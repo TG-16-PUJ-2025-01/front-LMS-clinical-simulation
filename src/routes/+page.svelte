@@ -24,3 +24,8 @@
 
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<div class="h-full w-full">
+  <video src="http://localhost:8080/streaming/video/javatechie" width="720px" height="480px" controls preload="auto">
+    <track kind="captions">
+  </video>
+</div>
