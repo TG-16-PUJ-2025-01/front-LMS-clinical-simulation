@@ -1,6 +1,6 @@
 <script lang="ts">
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
+  import * as AlertDialog from "$lib/common/components/ui/alert-dialog/index.js";
+  import { Button } from "$lib/common/components/ui/button/index.js";
  </script>
   
  <AlertDialog.Root>
