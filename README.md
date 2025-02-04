@@ -48,3 +48,60 @@ export default tseslint.config({
   },
 })
 ```
+
+## Using Screaming Architecture:
+
+```
+.
+└── src/
+    ├── assets/
+    └── modules/
+        ├── core/
+        │   ├── config/
+        │   │   ├── env/
+        │   │   └── security/
+        │   ├── components/
+        │   │   ├── ui/
+        │   │   └── ...
+        │   ├── models/
+        │   │   └── ...
+        │   ├── lib/
+        │   │   ├── utils.ts
+        │   │   └── ...
+        │   └── router/
+        │       └── index.tsx
+        ├── shared/
+        │   ├── auth/
+        │   │   ├── components/
+        │   │   ├── pages/
+        │   │   └── services/
+        │   └── ...
+        ├── student/
+        │   ├── layout/
+        │   ├── moduleA/
+        │   │   ├── components/
+        │   │   ├── pages/
+        │   │   └── services/
+        │   └── ...
+        ├── teacher/
+        │   ├── layout/
+        │   ├── moduleB/
+        │   │   ├── components/
+        │   │   ├── pages/
+        │   │   └── services/
+        │   └── ...
+        ├── coordinator/
+        │   ├── layout/
+        │   ├── moduleC/
+        │   │   ├── components/
+        │   │   ├── pages/
+        │   │   └── services/
+        │   └── ...
+        └── admin/
+            ├── layout/
+            ├── moduleD/
+            │   ├── components/
+            │   ├── pages/
+            │   └── services/
+            └── ...
+```
