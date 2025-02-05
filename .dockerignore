@@ -1,0 +1,13 @@
+# git
+.git/
+.gitignore
+README.md
+
+# node
+dist/
+node_modules/
+.prettierrc.mjs
+eslint.config.js
+
+# docker
+Dockerfile
