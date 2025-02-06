@@ -1,6 +1,6 @@
 import { VideosDataTable } from "../components/VideosDataTable";
 
-export default function Videos() {
+export default function VideosPage() {
   return (
     <main>
       <div>Videos</div>

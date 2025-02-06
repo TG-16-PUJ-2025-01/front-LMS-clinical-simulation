@@ -9,7 +9,7 @@ import {
 } from "@/modules/core/config/security/guards"
 import Login from "@/modules/shared/auth/pages/Login/Login"
 import Courses from "@/modules/admin/courses/pages/Courses"
-import Videos from "@/modules/admin/courses/pages/Videos"
+import VideosPage from "@/modules/admin/videos/pages/VideosPage"
 
 export default function Router() {
 	return (
@@ -32,7 +32,7 @@ export default function Router() {
 				{/* Admin Routes */}
 				<Route element={<AdminRoute />}>
 					<Route path="/admin" element={<Courses />}></Route>
-					<Route path="/admin/videos" element={<Videos />}></Route>
+					<Route path="/admin/videos" element={<VideosPage />}></Route>
 				</Route>
 
 				{/* Default Route */}
