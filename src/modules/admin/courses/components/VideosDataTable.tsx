@@ -11,7 +11,15 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import {
+	ArrowUpDown,
+	ChevronDown,
+	MoreHorizontal,
+	Pencil,
+	Search,
+	Trash2,
+	Video as VideoIcon,
+} from "lucide-react"
 
 import { Button } from "@/modules/core/components/ui/button"
 import {
@@ -66,7 +74,7 @@ const columns: ColumnDef<Video>[] = [
 			<div className="relative w-full">
 				<Button
 					variant="ghost"
-					className="mx-auto flex cursor-pointer absolute left-1/2 top-1/2 -translate-1/2"
+					className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
 					Nombre del Video
@@ -85,7 +93,7 @@ const columns: ColumnDef<Video>[] = [
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="mx-auto flex cursor-pointer absolute left-1/2 top-1/2 -translate-1/2"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Fecha de Grabación
@@ -107,7 +115,7 @@ const columns: ColumnDef<Video>[] = [
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="mx-auto flex cursor-pointer absolute left-1/2 top-1/2 -translate-1/2"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Fecha de Expiración
@@ -129,7 +137,7 @@ const columns: ColumnDef<Video>[] = [
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="mx-auto flex cursor-pointer absolute left-1/2 top-1/2 -translate-1/2"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Duración
@@ -149,7 +157,7 @@ const columns: ColumnDef<Video>[] = [
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="mx-auto flex cursor-pointer absolute left-1/2 top-1/2 -translate-1/2"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Tamaño
@@ -170,18 +178,21 @@ const columns: ColumnDef<Video>[] = [
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="ghost" className="ml-auto flex h-8 w-8 p-0">
-							<span className="sr-only">Open menu</span>
 							<MoreHorizontal />
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>Actions</DropdownMenuLabel>
+						<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(video.name)}>
-							Copy Course ID
+							<VideoIcon /> Ver video
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>View customer</DropdownMenuItem>
-						<DropdownMenuItem>View Course details</DropdownMenuItem>
+						<DropdownMenuItem>
+							<Pencil /> Editar
+						</DropdownMenuItem>
+						<DropdownMenuItem>
+							<Trash2 /> Borrar
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			)
@@ -217,12 +228,15 @@ export function VideosDataTable() {
 	return (
 		<div className="w-full">
 			<div className="flex items-center py-4">
-				<Input
-					placeholder="Filter names..."
-					value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-					onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
-					className="max-w-sm"
-				/>
+				<div className="relative max-w-sm w-1/2">
+					<Search className="absolute top-1/2 left-1.5 h-5 w-5 -translate-y-1/2 stroke-zinc-500" />
+					<Input
+						placeholder="Buscar..."
+						value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+						onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+						className="pl-8 w-full"
+					/>
+				</div>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="outline" className="ml-auto">
@@ -287,10 +301,6 @@ export function VideosDataTable() {
 				</Table>
 			</div>
 			<div className="flex items-center justify-end space-x-2 py-4">
-				<div className="text-muted-foreground flex-1 text-sm">
-					{table.getFilteredSelectedRowModel().rows.length} of{" "}
-					{table.getFilteredRowModel().rows.length} row(s) selected.
-				</div>
 				<div className="space-x-2">
 					<Button
 						variant="outline"
@@ -298,7 +308,7 @@ export function VideosDataTable() {
 						onClick={() => table.previousPage()}
 						disabled={!table.getCanPreviousPage()}
 					>
-						Previous
+						Anterior
 					</Button>
 					<Button
 						variant="outline"
@@ -306,7 +316,7 @@ export function VideosDataTable() {
 						onClick={() => table.nextPage()}
 						disabled={!table.getCanNextPage()}
 					>
-						Next
+						Siguiente
 					</Button>
 				</div>
 			</div>
