@@ -8,6 +8,7 @@ import {
 	TeacherRoute,
 } from "@/modules/core/config/security/guards"
 import Login from "@/modules/shared/auth/pages/Login/Login"
+import Courses from "@/modules/admin/courses/pages/Courses"
 
 export default function Router() {
 	return (
@@ -28,7 +29,9 @@ export default function Router() {
 				<Route element={<CoordinatorRoute />}></Route>
 
 				{/* Admin Routes */}
-				<Route element={<AdminRoute />}></Route>
+				<Route element={<AdminRoute />}>
+					<Route path="/admin" element={<Courses />}></Route>
+				</Route>
 
 				{/* Default Route */}
 				<Route path="*" element={<Navigate to="/login" />}></Route>

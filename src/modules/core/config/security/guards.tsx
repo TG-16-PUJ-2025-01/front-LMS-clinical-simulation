@@ -8,7 +8,7 @@ import TeacherLayout from "@/modules/teacher/layout/TeacherLayout"
 export function PrivateRoute() {
 	// Assert is authenticated
 	// If not authenticated, redirect to login
-	const isAuthenticated = false
+	const isAuthenticated = true
 	if (!isAuthenticated) {
 		return <Navigate to="/login" />
 	}
@@ -64,7 +64,7 @@ export function CoordinatorRoute() {
 export function AdminRoute() {
 	// Assert is admin
 	// If not admin, redirect to login
-	const isAdmin = false
+	const isAdmin = true
 	if (!isAdmin) {
 		return <Navigate to="/login" />
 	}
