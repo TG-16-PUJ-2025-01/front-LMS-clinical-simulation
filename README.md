@@ -73,6 +73,7 @@ export default tseslint.config({
         ├── shared/
         │   ├── auth/
         │   │   ├── components/
+        │   │   ├── hooks/
         │   │   ├── pages/
         │   │   └── services/
         │   └── ...
@@ -80,6 +81,7 @@ export default tseslint.config({
         │   ├── layout/
         │   ├── moduleA/
         │   │   ├── components/
+        │   │   ├── hooks/
         │   │   ├── pages/
         │   │   └── services/
         │   └── ...
@@ -87,6 +89,7 @@ export default tseslint.config({
         │   ├── layout/
         │   ├── moduleB/
         │   │   ├── components/
+        │   │   ├── hooks/
         │   │   ├── pages/
         │   │   └── services/
         │   └── ...
@@ -94,6 +97,7 @@ export default tseslint.config({
         │   ├── layout/
         │   ├── moduleC/
         │   │   ├── components/
+        │   │   ├── hooks/
         │   │   ├── pages/
         │   │   └── services/
         │   └── ...
@@ -101,6 +105,7 @@ export default tseslint.config({
             ├── layout/
             ├── moduleD/
             │   ├── components/
+            │   ├── hooks/
             │   ├── pages/
             │   └── services/
             └── ...
