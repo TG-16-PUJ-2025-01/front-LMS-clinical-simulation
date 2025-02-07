@@ -42,6 +42,7 @@ import {
 } from "@/modules/core/components/ui/table"
 import Video from "@/modules/core/models/video"
 import { formatDuration } from "@/modules/core/lib/utils"
+import EditVideoDialog from "./EditVideoDIalog"
 
 const data: Video[] = [
 	{
@@ -67,144 +68,157 @@ const data: Video[] = [
 	},
 ]
 
-const columns: ColumnDef<Video>[] = [
-	{
-		accessorKey: "name",
-		header: ({ column }) => (
-			<div className="relative w-full">
-				<Button
-					variant="ghost"
-					className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					Nombre del Video
-					{column.getIsSorted() && <ArrowUpDown />}
-				</Button>
-			</div>
-		),
-		cell: ({ row }) => {
-			return <div className="text-center capitalize">{row.getValue("name")}</div>
-		},
-	},
-	{
-		accessorKey: "recordingDate",
-		header: ({ column }) => {
-			return (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Fecha de Grabación
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			)
-		},
-		cell: ({ row }) => (
-			<div className="text-center">
-				{(row.getValue("recordingDate") as Date).toLocaleDateString()}
-			</div>
-		),
-	},
-	{
-		accessorKey: "expirationDate",
-		header: ({ column }) => {
-			return (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Fecha de Expiración
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			)
-		},
-		cell: ({ row }) => (
-			<div className="text-center">
-				{(row.getValue("expirationDate") as Date).toLocaleDateString()}
-			</div>
-		),
-	},
-	{
-		accessorKey: "duration",
-		header: ({ column }) => {
-			return (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Duración
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			)
-		},
-		cell: ({ row }) => (
-			<div className="text-center">{formatDuration(row.getValue("duration"))}</div>
-		),
-	},
-	{
-		accessorKey: "size",
-		header: ({ column }) => {
-			return (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Tamaño
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			)
-		},
-		cell: ({ row }) => <div className="text-center">{row.getValue("size")} GB</div>,
-	},
-	{
-		id: "actions",
-		enableHiding: false,
-		cell: ({ row }) => {
-			const video = row.original
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" className="ml-auto flex h-8 w-8 p-0">
-							<MoreHorizontal />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>Acciones</DropdownMenuLabel>
-						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(video.name)}>
-							<VideoIcon /> Ver video
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>
-							<Pencil /> Editar
-						</DropdownMenuItem>
-						<DropdownMenuItem>
-							<Trash2 /> Borrar
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		},
-	},
-]
-
 export function VideosDataTable() {
 	const [sorting, setSorting] = React.useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = React.useState({})
+
+	const [openDialog, setEditDialog] = React.useState<"view" | "edit" | "delete" | null>(null)
+	const [selectedVideo, setSelectedVideo] = React.useState<Video | null>(null)
+
+	const handleOpenDialog = (type: "view" | "edit" | "delete", video: Video) => {
+		setEditDialog(type)
+		setSelectedVideo(video)
+	}
+
+	const handleCloseDialog = () => {
+		setEditDialog(null)
+		setSelectedVideo(null)
+	}
+
+	const columns: ColumnDef<Video>[] = [
+		{
+			accessorKey: "name",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Nombre del Video
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				return <div className="text-center capitalize">{row.getValue("name")}</div>
+			},
+		},
+		{
+			accessorKey: "recordingDate",
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Fecha de Grabación
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => (
+				<div className="text-center">
+					{(row.getValue("recordingDate") as Date).toLocaleDateString()}
+				</div>
+			),
+		},
+		{
+			accessorKey: "expirationDate",
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Fecha de Expiración
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => (
+				<div className="text-center">
+					{(row.getValue("expirationDate") as Date).toLocaleDateString()}
+				</div>
+			),
+		},
+		{
+			accessorKey: "duration",
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Duración
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => (
+				<div className="text-center">{formatDuration(row.getValue("duration"))}</div>
+			),
+		},
+		{
+			accessorKey: "size",
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Tamaño
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => <div className="text-center">{row.getValue("size")} GB</div>,
+		},
+		{
+			id: "actions",
+			enableHiding: false,
+			cell: ({ row }) => {
+				const video = row.original
+
+				return (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" className="ml-auto flex h-8 w-8 p-0">
+								<MoreHorizontal />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
+							<DropdownMenuItem onClick={() => handleOpenDialog("view", video)}>
+								<VideoIcon /> Ver video
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem onClick={() => handleOpenDialog("edit", video)}>
+								<Pencil /> Editar
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={() => handleOpenDialog("delete", video)}>
+								<Trash2 /> Borrar
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)
+			},
+		},
+	]
 
 	const table = useReactTable({
 		data,
@@ -226,100 +240,107 @@ export function VideosDataTable() {
 	})
 
 	return (
-		<div className="w-full">
-			<div className="flex items-center py-4">
-				<div className="relative max-w-sm w-1/2">
-					<Search className="absolute top-1/2 left-1.5 h-5 w-5 -translate-y-1/2 stroke-zinc-500" />
-					<Input
-						placeholder="Buscar..."
-						value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-						onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
-						className="pl-8 w-full"
-					/>
-				</div>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" className="ml-auto">
-							Columns <ChevronDown />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						{table
-							.getAllColumns()
-							.filter((column) => column.getCanHide())
-							.map((column) => {
-								return (
-									<DropdownMenuCheckboxItem
-										key={column.id}
-										className="capitalize"
-										checked={column.getIsVisible()}
-										onCheckedChange={(value) => column.toggleVisibility(!!value)}
-									>
-										{column.id}
-									</DropdownMenuCheckboxItem>
-								)
-							})}
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</div>
-			<div className="rounded-md border">
-				<Table>
-					<TableHeader>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => {
+		<>
+			<div className="w-full">
+				<div className="flex items-center py-4">
+					<div className="relative w-1/2 max-w-sm">
+						<Search className="absolute top-1/2 left-1.5 h-5 w-5 -translate-y-1/2 stroke-zinc-500" />
+						<Input
+							placeholder="Buscar..."
+							value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+							onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+							className="w-full pl-8"
+						/>
+					</div>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="outline" className="ml-auto">
+								Columns <ChevronDown />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							{table
+								.getAllColumns()
+								.filter((column) => column.getCanHide())
+								.map((column) => {
 									return (
-										<TableHead key={header.id}>
-											{header.isPlaceholder
-												? null
-												: flexRender(header.column.columnDef.header, header.getContext())}
-										</TableHead>
+										<DropdownMenuCheckboxItem
+											key={column.id}
+											className="capitalize"
+											checked={column.getIsVisible()}
+											onCheckedChange={(value) => column.toggleVisibility(!!value)}
+										>
+											{column.id}
+										</DropdownMenuCheckboxItem>
 									)
 								})}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
-											{flexRender(cell.column.columnDef.cell, cell.getContext())}
-										</TableCell>
-									))}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
+				<div className="rounded-md border">
+					<Table>
+						<TableHeader>
+							{table.getHeaderGroups().map((headerGroup) => (
+								<TableRow key={headerGroup.id}>
+									{headerGroup.headers.map((header) => {
+										return (
+											<TableHead key={header.id}>
+												{header.isPlaceholder
+													? null
+													: flexRender(header.column.columnDef.header, header.getContext())}
+											</TableHead>
+										)
+									})}
 								</TableRow>
-							))
-						) : (
-							<TableRow>
-								<TableCell colSpan={columns.length} className="h-24 text-center">
-									No results.
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-			</div>
-			<div className="flex items-center justify-end space-x-2 py-4">
-				<div className="space-x-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						Anterior
-					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						Siguiente
-					</Button>
+							))}
+						</TableHeader>
+						<TableBody>
+							{table.getRowModel().rows?.length ? (
+								table.getRowModel().rows.map((row) => (
+									<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell key={cell.id}>
+												{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											</TableCell>
+										))}
+									</TableRow>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={columns.length} className="h-24 text-center">
+										No results.
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
+				</div>
+				<div className="flex items-center justify-end space-x-2 py-4">
+					<div className="space-x-2">
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => table.previousPage()}
+							disabled={!table.getCanPreviousPage()}
+						>
+							Anterior
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => table.nextPage()}
+							disabled={!table.getCanNextPage()}
+						>
+							Siguiente
+						</Button>
+					</div>
 				</div>
 			</div>
-		</div>
+			<EditVideoDialog
+				open={openDialog === "edit"}
+				onClose={handleCloseDialog}
+				video={selectedVideo ?? undefined}
+			/>
+		</>
 	)
 }
