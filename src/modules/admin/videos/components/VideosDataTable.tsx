@@ -42,7 +42,7 @@ import {
 } from "@/modules/core/components/ui/table"
 import Video from "@/modules/core/models/video"
 import { formatDuration } from "@/modules/core/lib/utils"
-import EditVideoDialog from "./EditVideoDIalog"
+import EditVideoDialog from "./EditVideoDialog"
 
 const data: Video[] = [
 	{
