@@ -42,6 +42,7 @@ import Video from "@/modules/core/models/video"
 import { formatDuration } from "@/modules/core/lib/utils"
 import EditVideoDialog from "./EditVideoDialog"
 import DeleteVideoDialog from "./DeleteVideoDialog"
+import WatchVideoDialog from "./WatchVideoDialog"
 
 const data: Video[] = [
 	{
@@ -311,6 +312,10 @@ export function VideosDataTable() {
 					</div>
 				</div>
 			</div>
+			<WatchVideoDialog
+				open={openDialog === "view"}
+				onClose={handleCloseDialog}
+			/>
 			<EditVideoDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
