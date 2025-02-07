@@ -242,7 +242,7 @@ export function VideosDataTable() {
 			<div className="w-full">
 				<div className="flex items-center py-4">
 					<div className="relative w-1/2 max-w-sm">
-						<Search className="absolute top-1/2 left-1.5 h-5 w-5 -translate-y-1/2 stroke-zinc-500" />
+						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
 							value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
