@@ -20,3 +20,18 @@ export async function getVideos(page: number, size: number): Promise<ApiResponse
 		data: data.data.map(videoMapper),
 	}
 }
+
+export async function getVideoChunk(
+	name: string,
+	startByte: number = 0,
+	chunkSize: number = 1024 * 1024
+): Promise<Blob> {
+	const endByte = startByte + chunkSize - 1
+	const res = await axiosInstance.get(`/streaming/video/${name}`, {
+		headers: {
+			Range: `bytes=${startByte}-${endByte}`,
+		},
+		responseType: "blob",
+	})
+	return res.data
+}

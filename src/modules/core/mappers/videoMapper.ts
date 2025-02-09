@@ -1,7 +1,6 @@
 import Video from "@/modules/core/models/video"
 
 export function videoMapper(video): Video {
-	console.log(video)
 	return {
 		name: video.videoName,
 		recordingDate: new Date(video.date),

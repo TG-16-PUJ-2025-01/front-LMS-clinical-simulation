@@ -60,7 +60,7 @@ export function VideosDataTable() {
 		pageIndex: 0, //initial page index
 		pageSize: 10, //default page size
 	})
-	
+
 	const [paginationInfo, setPaginationInfo] = useState({
 		total: 0, //total number of records
 		totalPages: 0, //total number of pages
@@ -318,7 +318,11 @@ export function VideosDataTable() {
 					</div>
 				</div>
 			</div>
-			<WatchVideoDialog open={openDialog === "view"} onClose={handleCloseDialog} />
+			<WatchVideoDialog
+				open={openDialog === "view"}
+				onClose={handleCloseDialog}
+				video={selectedVideo ?? undefined}
+			/>
 			<EditVideoDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
