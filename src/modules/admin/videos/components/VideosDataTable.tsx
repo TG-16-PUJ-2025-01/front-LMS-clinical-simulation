@@ -1,4 +1,3 @@
-import * as React from "react"
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -39,43 +38,45 @@ import {
 	TableRow,
 } from "@/modules/core/components/ui/table"
 import Video from "@/modules/core/models/video"
-import { formatDuration } from "@/modules/core/lib/utils"
+import { formatDuration, formatSize } from "@/modules/core/lib/utils"
 import EditVideoDialog from "./EditVideoDialog"
 import DeleteVideoDialog from "./DeleteVideoDialog"
 import WatchVideoDialog from "./WatchVideoDialog"
-
-const data: Video[] = [
-	{
-		name: "video1",
-		recordingDate: new Date(2022, 5, 15),
-		expirationDate: new Date(2023, 5, 15),
-		duration: 3740,
-		size: 4.6,
-	},
-	{
-		name: "video2",
-		recordingDate: new Date(2021, 3, 10),
-		expirationDate: new Date(2025, 3, 10),
-		duration: 3000,
-		size: 2.1,
-	},
-	{
-		name: "video3",
-		recordingDate: new Date(2020, 7, 20),
-		expirationDate: new Date(2021, 7, 20),
-		duration: 48,
-		size: 1.3,
-	},
-]
+import { useEffect, useState } from "react"
+import { getVideos } from "../services/videoService"
 
 export function VideosDataTable() {
-	const [sorting, setSorting] = React.useState<SortingState>([])
-	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-	const [rowSelection, setRowSelection] = React.useState({})
+	const [sorting, setSorting] = useState<SortingState>([])
+	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = React.useState<"view" | "edit" | "delete" | null>(null)
-	const [selectedVideo, setSelectedVideo] = React.useState<Video | null>(null)
+	const [openDialog, setEditDialog] = useState<"view" | "edit" | "delete" | null>(null)
+	const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+
+	const [data, setData] = useState<Video[]>([])
+
+	const [pagination, setPagination] = useState({
+		pageIndex: 0, //initial page index
+		pageSize: 10, //default page size
+	})
+	
+	const [paginationInfo, setPaginationInfo] = useState({
+		total: 0, //total number of records
+		totalPages: 0, //total number of pages
+	})
+
+	useEffect(() => {
+		const fetchVideos = async () => {
+			const res = await getVideos(pagination.pageIndex, pagination.pageSize)
+			setData(res.data)
+			setPaginationInfo({
+				total: res.metadata.total,
+				totalPages: res.metadata.totalPages,
+			})
+		}
+		fetchVideos()
+	}, [pagination])
 
 	const handleOpenDialog = (type: "view" | "edit" | "delete", video: Video) => {
 		setEditDialog(type)
@@ -186,7 +187,7 @@ export function VideosDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("size")} GB</div>,
+			cell: ({ row }) => <div className="text-center">{formatSize(row.getValue("size"))}</div>,
 		},
 		{
 			id: "actions",
@@ -231,11 +232,16 @@ export function VideosDataTable() {
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setColumnVisibility,
 		onRowSelectionChange: setRowSelection,
+		manualPagination: true,
+		onPaginationChange: setPagination,
+		rowCount: paginationInfo.total,
+		pageCount: paginationInfo.totalPages,
 		state: {
 			sorting,
 			columnFilters,
 			columnVisibility,
 			rowSelection,
+			pagination,
 		},
 	})
 
@@ -312,19 +318,13 @@ export function VideosDataTable() {
 					</div>
 				</div>
 			</div>
-			<WatchVideoDialog
-				open={openDialog === "view"}
-				onClose={handleCloseDialog}
-			/>
+			<WatchVideoDialog open={openDialog === "view"} onClose={handleCloseDialog} />
 			<EditVideoDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
 				video={selectedVideo ?? undefined}
 			/>
-			<DeleteVideoDialog
-				open={openDialog === "delete"}
-				onClose={handleCloseDialog}
-			/>
+			<DeleteVideoDialog open={openDialog === "delete"} onClose={handleCloseDialog} />
 		</>
 	)
 }

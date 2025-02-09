@@ -17,3 +17,11 @@ export function formatDuration(seconds: number) {
 
 	return min ? `${hours}h ${min}min` : `${hours}h`
 }
+
+export function formatSize(megaBytes: number) {
+	if (megaBytes < 1024) return `${megaBytes}MB` // Less than a gigabyte
+
+	const gigaBytes = megaBytes / 1024
+
+	return `${gigaBytes.toFixed(2)}GB`
+}
