@@ -1,41 +1,36 @@
 "use client"
 
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+	ColumnDef,
+	ColumnFiltersState,
+	SortingState,
+	VisibilityState,
+	flexRender,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
 } from "@tanstack/react-table"
-import { 
-  ArrowUpDown, 
-  MoreHorizontal,
-	Pencil,
-	Search,
-	Trash2,} from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
 import { Input } from "@/modules/core/components/ui/input"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/modules/core/components/ui/table"
 import Course from "@/modules/core/models/course"
 import EditCourseDialog from "./EditCourseDialog"
@@ -43,52 +38,51 @@ import DeleteCourseDialog from "./DeleteCourseDialog"
 import { useEffect, useState } from "react"
 import CreateCourseDialog from "./CreateCourseDialog"
 
-
 const initialData: Course[] = [
-  {
-    id: 23,
-    name: "ken99@yahoo.com",
-  },
-  {
-    id: 343,
-    name: "Abe45@gmail.com",
-  },
-  {
-    id: 1243,
-    name: "Monserrat44@gmail.com",
-  },
-  {
-    id: 2321,
-    name: "Silas22@gmail.com",
-  },
-  {
-    id: 6654,
-    name: "carmella@hotmail.com",
-  },
-  {
-    id: 302,
-    name: "carmella@hotmail.com",
-  },
-  {
-    id: 9302,
-    name: "carmella@hotmail.com",
-  },
-  {
-    id: 93920,
-    name: "carmella@hotmail.com",
-  },
-  {
-    id: 92912,
-    name: "carmella@hotmail.com",
-  },
-  {
-    id: 19291,
-    name: "carmella@hotmail.com",
-  },
-  {
-    id: 1391,
-    name: "carmella@hotmail.com"
-  },
+	{
+		id: 23,
+		name: "ken99@yahoo.com",
+	},
+	{
+		id: 343,
+		name: "Abe45@gmail.com",
+	},
+	{
+		id: 1243,
+		name: "Monserrat44@gmail.com",
+	},
+	{
+		id: 2321,
+		name: "Silas22@gmail.com",
+	},
+	{
+		id: 6654,
+		name: "carmella@hotmail.com",
+	},
+	{
+		id: 302,
+		name: "carmella@hotmail.com",
+	},
+	{
+		id: 9302,
+		name: "carmella@hotmail.com",
+	},
+	{
+		id: 93920,
+		name: "carmella@hotmail.com",
+	},
+	{
+		id: 92912,
+		name: "carmella@hotmail.com",
+	},
+	{
+		id: 19291,
+		name: "carmella@hotmail.com",
+	},
+	{
+		id: 1391,
+		name: "carmella@hotmail.com",
+	},
 ]
 export function CoursesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -96,7 +90,7 @@ export function CoursesDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create"| null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | null>(null)
 	const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
 
 	const [data, setData] = useState<Course[]>([])
@@ -112,17 +106,16 @@ export function CoursesDataTable() {
 	})
 
 	useEffect(() => {
-  const fetchCourses = async () => {
-    setData([...initialData]); // ✅ Ahora sí estamos usando la constante "data"
-    console.log([...initialData]); // ✅ Mostramos los datos en consola
-    setPaginationInfo({
-      total: data.length, // ✅ Usamos "data" para obtener el total
-      totalPages: Math.ceil(data.length / pagination.pageSize),
-    });
-  };
-  fetchCourses();
-}, [pagination]);
-
+		const fetchCourses = async () => {
+			setData([...initialData]) // ✅ Ahora sí estamos usando la constante "data"
+			console.log([...initialData]) // ✅ Mostramos los datos en consola
+			setPaginationInfo({
+				total: data.length, // ✅ Usamos "data" para obtener el total
+				totalPages: Math.ceil(data.length / pagination.pageSize),
+			})
+		}
+		fetchCourses()
+	}, [pagination])
 
 	const handleOpenDialog = (type: "create" | "edit" | "delete", Course?: Course) => {
 		setEditDialog(type)
@@ -169,11 +162,7 @@ export function CoursesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{(row.getValue("name"))}
-				</div>
-			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
 			id: "actions",
@@ -191,7 +180,7 @@ export function CoursesDataTable() {
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuItem onClick={() => handleOpenDialog("edit", Course)}>
-								<Pencil /> Editar 
+								<Pencil /> Editar
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("delete", Course)}>
 								<Trash2 /> Borrar
@@ -230,7 +219,7 @@ export function CoursesDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center py-4 justify-between">
+				<div className="flex items-center justify-between py-4">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -307,88 +296,84 @@ export function CoursesDataTable() {
 				course={selectedCourse ?? undefined}
 			/>
 			<DeleteCourseDialog open={openDialog === "delete"} onClose={handleCloseDialog} />
-			<CreateCourseDialog 
-				open={openDialog === "create"} 
-				onClose={handleCloseDialog} 
+			<CreateCourseDialog
+				open={openDialog === "create"}
+				onClose={handleCloseDialog}
 				course={undefined}
 			/>
 		</>
 	)
 }
 
-
 export const columns: ColumnDef<Course>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "id",
-    header: () => <div >id</div>,
-    cell: ({ row }) => {
-      return <div className="font-medium">{row.getValue("id")}</div>
-    },
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Nombre
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const Course = row.original
+	{
+		id: "select",
+		header: ({ table }) => (
+			<Checkbox
+				checked={
+					table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
+				}
+				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+				aria-label="Select all"
+			/>
+		),
+		cell: ({ row }) => (
+			<Checkbox
+				checked={row.getIsSelected()}
+				onCheckedChange={(value) => row.toggleSelected(!!value)}
+				aria-label="Select row"
+			/>
+		),
+		enableSorting: false,
+		enableHiding: false,
+	},
+	{
+		accessorKey: "id",
+		header: () => <div>id</div>,
+		cell: ({ row }) => {
+			return <div className="font-medium">{row.getValue("id")}</div>
+		},
+	},
+	{
+		accessorKey: "name",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Nombre
+					<ArrowUpDown />
+				</Button>
+			)
+		},
+		cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+	},
+	{
+		id: "actions",
+		enableHiding: false,
+		cell: ({ row }) => {
+			const Course = row.original
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-			  onClick={() => navigator.clipboard.writeText(Course.id.toString())}
-            >
-              Copy Course ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View Course details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
+			return (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="ghost" className="h-8 w-8 p-0">
+							<span className="sr-only">Open menu</span>
+							<MoreHorizontal />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuLabel>Actions</DropdownMenuLabel>
+						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Course.id.toString())}>
+							Copy Course ID
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem>View customer</DropdownMenuItem>
+						<DropdownMenuItem>View Course details</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			)
+		},
+	},
 ]

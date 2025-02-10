@@ -10,8 +10,8 @@ import {
 } from "@/modules/core/components/ui/alert-dialog"
 
 interface Props {
-  open: boolean
-  onClose: (open: boolean) => void
+	open: boolean
+	onClose: (open: boolean) => void
 }
 
 export default function DeleteCourseDialog({ open, onClose }: Props) {
