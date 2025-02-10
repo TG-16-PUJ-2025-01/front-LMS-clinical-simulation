@@ -31,7 +31,7 @@ export default function NavBar({ showSelect = true, navLinks = [] }: NavBarProps
 				<div className="flex items-center gap-4">
 					{/* Logo */}
 					<img
-						src="https://sibcolombia.net/wp-content/uploads/2016/05/Logo-javeriana.png"
+						src="/src/assets/logo.svg"
 						alt="Logo"
 						className="mr-8 h-15 w-15"
 					/>
