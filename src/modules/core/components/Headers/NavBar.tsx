@@ -8,7 +8,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/modules/core/components/ui/select"
-import { UserNav } from "./user-nav"
+import { UserNav } from "./UserNav"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/modules/core/components/ui/tooltip"
 import { Button } from "@/modules/core/components/ui/button"
 import { TooltipProvider } from "@radix-ui/react-tooltip"
