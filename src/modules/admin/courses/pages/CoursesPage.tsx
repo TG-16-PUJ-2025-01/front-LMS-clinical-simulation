@@ -1,10 +1,10 @@
 import { CoursesDataTable } from "../components/CoursesDataTable";
 
 
-export default function Courses() {
+export default function CoursesPage() {
   return (
     <main>
-      <div>Courses</div>
+      <div>Materias</div>
       <CoursesDataTable />
 
 

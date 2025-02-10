@@ -8,8 +8,9 @@ import {
 	TeacherRoute,
 } from "@/modules/core/config/security/guards"
 import Login from "@/modules/shared/auth/pages/Login/Login"
-import Courses from "@/modules/admin/courses/pages/Courses"
+import CoursesPage from "@/modules/admin/courses/pages/CoursesPage"
 import VideosPage from "@/modules/admin/videos/pages/VideosPage"
+import ClassesPage from "@/modules/admin/classes/pages/ClassesPage"
 
 export default function Router() {
 	return (
@@ -31,8 +32,9 @@ export default function Router() {
 
 				{/* Admin Routes */}
 				<Route element={<AdminRoute />}>
-					<Route path="/admin" element={<Courses />}></Route>
+					<Route path="/admin/materias" element={<CoursesPage />}></Route>
 					<Route path="/admin/videos" element={<VideosPage />}></Route>
+					<Route path="/admin/clases" element={<ClassesPage />}></Route>
 				</Route>
 
 				{/* Default Route */}
