@@ -123,7 +123,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 								name="id"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Nombre</FormLabel>
+										<FormLabel className="m-0 text-right">ID</FormLabel>
 										<FormControl>
 											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
 										</FormControl>
@@ -136,7 +136,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 								name="name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Fecha de expiración</FormLabel>
+										<FormLabel className="m-0 text-right">Nombre</FormLabel>
 										<FormControl>
                                             <Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
 										</FormControl>
