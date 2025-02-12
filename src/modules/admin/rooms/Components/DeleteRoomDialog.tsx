@@ -1,4 +1,3 @@
-import React from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -10,28 +9,26 @@ import {
 	AlertDialogTitle,
 } from "@/modules/core/components/ui/alert-dialog"
 
-interface DeleteCourseDialogProps {
-	open: boolean
-	onClose: (open: boolean) => void
+interface Props {
+  open: boolean
+  onClose: (open: boolean) => void
 }
 
-const DeleteCourseDialog: React.FC<DeleteCourseDialogProps> = ({ open, onClose }) => {
+export default function DeleteRoomDialog({ open, onClose }: Props) {
 	return (
 		<AlertDialog open={open} onOpenChange={onClose}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>¿Seguro que desea eliminar la materia?</AlertDialogTitle>
+					<AlertDialogTitle>¿Seguro que desea eliminar la sala?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y se eliminarán todas las clases vinculadas a esta materia.
+						Esta acción no es reversible.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancelar</AlertDialogCancel>
-					<AlertDialogAction>Eliminar</AlertDialogAction>
+					<AlertDialogAction className="danger">Eliminar</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
 	)
-};
-
-export default DeleteCourseDialog;
+}
