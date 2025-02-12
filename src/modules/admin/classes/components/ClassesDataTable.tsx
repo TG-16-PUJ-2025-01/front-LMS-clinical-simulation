@@ -1,136 +1,130 @@
 "use client"
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+	ColumnDef,
+	ColumnFiltersState,
+	SortingState,
+	VisibilityState,
+	flexRender,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
 } from "@tanstack/react-table"
-import { 
-  ArrowUpDown, 
-  MoreHorizontal,
-	Pencil,
-	Search,
-	Trash2,} from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
 import { Input } from "@/modules/core/components/ui/input"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/modules/core/components/ui/table"
 import Class from "@/modules/core/models/class"
 import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
 
-
 const initialData: Class[] = [
-  {
-    id: 23,
-    name: "ken99@yahoo.com",
-	course: "course1",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 343,
-    name: "Abe45@gmail.com",
-	course: "course1",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 1243,
-    name: "Monserrat44@gmail.com",
-	course: "course1",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 2321,
-    name: "Silas22@gmail.com",
-	course: "course1",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 6654,
-    name: "carmella@hotmail.com",
-	course: "course2",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 302,
-    name: "carmella@hotmail.com",
-	course: "course1",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 9302,
-    name: "carmella@hotmail.com",
-	course: "course3",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 93920,
-    name: "carmella@hotmail.com",
-	course: "course4",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 92912,
-    name: "carmella@hotmail.com",
-	course: "course1",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 19291,
-    name: "carmella@hotmail.com",
-	course: "course1",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
-  {
-    id: 1391,
-    name: "carmella@hotmail.com",
-	course: "course1",
-	startDate: new Date(),
-	endDate: new Date(),
-	professor: "professor1",
-  },
+	{
+		id: 23,
+		name: "ken99@yahoo.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 343,
+		name: "Abe45@gmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 1243,
+		name: "Monserrat44@gmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 2321,
+		name: "Silas22@gmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 6654,
+		name: "carmella@hotmail.com",
+		course: "course2",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 302,
+		name: "carmella@hotmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 9302,
+		name: "carmella@hotmail.com",
+		course: "course3",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 93920,
+		name: "carmella@hotmail.com",
+		course: "course4",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 92912,
+		name: "carmella@hotmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 19291,
+		name: "carmella@hotmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
+	{
+		id: 1391,
+		name: "carmella@hotmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
+	},
 ]
 export function ClassesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -154,17 +148,16 @@ export function ClassesDataTable() {
 	})
 
 	useEffect(() => {
-  const fetchClasses = async () => {
-    setData([...initialData]); // ✅ Ahora sí estamos usando la constante "data"
-    console.log([...initialData]); // ✅ Mostramos los datos en consola
-    setPaginationInfo({
-      total: data.length, // ✅ Usamos "data" para obtener el total
-      totalPages: Math.ceil(data.length / pagination.pageSize),
-    });
-  };
-  fetchClasses();
-}, [pagination]);
-
+		const fetchClasses = async () => {
+			setData([...initialData]) // ✅ Ahora sí estamos usando la constante "data"
+			console.log([...initialData]) // ✅ Mostramos los datos en consola
+			setPaginationInfo({
+				total: data.length, // ✅ Usamos "data" para obtener el total
+				totalPages: Math.ceil(data.length / pagination.pageSize),
+			})
+		}
+		fetchClasses()
+	}, [pagination])
 
 	const handleOpenDialog = (type: "edit" | "delete", Class: Class) => {
 		setEditDialog(type)
@@ -211,11 +204,7 @@ export function ClassesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{(row.getValue("name"))}
-				</div>
-			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
 			accessorKey: "course",
@@ -233,11 +222,7 @@ export function ClassesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{(row.getValue("course"))}
-				</div>
-			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
 		},
 		{
 			accessorKey: "professor",
@@ -255,11 +240,7 @@ export function ClassesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{(row.getValue("professor"))}
-				</div>
-			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("professor")}</div>,
 		},
 		{
 			accessorKey: "startDate",
@@ -300,7 +281,7 @@ export function ClassesDataTable() {
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem onClick={() => handleOpenDialog("edit", Class)}>
-								<Pencil /> Editar 
+								<Pencil /> Editar
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("delete", Class)}>
 								<Trash2 /> Borrar
@@ -340,16 +321,15 @@ export function ClassesDataTable() {
 		<>
 			<div className="w-full">
 				<div className="flex items-center py-4">
-				<div className="relative w-1/2 max-w-sm">
-					<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
-					<Input
-						placeholder="Buscar..."
-						value={(table.getState().globalFilter as string) ?? ""}
-						onChange={(event) => table.setGlobalFilter(event.target.value)}
-						className="w-full pl-8"
-					/>
-				</div>
-
+					<div className="relative w-1/2 max-w-sm">
+						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
+						<Input
+							placeholder="Buscar..."
+							value={(table.getState().globalFilter as string) ?? ""}
+							onChange={(event) => table.setGlobalFilter(event.target.value)}
+							className="w-full pl-8"
+						/>
+					</div>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -420,79 +400,75 @@ export function ClassesDataTable() {
 	)
 }
 
-
 export const columns: ColumnDef<Class>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "id",
-    header: () => <div >id</div>,
-    cell: ({ row }) => {
-      return <div className="font-medium">{row.getValue("id")}</div>
-    },
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Nombre
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const Class = row.original
+	{
+		id: "select",
+		header: ({ table }) => (
+			<Checkbox
+				checked={
+					table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
+				}
+				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+				aria-label="Select all"
+			/>
+		),
+		cell: ({ row }) => (
+			<Checkbox
+				checked={row.getIsSelected()}
+				onCheckedChange={(value) => row.toggleSelected(!!value)}
+				aria-label="Select row"
+			/>
+		),
+		enableSorting: false,
+		enableHiding: false,
+	},
+	{
+		accessorKey: "id",
+		header: () => <div>id</div>,
+		cell: ({ row }) => {
+			return <div className="font-medium">{row.getValue("id")}</div>
+		},
+	},
+	{
+		accessorKey: "name",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Nombre
+					<ArrowUpDown />
+				</Button>
+			)
+		},
+		cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+	},
+	{
+		id: "actions",
+		enableHiding: false,
+		cell: ({ row }) => {
+			const Class = row.original
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-			  onClick={() => navigator.clipboard.writeText(Class.id.toString())}
-            >
-              Copy Class ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View Class details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
+			return (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="ghost" className="h-8 w-8 p-0">
+							<span className="sr-only">Open menu</span>
+							<MoreHorizontal />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuLabel>Actions</DropdownMenuLabel>
+						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Class.id.toString())}>
+							Copy Class ID
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem>View customer</DropdownMenuItem>
+						<DropdownMenuItem>View Class details</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			)
+		},
+	},
 ]

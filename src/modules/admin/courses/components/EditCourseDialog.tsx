@@ -30,8 +30,8 @@ interface Props {
 
 const formSchema = z.object({
 	id: z.coerce.number().int().positive({
-        message: "El ID debe ser un número entero positivo",
-    }),
+		message: "El ID debe ser un número entero positivo",
+	}),
 	name: z.string().min(2, {
 		message: "El nombre debe tener al menos 2 caracteres",
 	}),
@@ -65,7 +65,9 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Editar Materia</DialogTitle>
-					<DialogDescription>Puedes editar los siguientes atributos de la materia</DialogDescription>
+					<DialogDescription>
+						Puedes editar los siguientes atributos de la materia
+					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
@@ -90,7 +92,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Fecha de expiración</FormLabel>
 										<FormControl>
-                                            <Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
+											<Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
