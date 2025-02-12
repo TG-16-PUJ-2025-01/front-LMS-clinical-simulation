@@ -11,7 +11,7 @@ import Login from "@/modules/shared/auth/pages/Login/Login"
 import CoursesPage from "@/modules/admin/courses/pages/CoursesPage"
 import VideosPage from "@/modules/admin/videos/pages/VideosPage"
 import ClassesPage from "@/modules/admin/classes/pages/ClassesPage"
-import RoomsPage from "@/modules/admin/rooms/Pages/RoomsPage"
+import RoomsPage from "@/modules/admin/rooms/pages/RoomsPage"
 
 export default function Router() {
 	return (

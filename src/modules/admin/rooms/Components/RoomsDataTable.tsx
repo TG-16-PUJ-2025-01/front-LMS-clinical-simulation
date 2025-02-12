@@ -40,7 +40,7 @@ import Room from "@/modules/core/models/room"
 import EditRoomDialog from "./EditRoomDialog"
 import DeleteRoomDialog from "./DeleteRoomDialog"
 import { useEffect, useState } from "react"
-import { roomService } from "../Services/roomService"
+import { roomService } from "../services/roomService"
 
 export function RoomsDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])

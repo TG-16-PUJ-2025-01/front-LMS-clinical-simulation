@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { RoomsDataTable } from "../Components/RoomsDataTable";
-import { roomService } from "../Services/roomService";
+import { RoomsDataTable } from "../components/RoomsDataTable";
+import { roomService } from "../services/roomService";
 import { Button } from "@/modules/core/components/ui/button";
 import Room from "@/modules/core/models/room";
 

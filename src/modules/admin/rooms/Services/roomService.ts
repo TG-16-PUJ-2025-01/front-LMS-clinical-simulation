@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_URL } from "@/modules/core/config/env";
-import { RoomDto } from "@/modules/admin/rooms/Models/RoomDto";
+import { RoomDto } from "@/modules/admin/rooms/models/RoomDto";
 
 const axiosInstance = axios.create({
     baseURL: API_URL,
