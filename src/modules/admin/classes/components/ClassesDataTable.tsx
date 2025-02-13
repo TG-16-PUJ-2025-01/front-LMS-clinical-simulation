@@ -1,5 +1,4 @@
 "use client"
-
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -32,68 +31,111 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import Course from "@/modules/core/models/course"
-import EditCourseDialog from "./EditCourseDialog"
-import DeleteCourseDialog from "./DeleteCourseDialog"
+import Class from "@/modules/core/models/class"
+import EditClassDialog from "./EditClassDialog"
+import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
-import CreateCourseDialog from "./CreateCourseDialog"
 
-const initialData: Course[] = [
+const initialData: Class[] = [
 	{
 		id: 23,
 		name: "ken99@yahoo.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 343,
 		name: "Abe45@gmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 1243,
 		name: "Monserrat44@gmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 2321,
 		name: "Silas22@gmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 6654,
 		name: "carmella@hotmail.com",
+		course: "course2",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 302,
 		name: "carmella@hotmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 9302,
 		name: "carmella@hotmail.com",
+		course: "course3",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 93920,
 		name: "carmella@hotmail.com",
+		course: "course4",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 92912,
 		name: "carmella@hotmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 19291,
 		name: "carmella@hotmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 	{
 		id: 1391,
 		name: "carmella@hotmail.com",
+		course: "course1",
+		startDate: new Date(),
+		endDate: new Date(),
+		professor: "professor1",
 	},
 ]
-export function CoursesDataTable() {
+export function ClassesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | null>(null)
-	const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | null>(null)
+	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 
-	const [data, setData] = useState<Course[]>([])
+	const [data, setData] = useState<Class[]>([])
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
@@ -106,7 +148,7 @@ export function CoursesDataTable() {
 	})
 
 	useEffect(() => {
-		const fetchCourses = async () => {
+		const fetchClasses = async () => {
 			setData([...initialData]) // ✅ Ahora sí estamos usando la constante "data"
 			console.log([...initialData]) // ✅ Mostramos los datos en consola
 			setPaginationInfo({
@@ -114,20 +156,20 @@ export function CoursesDataTable() {
 				totalPages: Math.ceil(data.length / pagination.pageSize),
 			})
 		}
-		fetchCourses()
+		fetchClasses()
 	}, [pagination])
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete", Course?: Course) => {
+	const handleOpenDialog = (type: "edit" | "delete", Class: Class) => {
 		setEditDialog(type)
-		setSelectedCourse(Course ?? null)
+		setSelectedClass(Class)
 	}
 
 	const handleCloseDialog = () => {
 		setEditDialog(null)
-		setSelectedCourse(null)
+		setSelectedClass(null)
 	}
 
-	const columns: ColumnDef<Course>[] = [
+	const columns: ColumnDef<Class>[] = [
 		{
 			accessorKey: "id",
 			header: ({ column }) => (
@@ -137,7 +179,7 @@ export function CoursesDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						ID la materia
+						ID la clase
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
@@ -165,10 +207,68 @@ export function CoursesDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
+			accessorKey: "course",
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Materia
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
+		},
+		{
+			accessorKey: "professor",
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Profesor
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => <div className="text-center">{row.getValue("professor")}</div>,
+		},
+		{
+			accessorKey: "startDate",
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Periodo
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => (
+				<div className="text-center">
+					{(row.getValue("startDate") as Date).toLocaleDateString()}
+				</div>
+			),
+		},
+		{
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {
-				const Course = row.original
+				const Class = row.original
 
 				return (
 					<DropdownMenu>
@@ -179,10 +279,11 @@ export function CoursesDataTable() {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
-							<DropdownMenuItem onClick={() => handleOpenDialog("edit", Course)}>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem onClick={() => handleOpenDialog("edit", Class)}>
 								<Pencil /> Editar
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => handleOpenDialog("delete", Course)}>
+							<DropdownMenuItem onClick={() => handleOpenDialog("delete", Class)}>
 								<Trash2 /> Borrar
 							</DropdownMenuItem>
 						</DropdownMenuContent>
@@ -219,7 +320,7 @@ export function CoursesDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center justify-between py-4">
+				<div className="flex items-center py-4">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -229,7 +330,6 @@ export function CoursesDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => handleOpenDialog("create", undefined)}>Nueva materia</Button>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -290,22 +390,17 @@ export function CoursesDataTable() {
 					</div>
 				</div>
 			</div>
-			<EditCourseDialog
+			<EditClassDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
-				course={selectedCourse ?? undefined}
+				classData={selectedClass ?? undefined}
 			/>
-			<DeleteCourseDialog open={openDialog === "delete"} onClose={handleCloseDialog} />
-			<CreateCourseDialog
-				open={openDialog === "create"}
-				onClose={handleCloseDialog}
-				course={undefined}
-			/>
+			<DeleteClassDialog open={openDialog === "delete"} onClose={handleCloseDialog} />
 		</>
 	)
 }
 
-export const columns: ColumnDef<Course>[] = [
+export const columns: ColumnDef<Class>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -353,7 +448,7 @@ export const columns: ColumnDef<Course>[] = [
 		id: "actions",
 		enableHiding: false,
 		cell: ({ row }) => {
-			const Course = row.original
+			const Class = row.original
 
 			return (
 				<DropdownMenu>
@@ -365,12 +460,12 @@ export const columns: ColumnDef<Course>[] = [
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Course.id.toString())}>
-							Copy Course ID
+						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Class.id.toString())}>
+							Copy Class ID
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem>View customer</DropdownMenuItem>
-						<DropdownMenuItem>View Course details</DropdownMenuItem>
+						<DropdownMenuItem>View Class details</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			)
