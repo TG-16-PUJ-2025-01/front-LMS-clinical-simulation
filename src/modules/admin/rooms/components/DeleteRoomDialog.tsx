@@ -8,13 +8,31 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/modules/core/components/ui/alert-dialog"
+import { deleteRoom } from "../services/roomService"
 
 interface Props {
   open: boolean
   onClose: (open: boolean) => void
+  roomId: number | null
 }
 
-export default function DeleteRoomDialog({ open, onClose }: Props) {
+export default function DeleteRoomDialog({ open, onClose, roomId }: Props) {
+
+	async function onConfirmDelete() {
+		if (!roomId){
+			console.log("No se ha proporcionado un ID de sala para eliminar.");
+			return;
+		} 
+
+		try {
+			await deleteRoom(roomId);
+			console.log(`Sala con ID ${roomId} eliminada exitosamente.`);
+			onClose(false);
+		} catch (error) {
+			console.error("Error al eliminar la sala:", error);
+		}
+	}
+
 	return (
 		<AlertDialog open={open} onOpenChange={onClose}>
 			<AlertDialogContent>
@@ -26,7 +44,9 @@ export default function DeleteRoomDialog({ open, onClose }: Props) {
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancelar</AlertDialogCancel>
-					<AlertDialogAction className="danger">Eliminar</AlertDialogAction>
+					<AlertDialogAction className="danger bg-red-600" onClick={onConfirmDelete}>
+						Eliminar
+					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

@@ -40,7 +40,7 @@ import Room from "@/modules/core/models/room"
 import EditRoomDialog from "./EditRoomDialog"
 import DeleteRoomDialog from "./DeleteRoomDialog"
 import { useEffect, useState } from "react"
-import { roomService } from "../services/roomService"
+import { getAllRooms } from "../services/roomService"
 
 export function RoomsDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -65,11 +65,11 @@ export function RoomsDataTable() {
 
 	useEffect(() => {
 		const fetchRooms = async () => {
-			const res = await roomService.getAllRooms(pagination.pageIndex, pagination.pageSize)
-			setData(res.data)
+			const res = await getAllRooms(pagination.pageIndex, pagination.pageSize)
+			setData(res.data.content)
 			setPaginationInfo({
-				total: res.data.content.totalElements,
-				totalPages: res.data.content.totalPages,
+				total: res.data.totalElements,
+				totalPages: res.data.totalElements,
 			})
 		}
 		fetchRooms()
@@ -83,6 +83,7 @@ export function RoomsDataTable() {
 	const handleCloseDialog = () => {
 		setEditDialog(null)
 		setSelectedRoom(null)
+		setPagination((prev) => ({ ...prev }));
 	}
 
 	const columns: ColumnDef<Room>[] = [
@@ -123,24 +124,23 @@ export function RoomsDataTable() {
 			},
 		},
 		{
-			accessorKey: "type.name",
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						>
-							Tipo de Sala
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
+			id: "type",
+			accessorFn: (room) => room.type.name,
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Tipo de Sala
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
 			cell: ({ row }) => (
 				<div className="text-center">
-					{row.getValue("type.name")}
+					{row.getValue("type")}
 				</div>
 			),
 		},
@@ -159,6 +159,7 @@ export function RoomsDataTable() {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
+							<DropdownMenuSeparator />
 							<DropdownMenuItem onClick={() => handleOpenDialog("edit", room)}>
 								<Pencil /> Editar
 							</DropdownMenuItem>
@@ -274,7 +275,7 @@ export function RoomsDataTable() {
 				onClose={handleCloseDialog}
 				room={selectedRoom ?? undefined}
 			/>
-			<DeleteRoomDialog open={openDialog === "delete"} onClose={handleCloseDialog} />
+			<DeleteRoomDialog open={openDialog === "delete"} onClose={handleCloseDialog} roomId={selectedRoom?.id ?? null} />
 		</>
 	)
 }
