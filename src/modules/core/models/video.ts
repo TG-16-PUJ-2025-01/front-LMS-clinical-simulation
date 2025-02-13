@@ -4,4 +4,5 @@ export default interface Video {
 	expirationDate: Date
 	duration: number // in seconds
 	size: number // in GB
+	status: "AVAILABLE" | "UNAVAILABLE"
 }

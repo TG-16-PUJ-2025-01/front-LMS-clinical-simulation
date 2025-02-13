@@ -25,8 +25,8 @@ export default function DeleteVideoDialog({ open, onClose }: Props) {
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction>Continue</AlertDialogAction>
+					<AlertDialogCancel>Cancelar</AlertDialogCancel>
+					<AlertDialogAction>Continuar</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
