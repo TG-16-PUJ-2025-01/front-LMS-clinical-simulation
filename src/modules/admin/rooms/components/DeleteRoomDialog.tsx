@@ -9,6 +9,7 @@ import {
 	AlertDialogTitle,
 } from "@/modules/core/components/ui/alert-dialog"
 import { deleteRoom } from "../services/roomService"
+import { toast } from "sonner"
 
 interface Props {
   open: boolean
@@ -20,13 +21,14 @@ export default function DeleteRoomDialog({ open, onClose, roomId }: Props) {
 
 	async function onConfirmDelete() {
 		if (!roomId){
-			console.log("No se ha proporcionado un ID de sala para eliminar.");
+			toast.error("No se ha proporcionado un ID de sala para eliminar.");
 			return;
 		} 
 
 		try {
 			await deleteRoom(roomId);
 			console.log(`Sala con ID ${roomId} eliminada exitosamente.`);
+			toast.success("Sala eliminada exitosamente.");
 			onClose(false);
 		} catch (error) {
 			console.error("Error al eliminar la sala:", error);

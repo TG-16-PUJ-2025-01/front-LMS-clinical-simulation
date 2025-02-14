@@ -43,3 +43,17 @@ export async function deleteRoom(id: number) {
     return response.data;
 }
 
+export async function createRoom(room: Room) {
+    const response = await axiosInstance.post(`/rooms/add`, room);
+    console.log("Dentro de createRoom");
+    console.log(response.data);
+    return response.data;
+}
+
+export async function addRoomType(name: string) {
+    const response = await axiosInstance.post(`/rooms/type/add`, { name });
+    console.log("Dentro de addRoomType");
+    console.log(response.data);
+    return response.data;
+}
+

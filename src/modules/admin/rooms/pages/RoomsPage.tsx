@@ -1,27 +1,31 @@
-import { RoomsDataTable } from "../components/RoomsDataTable";
-import { getAllRooms, getRoomById } from "../services/roomService";
-import { Button } from "@/modules/core/components/ui/button";
+import { RoomsDataTable } from "../components/RoomsDataTable"
+import NavBar from "@/modules/core/components/Headers/NavBar"
+import { Toaster } from "@/modules/core/components/ui/sonner"
 
 export default function RoomsPage() {
 
-  const fetchRooms = async () => {
-    const res = await getAllRooms(0, 10);
-    console.log("Rooms fetched!");
-    console.log(res);
-  };
+	const navLinks = [
+		{ label: "Listado de materias", href: "/admin/" },
+		{ label: "Listado de clases", href: "/admin/clases" },
+		{ label: "Listado de cuentas", href: "/admin/users" },
+		{ label: "Listado de salas", href: "#" },
+    	{ label: "Listado de videos", href: "/admin/videos" },
+	]
 
-  const fetchRoom = async () => {
-    const res = await getRoomById(2);
-    console.log("Room fetched!");
-    console.log(res);
-  }
-
-  return (
-    <main>
-      <div>Rooms</div>
-      <Button onClick={fetchRooms}>Cargar Salas</Button>
-      <Button onClick={fetchRoom}>Cargar Sala</Button>
-      <RoomsDataTable/>
-    </main>
-  );
+	return (
+		<>
+			<NavBar navLinks={navLinks} />
+			<main className="bg-gray-100 min-h-screen flex flex-col items-center py-8">
+				<div className="w-full max-w-6xl mb-4">
+					<h1 className="text-2xl font-semibold">Salas</h1>
+				</div>
+				<div className="w-full max-w-6xl p-4 bg-white rounded-lg shadow-md flex flex-col justify-between h-full">
+					<div className="flex-grow">
+						<RoomsDataTable />
+					</div>
+				</div>
+			</main>
+			<Toaster />
+		</>
+	)
 }

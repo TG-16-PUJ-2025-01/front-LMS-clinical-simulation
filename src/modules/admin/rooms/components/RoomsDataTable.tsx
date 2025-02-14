@@ -14,6 +14,7 @@ import {
 	ArrowUpDown,
 	MoreHorizontal,
 	Pencil,
+	Plus,
 	Search,
 	Trash2,
 } from "lucide-react"
@@ -41,6 +42,14 @@ import EditRoomDialog from "./EditRoomDialog"
 import DeleteRoomDialog from "./DeleteRoomDialog"
 import { useEffect, useState } from "react"
 import { getAllRooms } from "../services/roomService"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/modules/core/components/ui/tooltip"
+import AddRoomDialog from "./AddRoomDialog"
+import AddRoomTypeDialog from "./AddRoomTypeDialog"
 
 export function RoomsDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -48,7 +57,7 @@ export function RoomsDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "add" | "addRoomType" | null>(null)
 	const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
 
 	const [data, setData] = useState<Room[]>([])
@@ -75,9 +84,9 @@ export function RoomsDataTable() {
 		fetchRooms()
 	}, [pagination])
 
-	const handleOpenDialog = (type: "edit" | "delete", room: Room) => {
+	const handleOpenDialog = (type: "edit" | "delete" | "add" | "addRoomType", room?: Room | null) => {
 		setEditDialog(type)
-		setSelectedRoom(room)
+		setSelectedRoom(room ?? null)
 	}
 
 	const handleCloseDialog = () => {
@@ -210,6 +219,23 @@ export function RoomsDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
+					<div className="ml-auto flex space-x-2">
+						<Button variant="outline" onClick={() => handleOpenDialog("addRoomType", null)}>
+							Nuevo Tipo de Sala
+						</Button>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Button variant="outline" size="icon" onClick={() => handleOpenDialog("add", null)}>
+										<Plus className="h-5 w-5" />
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent>
+									<span>Agregar nueva sala</span>
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
+					</div>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -242,7 +268,7 @@ export function RoomsDataTable() {
 							) : (
 								<TableRow>
 									<TableCell colSpan={columns.length} className="h-24 text-center">
-										No results.
+										Sin resultados.
 									</TableCell>
 								</TableRow>
 							)}
@@ -276,6 +302,8 @@ export function RoomsDataTable() {
 				room={selectedRoom ?? undefined}
 			/>
 			<DeleteRoomDialog open={openDialog === "delete"} onClose={handleCloseDialog} roomId={selectedRoom?.id ?? null} />
+			<AddRoomDialog open={openDialog === "add"} onClose={handleCloseDialog} />
+			<AddRoomTypeDialog open={openDialog === "addRoomType"} onClose={handleCloseDialog} />
 		</>
 	)
 }
