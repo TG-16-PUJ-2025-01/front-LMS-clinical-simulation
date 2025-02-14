@@ -23,7 +23,7 @@ export default function WatchVideoDialog({ open, onClose, video }: Props) {
 					<DialogTitle>Ver Video</DialogTitle>
 					<DialogDescription>Estás viendo el video {video?.name}</DialogDescription>
 				</DialogHeader>
-				{video?.status === "AVAILABLE" ? (
+				{video?.available ? (
 					<video
 						className="aspect-video h-full w-full"
 						src={`${API_URL}/streaming/video/${video?.name}`}
