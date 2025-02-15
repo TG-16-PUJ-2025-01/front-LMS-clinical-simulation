@@ -1,12 +1,22 @@
+import NavBar from "@/modules/core/components/Headers/NavBar"
+
 interface Props {
 	children: React.ReactNode
 }
 
 export default function AdminLayout({ children }: Props) {
+	const navLinks = [
+		{ label: "Listado de materias", href: "/admin/materias" },
+		{ label: "Listado de clases", href: "/admin/clases" },
+		{ label: "Listado de cuentas", href: "/admin/cuentas" },
+		{ label: "Listado de salas", href: "/admin/salas" },
+		{ label: "Listado de videos", href: "/admin/videos" },
+	]
+
 	return (
-		<div className="bg-gray-100 min-h-screen">
-			{/* Header goes here */}
-			<div className="mx-auto max-w-[1200px]">{children}</div>
+		<div className="min-h-screen bg-gray-100">
+			<NavBar navLinks={navLinks} />
+			<div className="container mx-auto p-4">{children}</div>
 		</div>
 	)
 }
