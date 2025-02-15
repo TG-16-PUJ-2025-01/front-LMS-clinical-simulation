@@ -1,3 +1,4 @@
+import React from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -9,12 +10,12 @@ import {
 	AlertDialogTitle,
 } from "@/modules/core/components/ui/alert-dialog"
 
-interface Props {
+interface DeleteCourseDialogProps {
 	open: boolean
 	onClose: (open: boolean) => void
 }
 
-export default function DeleteCourseDialog({ open, onClose }: Props) {
+const DeleteCourseDialog: React.FC<DeleteCourseDialogProps> = ({ open, onClose }) => {
 	return (
 		<AlertDialog open={open} onOpenChange={onClose}>
 			<AlertDialogContent>
@@ -31,4 +32,6 @@ export default function DeleteCourseDialog({ open, onClose }: Props) {
 			</AlertDialogContent>
 		</AlertDialog>
 	)
-}
+};
+
+export default DeleteCourseDialog;

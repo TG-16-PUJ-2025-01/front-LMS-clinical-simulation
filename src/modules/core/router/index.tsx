@@ -11,6 +11,7 @@ import Login from "@/modules/shared/auth/pages/Login/Login"
 import CoursesPage from "@/modules/admin/courses/pages/CoursesPage"
 import VideosPage from "@/modules/admin/videos/pages/VideosPage"
 import ClassesPage from "@/modules/admin/classes/pages/ClassesPage"
+import RoomsPage from "@/modules/admin/rooms/pages/RoomsPage"
 
 export default function Router() {
 	return (
@@ -35,6 +36,7 @@ export default function Router() {
 					<Route path="/admin/materias" element={<CoursesPage />}></Route>
 					<Route path="/admin/videos" element={<VideosPage />}></Route>
 					<Route path="/admin/clases" element={<ClassesPage />}></Route>
+					<Route path="/admin/salas" element={<RoomsPage />}></Route>
 				</Route>
 
 				{/* Default Route */}
