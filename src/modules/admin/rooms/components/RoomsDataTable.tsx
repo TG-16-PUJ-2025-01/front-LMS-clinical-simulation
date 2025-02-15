@@ -49,7 +49,6 @@ import {
 	TooltipTrigger,
 } from "@/modules/core/components/ui/tooltip"
 import AddRoomDialog from "./AddRoomDialog"
-import AddRoomTypeDialog from "./AddRoomTypeDialog"
 
 export function RoomsDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -57,7 +56,7 @@ export function RoomsDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "add" | "addRoomType" | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "add" | null>(null)
 	const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
 
 	const [data, setData] = useState<Room[]>([])
@@ -78,13 +77,13 @@ export function RoomsDataTable() {
 			setData(res.data.content)
 			setPaginationInfo({
 				total: res.data.totalElements,
-				totalPages: res.data.totalElements,
+				totalPages: res.data.totalPages,
 			})
 		}
 		fetchRooms()
 	}, [pagination])
 
-	const handleOpenDialog = (type: "edit" | "delete" | "add" | "addRoomType", room?: Room | null) => {
+	const handleOpenDialog = (type: "edit" | "delete" | "add", room?: Room | null) => {
 		setEditDialog(type)
 		setSelectedRoom(room ?? null)
 	}
@@ -220,9 +219,6 @@ export function RoomsDataTable() {
 						/>
 					</div>
 					<div className="ml-auto flex space-x-2">
-						<Button variant="outline" onClick={() => handleOpenDialog("addRoomType", null)}>
-							Nuevo Tipo de Sala
-						</Button>
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
@@ -303,7 +299,6 @@ export function RoomsDataTable() {
 			/>
 			<DeleteRoomDialog open={openDialog === "delete"} onClose={handleCloseDialog} roomId={selectedRoom?.id ?? null} />
 			<AddRoomDialog open={openDialog === "add"} onClose={handleCloseDialog} />
-			<AddRoomTypeDialog open={openDialog === "addRoomType"} onClose={handleCloseDialog} />
 		</>
 	)
 }

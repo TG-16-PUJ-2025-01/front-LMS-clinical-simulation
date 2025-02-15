@@ -22,7 +22,7 @@ import {
 import { useEffect, useState } from "react"
 import Room from "@/modules/core/models/room"
 import { getRoomsTypes, createRoom } from "../services/roomService"
-import { RoomType } from "@/modules/core/models/roomType"
+import RoomType from "@/modules/core/models/roomType"
 import { Popover, PopoverContent, PopoverTrigger } from "@/modules/core/components/ui/popover"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/modules/core/components/ui/command"
@@ -128,7 +128,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
 										<FormControl>
-											<Popover>
+											<Popover open>
 												<PopoverTrigger asChild>
 													<Button
 														variant="outline"

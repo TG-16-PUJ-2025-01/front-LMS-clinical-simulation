@@ -1,4 +1,4 @@
-import { RoomType } from "./roomType";
+import RoomType from "./roomType";
 
 export default interface Room {
     id?: number;
