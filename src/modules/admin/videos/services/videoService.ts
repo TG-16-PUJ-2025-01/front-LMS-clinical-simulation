@@ -15,6 +15,7 @@ interface EditVideo {
 export async function getVideos(
 	page: number,
 	size: number,
+	filter: string,
 	sort: string,
 	asc: boolean
 ): Promise<ApiResponse<Video[]>> {
@@ -24,6 +25,7 @@ export async function getVideos(
 			size,
 			sort,
 			asc,
+			filter,
 		},
 	})
 

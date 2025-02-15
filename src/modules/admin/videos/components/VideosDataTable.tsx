@@ -1,6 +1,5 @@
 import {
 	ColumnDef,
-	ColumnFiltersState,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -47,7 +46,7 @@ import { getVideos } from "../services/videoService"
 
 export function VideosDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
@@ -73,6 +72,7 @@ export function VideosDataTable() {
 			const res = await getVideos(
 				pagination.pageIndex,
 				pagination.pageSize,
+				filter,
 				sorting[0]?.id,
 				!(sorting[0]?.desc ?? false)
 			)
@@ -84,7 +84,7 @@ export function VideosDataTable() {
 		}
 
 		fetchVideos()
-	}, [pagination, sorting, openDialog])
+	}, [pagination, filter, sorting, openDialog])
 
 	const handleOpenDialog = (type: "view" | "edit" | "delete", video: Video) => {
 		setOpenDialog(type)
@@ -248,7 +248,6 @@ export function VideosDataTable() {
 		data,
 		columns,
 		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
@@ -261,7 +260,6 @@ export function VideosDataTable() {
 		pageCount: paginationInfo.totalPages,
 		state: {
 			sorting,
-			columnFilters,
 			columnVisibility,
 			rowSelection,
 			pagination,
@@ -276,8 +274,11 @@ export function VideosDataTable() {
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
-							value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-							onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+							value={filter}
+							onChange={(event) => {
+								setFilter(event.target.value)
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
