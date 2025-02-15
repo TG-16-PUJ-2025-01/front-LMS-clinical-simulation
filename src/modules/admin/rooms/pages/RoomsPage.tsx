@@ -1,6 +1,5 @@
 import { RoomsDataTable } from "../components/RoomsDataTable"
 import { ComboboxSelect } from "@/modules/admin/rooms/components/combobox-select"
-import { Toaster } from "@/modules/core/components/ui/sonner"
 import { useEffect, useState } from "react"
 import { addRoomType, getRoomsTypes } from "../services/roomService"
 import RoomType from "@/modules/core/models/roomType"
@@ -35,8 +34,6 @@ export default function RoomsPage() {
 						itemName="tipo de sala"
 					/>
 				</section>
-
-				<Toaster />
 			</main>
 		</>
 	)

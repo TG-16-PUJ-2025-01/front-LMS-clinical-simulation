@@ -1,4 +1,5 @@
 import NavBar from "@/modules/core/components/Headers/NavBar"
+import { Toaster } from "sonner"
 
 interface Props {
 	children: React.ReactNode
@@ -17,6 +18,7 @@ export default function AdminLayout({ children }: Props) {
 		<div className="min-h-screen bg-gray-100">
 			<NavBar navLinks={navLinks} />
 			<div className="container mx-auto p-4">{children}</div>
+			<Toaster />
 		</div>
 	)
 }

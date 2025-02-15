@@ -25,7 +25,14 @@ import { getRoomsTypes, createRoom } from "../services/roomService"
 import RoomType from "@/modules/core/models/roomType"
 import { Popover, PopoverContent, PopoverTrigger } from "@/modules/core/components/ui/popover"
 import { Check, ChevronsUpDown } from "lucide-react"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/modules/core/components/ui/command"
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "@/modules/core/components/ui/command"
 import { cn } from "@/modules/core/lib/utils"
 import { toast } from "sonner"
 
@@ -47,7 +54,6 @@ const formSchema = z.object({
 })
 
 export default function AddRoomDialog({ open, onClose }: Props) {
-
 	const [roomTypes, setRoomTypes] = useState<RoomType[]>([])
 	const [customType, setCustomType] = useState<string>("")
 
@@ -82,18 +88,18 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 				name: values.name,
 				type: {
 					id: values.type.id!,
-					name: values.type.name
-				}
+					name: values.type.name,
+				},
 			}
 
 			await createRoom(newRoom)
 			console.log("Sala creada exitosamente:", newRoom)
 
-            toast.success("Sala creada exitosamente")
+			toast.success("Sala creada exitosamente")
 
 			onClose(false)
 		} catch (error) {
-            toast.error("Error al crear la sala")
+			toast.error("Error al crear la sala")
 			console.error("Error al crear la sala:", error)
 		}
 	}
@@ -103,7 +109,9 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Agregar Sala</DialogTitle>
-					<DialogDescription>Puedes agregar una nueva sala con los siguientes atributos</DialogDescription>
+					<DialogDescription>
+						Puedes agregar una nueva sala con los siguientes atributos
+					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>

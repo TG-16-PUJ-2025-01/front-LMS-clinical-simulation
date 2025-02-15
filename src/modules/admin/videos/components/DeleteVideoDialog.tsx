@@ -10,6 +10,7 @@ import {
 } from "@/modules/core/components/ui/alert-dialog"
 import { deleteVideo } from "../services/videoService"
 import Video from '../../../core/models/video';
+import { toast } from "sonner";
 
 interface Props {
 	open: boolean
@@ -19,12 +20,17 @@ interface Props {
 
 export default function DeleteVideoDialog({ open, onClose, video }: Props) {
 	const handleConfirm = async () => {
-		await deleteVideo(video!.videoId)
+		try {
+			await deleteVideo(video!.videoId)
+			toast.success("Video eliminado")
+		} catch (error) {
+			toast.error("Error al eliminar el video")
+		}
 		onClose(false)
 	}
 
 	return (
-		<AlertDialog open={open} onOpenChange={onClose}>
+		<AlertDialog open={open}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar el video?</AlertDialogTitle>
