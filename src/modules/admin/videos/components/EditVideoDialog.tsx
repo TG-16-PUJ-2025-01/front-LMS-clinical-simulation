@@ -22,6 +22,7 @@ import {
 	FormMessage,
 } from "@/modules/core/components/ui/form"
 import { useEffect } from "react"
+import { updateVideo } from "../services/videoService"
 
 interface Props {
 	open: boolean
@@ -54,10 +55,8 @@ export default function EditVideoDialog({ open, onClose, video }: Props) {
 		})
 	}, [form, video])
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values)
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		await updateVideo(video!.videoId, values)
 		onClose(false)
 	}
 

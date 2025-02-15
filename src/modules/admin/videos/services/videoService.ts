@@ -7,13 +7,26 @@ const axiosInstance = axios.create({
 	baseURL: API_URL,
 })
 
-export async function getVideos(page: number, size: number): Promise<ApiResponse<Video[]>> {
+interface EditVideo {
+	name: string
+	expirationDate: Date
+}
+
+export async function getVideos(
+	page: number,
+	size: number,
+	sort: string,
+	asc: boolean
+): Promise<ApiResponse<Video[]>> {
 	const { data } = await axiosInstance.get("/video/all", {
 		params: {
 			page,
 			size,
+			sort,
+			asc,
 		},
 	})
+
 	return {
 		...data,
 		data: data.data.map((video: Video) => ({
@@ -24,17 +37,22 @@ export async function getVideos(page: number, size: number): Promise<ApiResponse
 	}
 }
 
-export async function getVideoChunk(
-	name: string,
-	startByte: number = 0,
-	chunkSize: number = 1024 * 1024
-): Promise<Blob> {
-	const endByte = startByte + chunkSize - 1
-	const res = await axiosInstance.get(`/streaming/video/${name}`, {
-		headers: {
-			Range: `bytes=${startByte}-${endByte}`,
+export async function updateVideo(videoId: number, video: EditVideo): Promise<ApiResponse<Video>> {
+	console.log(videoId)
+
+	const { data } = await axiosInstance.put(`/video/${videoId}`, video)
+
+	return {
+		...data,
+		data: {
+			...data.data,
+			recordingDate: new Date(data.data.recordingDate),
+			expirationDate: new Date(data.data.expirationDate),
 		},
-		responseType: "blob",
-	})
-	return res.data
+	}
+}
+
+export async function deleteVideo(videoId: number): Promise<ApiResponse<null>> {
+	const { data } = await axiosInstance.delete(`/video/${videoId}`)
+	return data
 }

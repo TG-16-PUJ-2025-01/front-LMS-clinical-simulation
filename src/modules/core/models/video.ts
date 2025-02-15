@@ -1,4 +1,5 @@
 export default interface Video {
+	videoId: number
 	name: string
 	recordingDate: Date
 	expirationDate: Date

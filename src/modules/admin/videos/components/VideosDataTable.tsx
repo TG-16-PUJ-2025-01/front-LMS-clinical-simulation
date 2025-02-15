@@ -51,7 +51,7 @@ export function VideosDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"view" | "edit" | "delete" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"view" | "edit" | "delete" | null>(null)
 	const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
 
 	const [data, setData] = useState<Video[]>([])
@@ -67,24 +67,32 @@ export function VideosDataTable() {
 	})
 
 	useEffect(() => {
+		if (openDialog) return
+
 		const fetchVideos = async () => {
-			const res = await getVideos(pagination.pageIndex, pagination.pageSize)
+			const res = await getVideos(
+				pagination.pageIndex,
+				pagination.pageSize,
+				sorting[0]?.id,
+				!(sorting[0]?.desc ?? false)
+			)
 			setData(res.data)
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
 			})
 		}
+
 		fetchVideos()
-	}, [pagination])
+	}, [pagination, sorting, openDialog])
 
 	const handleOpenDialog = (type: "view" | "edit" | "delete", video: Video) => {
-		setEditDialog(type)
+		setOpenDialog(type)
 		setSelectedVideo(video)
 	}
 
 	const handleCloseDialog = () => {
-		setEditDialog(null)
+		setOpenDialog(null)
 		setSelectedVideo(null)
 	}
 
@@ -96,7 +104,10 @@ export function VideosDataTable() {
 					<Button
 						variant="ghost"
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() === "asc")
+							setPagination({ ...pagination, pageIndex: 0 })
+						}}
 					>
 						Nombre del Video
 						{column.getIsSorted() && <ArrowUpDown />}
@@ -104,7 +115,7 @@ export function VideosDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center capitalize">{row.getValue("name")}</div>
+				return <div className="text-center">{row.getValue("name")}</div>
 			},
 		},
 		{
@@ -115,7 +126,10 @@ export function VideosDataTable() {
 						<Button
 							variant="ghost"
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+							onClick={() => {
+								column.toggleSorting(column.getIsSorted() === "asc")
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 						>
 							Fecha de Grabación
 							{column.getIsSorted() && <ArrowUpDown />}
@@ -137,7 +151,10 @@ export function VideosDataTable() {
 						<Button
 							variant="ghost"
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+							onClick={() => {
+								column.toggleSorting(column.getIsSorted() === "asc")
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 						>
 							Fecha de Expiración
 							{column.getIsSorted() && <ArrowUpDown />}
@@ -159,7 +176,10 @@ export function VideosDataTable() {
 						<Button
 							variant="ghost"
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+							onClick={() => {
+								column.toggleSorting(column.getIsSorted() === "asc")
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 						>
 							Duración
 							{column.getIsSorted() && <ArrowUpDown />}
@@ -179,7 +199,10 @@ export function VideosDataTable() {
 						<Button
 							variant="ghost"
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+							onClick={() => {
+								column.toggleSorting(column.getIsSorted() === "asc")
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 						>
 							Tamaño
 							{column.getIsSorted() && <ArrowUpDown />}
@@ -321,14 +344,18 @@ export function VideosDataTable() {
 			<WatchVideoDialog
 				open={openDialog === "view"}
 				onClose={handleCloseDialog}
-				video={selectedVideo ?? undefined}
+				video={selectedVideo!}
 			/>
 			<EditVideoDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
-				video={selectedVideo ?? undefined}
+				video={selectedVideo!}
 			/>
-			<DeleteVideoDialog open={openDialog === "delete"} onClose={handleCloseDialog} />
+			<DeleteVideoDialog
+				open={openDialog === "delete"}
+				onClose={handleCloseDialog}
+				video={selectedVideo!}
+			/>
 		</>
 	)
 }
