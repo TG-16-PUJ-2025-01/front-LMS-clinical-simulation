@@ -44,7 +44,6 @@ const formSchema = z.object({
 })
 
 export default function AddRoomDialog({ open, onClose }: Props) {
-
 	const [roomTypes, setRoomTypes] = useState<RoomType[]>([])
 	const [customType, setCustomType] = useState<string>("")
 
@@ -60,19 +59,19 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 	})
 
 	const handleOnCreateOption = async (option: { key: number; value: string }) => {
-			await addRoomType(option.value)
-			fetchRoomTypes()
-		}
-		
-		const fetchRoomTypes = async () => {
-			const res = await getRoomsTypes()
-			setRoomTypes(res.data)
-		}
-		
-		useEffect(() => {
-			fetchRoomTypes()
-			form.reset();
-		}, [])
+		await addRoomType(option.value)
+		fetchRoomTypes()
+	}
+
+	const fetchRoomTypes = async () => {
+		const res = await getRoomsTypes()
+		setRoomTypes(res.data)
+	}
+
+	useEffect(() => {
+		fetchRoomTypes()
+		form.reset()
+	}, [])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
@@ -85,18 +84,18 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 				name: values.name,
 				type: {
 					id: values.type.id!,
-					name: values.type.name
-				}
+					name: values.type.name,
+				},
 			}
 
 			await createRoom(newRoom)
 			console.log("Sala creada exitosamente:", newRoom)
 
-            toast.success("Sala creada exitosamente")
+			toast.success("Sala creada exitosamente")
 
 			onClose(false)
 
-			form.reset();
+			form.reset()
 		} catch (error) {
 			toast.error("Error al crear la sala")
 			console.error("Error al crear la sala:", error)
@@ -108,7 +107,9 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Agregar Sala</DialogTitle>
-					<DialogDescription>Puedes agregar una nueva sala con los siguientes atributos</DialogDescription>
+					<DialogDescription>
+						Puedes agregar una nueva sala con los siguientes atributos
+					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
@@ -127,26 +128,29 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 								)}
 							/>
 							<FormField
-                                control={form.control}
-                                name="type"
-                                render={({ }) => (
-                                    <FormItem className="grid grid-cols-4 items-center gap-4">
-                                        <FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
-                                        <FormControl>
-                                            <ComboboxCreate
-                                                options={roomTypes.map(roomType => ({ key: roomType.id, value: roomType.name }))}
+								control={form.control}
+								name="type"
+								render={({}) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
+										<FormControl>
+											<ComboboxCreate
+												options={roomTypes.map((roomType) => ({
+													key: roomType.id,
+													value: roomType.name,
+												}))}
 												onCreateOption={handleOnCreateOption}
 												placeholderText="Seleccionar..."
-												itemName="tipo de sala" 
-                                                onChange={(selected) => {
-													form.setValue("type", { id: selected.key, name: selected.value });
+												itemName="tipo de sala"
+												onChange={(selected) => {
+													form.setValue("type", { id: selected.key, name: selected.value })
 												}}
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-                                    </FormItem>
-                                )}
-                            />
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
 						</div>
 						<DialogFooter>
 							<Button type="submit">Guardar</Button>
