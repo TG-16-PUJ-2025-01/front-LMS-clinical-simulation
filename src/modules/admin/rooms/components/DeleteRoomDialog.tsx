@@ -12,26 +12,25 @@ import { deleteRoom } from "../services/roomService"
 import { toast } from "sonner"
 
 interface Props {
-  open: boolean
-  onClose: (open: boolean) => void
-  roomId: number | null
+	open: boolean
+	onClose: (open: boolean) => void
+	roomId: number | null
 }
 
 export default function DeleteRoomDialog({ open, onClose, roomId }: Props) {
-
 	async function onConfirmDelete() {
-		if (!roomId){
-			toast.error("No se ha proporcionado un ID de sala para eliminar.");
-			return;
-		} 
+		if (!roomId) {
+			toast.error("No se ha proporcionado un ID de sala para eliminar.")
+			return
+		}
 
 		try {
-			await deleteRoom(roomId);
-			console.log(`Sala con ID ${roomId} eliminada exitosamente.`);
-			toast.success("Sala eliminada exitosamente.");
-			onClose(false);
+			await deleteRoom(roomId)
+			console.log(`Sala con ID ${roomId} eliminada exitosamente.`)
+			toast.success("Sala eliminada exitosamente.")
+			onClose(false)
 		} catch (error) {
-			console.error("Error al eliminar la sala:", error);
+			console.error("Error al eliminar la sala:", error)
 		}
 	}
 
@@ -40,9 +39,7 @@ export default function DeleteRoomDialog({ open, onClose, roomId }: Props) {
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar la sala?</AlertDialogTitle>
-					<AlertDialogDescription>
-						Esta acción no es reversible.
-					</AlertDialogDescription>
+					<AlertDialogDescription>Esta acción no es reversible.</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancelar</AlertDialogCancel>
