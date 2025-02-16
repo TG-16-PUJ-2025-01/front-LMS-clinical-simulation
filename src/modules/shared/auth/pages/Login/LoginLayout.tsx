@@ -1,7 +1,7 @@
 import { cn } from "@/modules/core/lib/utils";
 import AuthFlow from "@/modules/shared/auth/components/AuthFlow";
 
-export default function Login({ className, ...props }: React.ComponentProps<"div">) {
+export default function LoginLayout({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div className={cn("flex min-h-screen", className)} {...props}>
 			<AuthFlow/>
