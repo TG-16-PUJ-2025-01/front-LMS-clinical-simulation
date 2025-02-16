@@ -1,4 +1,3 @@
-import React from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -12,7 +11,7 @@ import {
 import Course from "@/modules/core/models/course"
 import { deleteCourse } from "../services/courseService"
 
-interface DeleteCourseDialogProps {
+interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
 	course?: Course
@@ -42,5 +41,3 @@ export default function DeleteCourseDialog({ open, onClose, course }: Props) {
 		</AlertDialog>
 	)
 };
-
-export default DeleteCourseDialog;
