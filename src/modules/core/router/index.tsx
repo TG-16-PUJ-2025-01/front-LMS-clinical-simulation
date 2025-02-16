@@ -33,7 +33,7 @@ export default function Router() {
 
 				{/* Admin Routes */}
 				<Route element={<AdminRoute />}>
-					<Route path="/admin/materias" element={<CoursesPage />}></Route>
+					<Route path="/admin/asignaturas" element={<CoursesPage />}></Route>
 					<Route path="/admin/videos" element={<VideosPage />}></Route>
 					<Route path="/admin/clases" element={<ClassesPage />}></Route>
 					<Route path="/admin/salas" element={<RoomsPage />}></Route>
