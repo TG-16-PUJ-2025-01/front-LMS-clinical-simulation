@@ -103,7 +103,7 @@ export function VideosDataTable() {
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="mx-auto flex"
 						onClick={() => {
 							column.toggleSorting(column.getIsSorted() === "asc")
 							setPagination({ ...pagination, pageIndex: 0 })
@@ -125,7 +125,7 @@ export function VideosDataTable() {
 					<div className="relative w-full">
 						<Button
 							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							className="mx-auto flex"
 							onClick={() => {
 								column.toggleSorting(column.getIsSorted() === "asc")
 								setPagination({ ...pagination, pageIndex: 0 })
@@ -150,7 +150,7 @@ export function VideosDataTable() {
 					<div className="relative w-full">
 						<Button
 							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							className="mx-auto flex"
 							onClick={() => {
 								column.toggleSorting(column.getIsSorted() === "asc")
 								setPagination({ ...pagination, pageIndex: 0 })
@@ -175,7 +175,7 @@ export function VideosDataTable() {
 					<div className="relative w-full">
 						<Button
 							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							className="mx-auto flex"
 							onClick={() => {
 								column.toggleSorting(column.getIsSorted() === "asc")
 								setPagination({ ...pagination, pageIndex: 0 })
@@ -195,7 +195,7 @@ export function VideosDataTable() {
 			accessorKey: "size",
 			header: ({ column }) => {
 				return (
-					<div className="relative w-full">
+					<div className="relative">
 						<Button
 							variant="ghost"
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
