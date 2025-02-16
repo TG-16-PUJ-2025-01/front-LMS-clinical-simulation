@@ -1,5 +1,6 @@
 import {
 	ColumnDef,
+	ColumnFiltersState,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -13,9 +14,9 @@ import {
 	ArrowUpDown,
 	MoreHorizontal,
 	Pencil,
+	Plus,
 	Search,
 	Trash2,
-	Video as VideoIcon,
 } from "lucide-react"
 
 import { Button } from "@/modules/core/components/ui/button"
@@ -36,24 +37,29 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import Video from "@/modules/core/models/video"
-import { formatDuration, formatSize } from "@/modules/core/lib/utils"
-import EditVideoDialog from "./EditVideoDialog"
-import DeleteVideoDialog from "./DeleteVideoDialog"
-import WatchVideoDialog from "./WatchVideoDialog"
+import Room from "@/modules/core/models/room"
+import EditRoomDialog from "./EditRoomDialog"
+import DeleteRoomDialog from "./DeleteRoomDialog"
 import { useEffect, useState } from "react"
-import { getVideos } from "../services/videoService"
+import { getAllRooms } from "../services/roomService"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/modules/core/components/ui/tooltip"
+import AddRoomDialog from "./AddRoomDialog"
 
-export function VideosDataTable() {
+export function RoomsDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [filter, setFilter] = useState<string>("")
+	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setOpenDialog] = useState<"view" | "edit" | "delete" | null>(null)
-	const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "add" | null>(null)
+	const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
 
-	const [data, setData] = useState<Video[]>([])
+	const [data, setData] = useState<Room[]>([])
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
@@ -66,157 +72,91 @@ export function VideosDataTable() {
 	})
 
 	useEffect(() => {
-		if (openDialog) return
-
-		const fetchVideos = async () => {
-			const res = await getVideos(
-				pagination.pageIndex,
-				pagination.pageSize,
-				filter,
-				sorting[0]?.id,
-				!(sorting[0]?.desc ?? false)
-			)
-			setData(res.data)
+		const fetchRooms = async () => {
+			const res = await getAllRooms(pagination.pageIndex, pagination.pageSize)
+			setData(res.data.content)
 			setPaginationInfo({
-				total: res.metadata.total,
-				totalPages: res.metadata.totalPages,
+				total: res.data.totalElements,
+				totalPages: res.data.totalPages,
 			})
 		}
+		fetchRooms()
+	}, [pagination])
 
-		fetchVideos()
-	}, [pagination, filter, sorting, openDialog])
-
-	const handleOpenDialog = (type: "view" | "edit" | "delete", video: Video) => {
-		setOpenDialog(type)
-		setSelectedVideo(video)
+	const handleOpenDialog = (type: "edit" | "delete" | "add", room?: Room | null) => {
+		setEditDialog(type)
+		setSelectedRoom(room ?? null)
 	}
 
 	const handleCloseDialog = () => {
-		setOpenDialog(null)
-		setSelectedVideo(null)
+		setEditDialog(null)
+		setSelectedRoom(null)
+		setPagination((prev) => ({ ...prev }));
 	}
 
-	const columns: ColumnDef<Video>[] = [
+	const columns: ColumnDef<Room>[] = [
+		{
+			accessorKey: "id",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						ID
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				return <div className="text-center">{row.getValue("id")}</div>
+			},
+		},
 		{
 			accessorKey: "name",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="mx-auto flex"
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() === "asc")
-							setPagination({ ...pagination, pageIndex: 0 })
-						}}
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						Nombre del Video
+						Nombre de la Sala
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("name")}</div>
+				return <div className="text-center capitalize">{row.getValue("name")}</div>
 			},
 		},
 		{
-			accessorKey: "recordingDate",
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="mx-auto flex"
-							onClick={() => {
-								column.toggleSorting(column.getIsSorted() === "asc")
-								setPagination({ ...pagination, pageIndex: 0 })
-							}}
-						>
-							Fecha de Grabación
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{(row.getValue("recordingDate") as Date).toLocaleDateString()}
+			id: "type",
+			accessorFn: (room) => room.type.name,
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Tipo de Sala
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
 				</div>
 			),
-		},
-		{
-			accessorKey: "expirationDate",
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="mx-auto flex"
-							onClick={() => {
-								column.toggleSorting(column.getIsSorted() === "asc")
-								setPagination({ ...pagination, pageIndex: 0 })
-							}}
-						>
-							Fecha de Expiración
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
 			cell: ({ row }) => (
 				<div className="text-center">
-					{(row.getValue("expirationDate") as Date).toLocaleDateString()}
+					{row.getValue("type")}
 				</div>
 			),
-		},
-		{
-			accessorKey: "duration",
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="mx-auto flex"
-							onClick={() => {
-								column.toggleSorting(column.getIsSorted() === "asc")
-								setPagination({ ...pagination, pageIndex: 0 })
-							}}
-						>
-							Duración
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => (
-				<div className="text-center">{formatDuration(row.getValue("duration"))}</div>
-			),
-		},
-		{
-			accessorKey: "size",
-			header: ({ column }) => {
-				return (
-					<div className="relative">
-						<Button
-							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => {
-								column.toggleSorting(column.getIsSorted() === "asc")
-								setPagination({ ...pagination, pageIndex: 0 })
-							}}
-						>
-							Tamaño
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => <div className="text-center">{formatSize(row.getValue("size"))}</div>,
 		},
 		{
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {
-				const video = row.original
+				const room = row.original
 
 				return (
 					<DropdownMenu>
@@ -227,14 +167,11 @@ export function VideosDataTable() {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
-							<DropdownMenuItem onClick={() => handleOpenDialog("view", video)}>
-								<VideoIcon /> Ver video
-							</DropdownMenuItem>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => handleOpenDialog("edit", video)}>
+							<DropdownMenuItem onClick={() => handleOpenDialog("edit", room)}>
 								<Pencil /> Editar
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => handleOpenDialog("delete", video)}>
+							<DropdownMenuItem onClick={() => handleOpenDialog("delete", room)}>
 								<Trash2 /> Borrar
 							</DropdownMenuItem>
 						</DropdownMenuContent>
@@ -248,6 +185,7 @@ export function VideosDataTable() {
 		data,
 		columns,
 		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
@@ -260,6 +198,7 @@ export function VideosDataTable() {
 		pageCount: paginationInfo.totalPages,
 		state: {
 			sorting,
+			columnFilters,
 			columnVisibility,
 			rowSelection,
 			pagination,
@@ -274,13 +213,24 @@ export function VideosDataTable() {
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
-							value={filter}
-							onChange={(event) => {
-								setFilter(event.target.value)
-								setPagination({ ...pagination, pageIndex: 0 })
-							}}
+							value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+							onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
 							className="w-full pl-8"
 						/>
+					</div>
+					<div className="ml-auto flex space-x-2">
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Button variant="outline" size="icon" onClick={() => handleOpenDialog("add", null)}>
+										<Plus className="h-5 w-5" />
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent>
+									<span>Agregar nueva sala</span>
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
 					</div>
 				</div>
 				<div className="rounded-md border">
@@ -314,7 +264,7 @@ export function VideosDataTable() {
 							) : (
 								<TableRow>
 									<TableCell colSpan={columns.length} className="h-24 text-center">
-										No results.
+										Sin resultados.
 									</TableCell>
 								</TableRow>
 							)}
@@ -342,21 +292,13 @@ export function VideosDataTable() {
 					</div>
 				</div>
 			</div>
-			<WatchVideoDialog
-				open={openDialog === "view"}
-				onClose={handleCloseDialog}
-				video={selectedVideo!}
-			/>
-			<EditVideoDialog
+			<EditRoomDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
-				video={selectedVideo!}
+				room={selectedRoom ?? undefined}
 			/>
-			<DeleteVideoDialog
-				open={openDialog === "delete"}
-				onClose={handleCloseDialog}
-				video={selectedVideo!}
-			/>
+			<DeleteRoomDialog open={openDialog === "delete"} onClose={handleCloseDialog} roomId={selectedRoom?.id ?? null} />
+			<AddRoomDialog open={openDialog === "add"} onClose={handleCloseDialog} />
 		</>
 	)
 }

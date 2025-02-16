@@ -64,8 +64,8 @@ export default function CreateCourseDialog({ open, onClose, course }: Props) {
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
-					<DialogTitle>Crear Materia</DialogTitle>
-					<DialogDescription>Para crear una materia llena los siguientes campos</DialogDescription>
+					<DialogTitle>Crear Asignatura</DialogTitle>
+					<DialogDescription>Para crear una asignatura llena los siguientes campos</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
