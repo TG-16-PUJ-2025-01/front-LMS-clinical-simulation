@@ -1,5 +1,4 @@
 import { RoomsDataTable } from "../components/RoomsDataTable"
-import NavBar from "@/modules/core/components/Headers/NavBar"
 import { ComboboxCreate } from "@/modules/core/components/Combobox/ComboboxCreate"
 import { Toaster } from "@/modules/core/components/ui/sonner"
 import { useEffect, useState } from "react"
@@ -44,7 +43,7 @@ export default function RoomsPage() {
 						placeholderText="Seleccionar tipo..."
 						itemName="tipo de sala"
 					/>
-				</div>
+				</section>
 				
 				<Toaster />
 			</main>

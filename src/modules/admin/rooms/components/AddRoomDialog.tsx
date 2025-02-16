@@ -45,7 +45,6 @@ const formSchema = z.object({
 
 export default function AddRoomDialog({ open, onClose }: Props) {
 	const [roomTypes, setRoomTypes] = useState<RoomType[]>([])
-	const [customType, setCustomType] = useState<string>("")
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -75,19 +74,13 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			if (customType) {
-				values.type = { id: undefined, name: customType }
-			}
-
 			const newRoom: Room = {
 				id: undefined,
 				name: values.name,
 				type: {
 					id: values.type.id!,
 					name: values.type.name,
-				},
-					name: values.type.name,
-				},
+				}
 			}
 
 			await createRoom(newRoom)
@@ -111,9 +104,6 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Agregar Sala</DialogTitle>
-					<DialogDescription>
-						Puedes agregar una nueva sala con los siguientes atributos
-					</DialogDescription>
 					<DialogDescription>
 						Puedes agregar una nueva sala con los siguientes atributos
 					</DialogDescription>

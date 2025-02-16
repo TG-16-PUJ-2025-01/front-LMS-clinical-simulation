@@ -62,7 +62,7 @@ export function CoursesDataTable() {
 			setData(res.data)
 			console.log(res.data) // ✅ Mostramos los datos en consola
 			setPaginationInfo({
-				total: data.length, 
+				total: data.length,
 				totalPages: Math.ceil(data.length / pagination.pageSize),
 			})
 		}
@@ -265,14 +265,12 @@ export function CoursesDataTable() {
 				onClose={handleCloseDialog}
 				course={selectedCourse ?? undefined}
 			/>
-			<DeleteCourseDialog 
-				open={openDialog === "delete"} 
-				onClose={handleCloseDialog} 
-				course={selectedCourse ?? undefined}/>
-			<CreateCourseDialog
-				open={openDialog === "create"}
+			<DeleteCourseDialog
+				open={openDialog === "delete"}
 				onClose={handleCloseDialog}
+				course={selectedCourse ?? undefined}
 			/>
+			<CreateCourseDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>
 	)
 }
