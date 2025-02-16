@@ -1,6 +1,5 @@
 import {
 	ColumnDef,
-	ColumnFiltersState,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -37,7 +36,7 @@ import { getCourses } from "../services/courseService"
 
 export function CoursesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
@@ -57,17 +56,24 @@ export function CoursesDataTable() {
 	})
 
 	useEffect(() => {
+		if (openDialog) return
+
 		const fetchCourses = async () => {
-			const res = await getCourses(pagination.pageIndex, pagination.pageSize)
+			const res = await getCourses(
+				pagination.pageIndex,
+				pagination.pageSize,
+				filter,
+				sorting[0]?.id,
+				!(sorting[0]?.desc ?? false)
+			)
 			setData(res.data)
-			console.log(res.data) // ✅ Mostramos los datos en consola
 			setPaginationInfo({
-				total: data.length,
-				totalPages: Math.ceil(data.length / pagination.pageSize),
+				total: res.metadata.total,
+				totalPages: res.metadata.totalPages,
 			})
 		}
 		fetchCourses()
-	}, [pagination, data.length])
+	}, [pagination, filter, sorting, openDialog])
 
 	const handleOpenDialog = (type: "create" | "edit" | "delete", Course?: Course) => {
 		setEditDialog(type)
@@ -117,7 +123,8 @@ export function CoursesDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
-			accessorKey: "coordinatorName",
+			id: "coordinator",
+			accessorFn: ({ coordinator }) => `${coordinator.name} ${coordinator.lastName}`,
 			header: ({ column }) => {
 				return (
 					<div className="relative w-full">
@@ -132,7 +139,7 @@ export function CoursesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("coordinatorName")}</div>,
+			cell: ({ row }) => <div className="text-center">{row.getValue("coordinator")}</div>,
 		},
 		{
 			id: "actions",
@@ -166,7 +173,6 @@ export function CoursesDataTable() {
 		data,
 		columns,
 		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
@@ -179,7 +185,6 @@ export function CoursesDataTable() {
 		pageCount: paginationInfo.totalPages,
 		state: {
 			sorting,
-			columnFilters,
 			columnVisibility,
 			rowSelection,
 			pagination,
@@ -194,12 +199,15 @@ export function CoursesDataTable() {
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
-							value={(table.getState().globalFilter as string) ?? ""}
-							onChange={(event) => table.setGlobalFilter(event.target.value)}
+							value={filter}
+							onChange={(event) => {
+								setFilter(event.target.value)
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => handleOpenDialog("create", undefined)}>Nueva asignatura</Button>
+					<Button onClick={() => handleOpenDialog("create")}>Nueva asignatura</Button>
 				</div>
 				<div className="rounded-md border">
 					<Table>

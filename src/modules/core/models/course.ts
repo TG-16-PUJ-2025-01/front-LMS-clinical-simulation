@@ -1,7 +1,8 @@
+import User from "./user"
+
 export default interface Course {
 	id?: number
 	idJaveriana: number
 	name: string
-	coordinatorId: number
-	coordinatorName: string
+	coordinator: User
 }

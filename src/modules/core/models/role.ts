@@ -1,0 +1,8 @@
+enum Role {
+	ADMIN = "ADMIN",
+	PROFESOR = "PROFESOR",
+	ESTUDIANTE = "ESTUDIANTE",
+	COORDINADOR = "COORDINADOR",
+}
+
+export default Role
