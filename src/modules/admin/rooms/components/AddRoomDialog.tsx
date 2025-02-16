@@ -21,13 +21,10 @@ import {
 } from "@/modules/core/components/ui/form"
 import { useEffect, useState } from "react"
 import Room from "@/modules/core/models/room"
-import { getRoomsTypes, createRoom } from "../services/roomService"
+import { getRoomsTypes, createRoom, addRoomType } from "../services/roomService"
 import RoomType from "@/modules/core/models/roomType"
-import { Popover, PopoverContent, PopoverTrigger } from "@/modules/core/components/ui/popover"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/modules/core/components/ui/command"
-import { cn } from "@/modules/core/lib/utils"
 import { toast } from "sonner"
+import { ComboboxCreate } from "../../../core/components/Combobox/ComboboxCreate"
 
 interface Props {
 	open: boolean
@@ -62,14 +59,20 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 		},
 	})
 
-	useEffect(() => {
+	const handleOnCreateOption = async (option: { key: number; value: string }) => {
+			await addRoomType(option.value)
+			fetchRoomTypes()
+		}
+		
 		const fetchRoomTypes = async () => {
 			const res = await getRoomsTypes()
 			setRoomTypes(res.data)
-			console.log("Room Types fetched!", res.data)
 		}
-		fetchRoomTypes()
-	}, [])
+		
+		useEffect(() => {
+			fetchRoomTypes()
+			form.reset();
+		}, [])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
@@ -92,8 +95,10 @@ export default function AddRoomDialog({ open, onClose }: Props) {
             toast.success("Sala creada exitosamente")
 
 			onClose(false)
+
+			form.reset();
 		} catch (error) {
-            toast.error("Error al crear la sala")
+			toast.error("Error al crear la sala")
 			console.error("Error al crear la sala:", error)
 		}
 	}
@@ -122,56 +127,26 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 								)}
 							/>
 							<FormField
-								control={form.control}
-								name="type"
-								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
-										<FormControl>
-											<Popover open>
-												<PopoverTrigger asChild>
-													<Button
-														variant="outline"
-														role="combobox"
-														className="col-span-3 justify-between"
-													>
-														{field.value.name || "Selecciona un tipo"}
-														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-													</Button>
-												</PopoverTrigger>
-												<PopoverContent className="w-[200px] p-0">
-													<Command>
-														<CommandInput placeholder="Buscar tipo de sala..." />
-														<CommandList>
-															<CommandEmpty>No se encontró el tipo</CommandEmpty>
-															<CommandGroup>
-																{roomTypes.map((rt) => (
-																	<CommandItem
-																		key={rt.id}
-																		value={(rt.id ?? "").toString()}
-																		onSelect={() => {
-																			form.setValue("type", { id: rt.id, name: rt.name })
-																		}}
-																	>
-																		<Check
-																			className={cn(
-																				"mr-2 h-4 w-4",
-																				field.value.id === rt.id ? "opacity-100" : "opacity-0"
-																			)}
-																		/>
-																		{rt.name}
-																	</CommandItem>
-																))}
-															</CommandGroup>
-														</CommandList>
-													</Command>
-												</PopoverContent>
-											</Popover>
-										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-									</FormItem>
-								)}
-							/>
+                                control={form.control}
+                                name="type"
+                                render={({ }) => (
+                                    <FormItem className="grid grid-cols-4 items-center gap-4">
+                                        <FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
+                                        <FormControl>
+                                            <ComboboxCreate
+                                                options={roomTypes.map(roomType => ({ key: roomType.id, value: roomType.name }))}
+												onCreateOption={handleOnCreateOption}
+												placeholderText="Seleccionar..."
+												itemName="tipo de sala" 
+                                                onChange={(selected) => {
+													form.setValue("type", { id: selected.key, name: selected.value });
+												}}
+                                            />
+                                        </FormControl>
+                                        <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+                                    </FormItem>
+                                )}
+                            />
 						</div>
 						<DialogFooter>
 							<Button type="submit">Guardar</Button>

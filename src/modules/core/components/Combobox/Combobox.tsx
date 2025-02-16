@@ -20,16 +20,16 @@ import {
 
 interface ComboboxSelectProps {
   options: { key?: number; value: string }[]
-  onCreateOption: (option: { key: number; value: string }) => void
   placeholderText?: string
   itemName?: string
+  onChange?: (selected: { key?: number; value: string }) => void;
 }
 
-export function ComboboxSelect({
+export function Combobox({
   options,
-  onCreateOption,
   placeholderText = "Seleccionar...",
-  itemName = "Tipo"
+  itemName = "Tipo",
+  onChange,
 }: ComboboxSelectProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
@@ -39,21 +39,16 @@ export function ComboboxSelect({
   const handleSelect = (currentValue: string) => {
     setValue(currentValue === value ? "" : currentValue)
     setOpen(false)
-  }
-
-  const handleCreateOption = () => {
-    const newOption = { key: 0, value: inputValue }
-    onCreateOption(newOption)
-    setValue(inputValue)
-    setFilteredOptions([...filteredOptions, newOption])
-    setOpen(false)
+    onChange && onChange({ value: currentValue })
   }
 
   React.useEffect(() => {
-    setFilteredOptions(options.filter(option => option.value.toLowerCase().includes(inputValue.toLowerCase())))
+    setFilteredOptions(
+      options.filter(option =>
+        option.value.toLowerCase().includes(inputValue.toLowerCase())
+      )
+    )
   }, [inputValue, options])
-
-  const popoverWidth = filteredOptions.length === 0 ? Math.max(300, (inputValue.length + itemName.length + 30) * 10) : 300
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -65,12 +60,12 @@ export function ComboboxSelect({
           className="col-span-3 justify-between"
         >
           {value
-            ? options.find((option) => option.value === value)?.value
+            ? options.find((option) => option.value === value)?.value || value
             : placeholderText}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent style={{ width: popoverWidth }} className="p-0">
+      <PopoverContent className="p-0 w-72">
         <Command>
           <CommandInput
             placeholder={`Buscar ${itemName}...`}
@@ -80,18 +75,14 @@ export function ComboboxSelect({
           />
           <CommandList>
             {filteredOptions.length === 0 && (
-              <CommandEmpty>
-                <Button variant="link" onClick={handleCreateOption}>
-                  No se encontró el {itemName}. Crear "{inputValue}"
-                </Button>
-              </CommandEmpty>
+              <CommandEmpty>No se encontraron resultados</CommandEmpty>
             )}
             <CommandGroup>
               {filteredOptions.map((option) => (
                 <CommandItem
                   key={option.key}
                   value={option.value}
-                  onSelect={handleSelect}
+                  onSelect={() => handleSelect(option.value)}
                 >
                   {option.value}
                   <Check
