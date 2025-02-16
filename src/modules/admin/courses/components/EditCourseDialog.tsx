@@ -21,6 +21,7 @@ import {
 	FormMessage,
 } from "@/modules/core/components/ui/form"
 import { useEffect } from "react"
+import { updateCourse } from "../services/courseService"
 
 interface Props {
 	open: boolean
@@ -29,7 +30,7 @@ interface Props {
 }
 
 const formSchema = z.object({
-	id: z.coerce.number().int().positive({
+	idJaveriana: z.coerce.number().int().positive({
 		message: "El ID debe ser un número entero positivo",
 	}),
 	name: z.string().min(2, {
@@ -41,21 +42,30 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			...course,
 			name: undefined,
-			id: undefined,
+			idJaveriana: undefined,
 		},
 	})
 
 	useEffect(() => {
 		form.reset({
+			...course,
 			name: course?.name,
-			id: course?.id,
+			idJaveriana: course?.idJaveriana,
 		})
 	}, [form, course])
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
+	async function onSubmit(values: z.infer<typeof formSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
+		const updatedCourse = {
+			...course,
+			...values, // Solo actualiza id y name
+		}
+
+		console.log(course!.id)	
+		await updateCourse(course!.id, updatedCourse as Course)
 		console.log(values)
 		onClose(false)
 	}
@@ -64,9 +74,9 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
-					<DialogTitle>Editar Materia</DialogTitle>
+					<DialogTitle>Editar asignatura</DialogTitle>
 					<DialogDescription>
-						Puedes editar los siguientes atributos de la materia
+						Puedes editar los siguientes atributos de la asignatura
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -74,10 +84,10 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 						<div className="grid gap-4 py-4">
 							<FormField
 								control={form.control}
-								name="id"
+								name="idJaveriana"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Nombre</FormLabel>
+										<FormLabel className="m-0 text-right">ID</FormLabel>
 										<FormControl>
 											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
 										</FormControl>
@@ -90,7 +100,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 								name="name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Fecha de expiración</FormLabel>
+										<FormLabel className="m-0 text-right">Nombre</FormLabel>
 										<FormControl>
 											<Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
 										</FormControl>

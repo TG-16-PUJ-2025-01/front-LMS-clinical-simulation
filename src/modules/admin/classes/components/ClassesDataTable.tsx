@@ -216,7 +216,7 @@ export function ClassesDataTable() {
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						>
-							Materia
+							Asignatura
 							{column.getIsSorted() && <ArrowUpDown />}
 						</Button>
 					</div>
