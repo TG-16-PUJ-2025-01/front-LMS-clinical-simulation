@@ -8,14 +8,6 @@ import RoomType from "@/modules/core/models/roomType"
 import { Combobox } from "../../../core/components/Combobox/Combobox"
 
 export default function RoomsPage() {
-
-	const navLinks = [
-		{ label: "Listado de materias", href: "/admin/" },
-		{ label: "Listado de clases", href: "/admin/clases" },
-		{ label: "Listado de cuentas", href: "/admin/users" },
-		{ label: "Listado de salas", href: "#" },
-    	{ label: "Listado de videos", href: "/admin/videos" },
-	]
 	const [data, setData] = useState<RoomType[]>([])
 
 	const handleOnCreateOption = async (option: { key: number; value: string }) => {
@@ -35,12 +27,9 @@ export default function RoomsPage() {
 
 	return (
 		<>
-			<NavBar navLinks={navLinks} />
-			<main className="bg-gray-100 min-h-screen flex flex-col items-center py-8">
-				<div className="w-full max-w-6xl mb-4">
-					<h1 className="text-2xl font-semibold">Salas</h1>
-				</div>
-				<div className="w-full max-w-6xl p-4 bg-white rounded-lg shadow-md flex flex-col justify-between h-full">
+			<main className="flex flex-col items-center gap-4 bg-gray-100">
+				<h1 className="w-full text-2xl font-semibold">Salas</h1>
+				<section className="flex h-full w-full flex-col justify-between rounded-2xl bg-white px-4 shadow-md">
 					<div className="flex-grow">
 						<RoomsDataTable />
 					</div>
@@ -59,7 +48,6 @@ export default function RoomsPage() {
 				
 				<Toaster />
 			</main>
-			
 		</>
 	)
 }

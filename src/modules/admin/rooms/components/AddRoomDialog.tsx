@@ -86,17 +86,21 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 					id: values.type.id!,
 					name: values.type.name,
 				},
+					name: values.type.name,
+				},
 			}
 
 			await createRoom(newRoom)
 			console.log("Sala creada exitosamente:", newRoom)
 
 			toast.success("Sala creada exitosamente")
+			toast.success("Sala creada exitosamente")
 
 			onClose(false)
 
 			form.reset()
 		} catch (error) {
+			toast.error("Error al crear la sala")
 			toast.error("Error al crear la sala")
 			console.error("Error al crear la sala:", error)
 		}
@@ -107,6 +111,9 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Agregar Sala</DialogTitle>
+					<DialogDescription>
+						Puedes agregar una nueva sala con los siguientes atributos
+					</DialogDescription>
 					<DialogDescription>
 						Puedes agregar una nueva sala con los siguientes atributos
 					</DialogDescription>
