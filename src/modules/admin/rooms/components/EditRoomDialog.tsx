@@ -9,7 +9,7 @@ import {
 } from "@/modules/core/components/ui/dialog"
 import { Input } from "@/modules/core/components/ui/input"
 import { useForm } from "react-hook-form"
-import { custom, z } from "zod"
+import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
 	Form,
@@ -22,7 +22,7 @@ import {
 import { useEffect, useState } from "react"
 import Room from "@/modules/core/models/room"
 import { getRoomsTypes, updateRoom } from "../services/roomService"
-import { RoomType } from "@/modules/core/models/roomType"
+import RoomType from "@/modules/core/models/roomType"
 import { Popover, PopoverContent, PopoverTrigger } from "@/modules/core/components/ui/popover"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/modules/core/components/ui/command"
