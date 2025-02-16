@@ -71,7 +71,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 	useEffect(() => {
 		fetchRoomTypes()
 		form.reset()
-	}, [])
+	}, [form])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
@@ -130,7 +130,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 							<FormField
 								control={form.control}
 								name="type"
-								render={({}) => (
+								render={() => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
 										<FormControl>

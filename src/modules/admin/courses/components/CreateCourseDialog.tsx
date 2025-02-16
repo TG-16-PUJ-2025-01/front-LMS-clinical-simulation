@@ -8,7 +8,6 @@ import {
 	DialogTitle,
 } from "@/modules/core/components/ui/dialog"
 import { Input } from "@/modules/core/components/ui/input"
-import Course from "@/modules/core/models/course"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,7 +27,6 @@ import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
-	course?: Course
 }
 
 const formSchema = z.object({
@@ -38,15 +36,15 @@ const formSchema = z.object({
 	name: z.string().min(2, {
 		message: "El nombre debe tener al menos 2 caracteres",
 	}),
-	coordinatorName: z.string().min(2, {
-		message: "El nombre del coordinador debe tener al menos 2 caracteres",
-	}),
-	coordinatorId: z.coerce.number().int().positive({
-		message: "El ID debe ser un número entero positivo",
-	}),
+	coordinator: z.object({
+		id: z.number().optional(),
+		name: z.string().nonempty({
+			message: "Debe seleccionar un coordinador",
+		}),
+	})
 })
 
-export default function CreateCourseDialog({ open, onClose, course }: Props) {
+export default function CreateCourseDialog({ open, onClose }: Props) {
 	const [coordinators, setCoordinators] = useState<Userlist[]>([])
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -54,8 +52,10 @@ export default function CreateCourseDialog({ open, onClose, course }: Props) {
 		defaultValues: {
 			name: "",
 			id: 0,
-			coordinatorName: "",
-			coordinatorId: 0,
+			coordinator: {
+				id: 0,
+				name: "",
+			}
 		},
 	})
 
@@ -63,34 +63,28 @@ export default function CreateCourseDialog({ open, onClose, course }: Props) {
 		const fetchCoordinators = async () => {
 			const res = await getAllCoordinators()
 			setCoordinators(res.data)
-			console.log(res.data)
 		}
 
 		fetchCoordinators()
 
-		form.reset({
-			name: course?.name,
-			id: course?.idJaveriana,
-			coordinatorName: course?.coordinatorName,
-		})
-	}, [form, course])
+		form.reset()
+	}, [form, open])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		const newCourse = {
-			...values,
-		}
-
-		await createCourse(newCourse as Course)
-
 		console.log(values)
+		await createCourse({
+			idJaveriana: values.id,
+			name: values.name,
+			coordinatorId: values.id,
+			coordinatorName: values.name,
+		})
+
 		onClose(false)
 	}
 
-	//cuando abra el dialogo, se debe hacer una peticion para traer las asignaturas
-
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
+			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
 					<DialogTitle>Crear asignatura</DialogTitle>
 					<DialogDescription>
@@ -128,8 +122,8 @@ export default function CreateCourseDialog({ open, onClose, course }: Props) {
 							/>
 							<FormField
 								control={form.control}
-								name="coordinatorName"
-								render={() => (
+								name="coordinator.name"
+								render={({field}) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Coordinador</FormLabel>
 										<FormControl>
@@ -138,8 +132,8 @@ export default function CreateCourseDialog({ open, onClose, course }: Props) {
 												options={coordinators.map((val) => ({ key: val.id, value: val.name }))}
 												itemName="coordinador"
 												onChange={(selected) => {
-													form.setValue("coordinatorId", selected!.key)
-													form.setValue("coordinatorName", selected.value)
+													field.onChange(selected.value)
+													form.setValue("coordinator.id", selected.key)
 												}}
 											/>
 										</FormControl>
