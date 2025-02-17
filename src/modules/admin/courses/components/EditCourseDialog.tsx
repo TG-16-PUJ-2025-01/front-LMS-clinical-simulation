@@ -58,11 +58,15 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 	}, [form, course])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		await updateCourse(course!.courseId as number, values)
-
-		onClose(false)
-
-		toast.success("Asignatura actualizada correctamente")
+		try {
+			await updateCourse(course!.courseId as number, values)
+	
+			onClose(false)
+	
+			toast.success("Asignatura actualizada correctamente")
+		} catch (error) {
+			toast.error("Error al actualizar la asignatura")
+		}
 	}
 
 	return (

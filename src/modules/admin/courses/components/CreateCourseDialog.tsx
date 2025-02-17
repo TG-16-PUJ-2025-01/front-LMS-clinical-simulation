@@ -72,14 +72,18 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 	}, [form, open])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		await createCourse({
-			javerianaId: values.id,
-			name: values.name,
-			coordinatorId: values.coordinator.id!,
-		})
-
-		onClose(false)
-		toast.success("Asignatura creada exitosamente")
+		try {
+			await createCourse({
+				javerianaId: values.id,
+				name: values.name,
+				coordinatorId: values.coordinator.id!,
+			})
+	
+			onClose(false)
+			toast.success("Asignatura creada exitosamente")
+		} catch (error) {
+			toast.error("Error al crear la asignatura")
+		}
 	}
 
 	return (
