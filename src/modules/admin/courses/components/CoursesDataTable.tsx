@@ -87,7 +87,7 @@ export function CoursesDataTable() {
 
 	const columns: ColumnDef<Course>[] = [
 		{
-			accessorKey: "idJaveriana",
+			accessorKey: "javerianaId",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -101,7 +101,7 @@ export function CoursesDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("idJaveriana")}</div>
+				return <div className="text-center">{row.getValue("javerianaId")}</div>
 			},
 		},
 		{

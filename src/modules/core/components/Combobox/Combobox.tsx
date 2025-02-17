@@ -34,10 +34,10 @@ export function Combobox({
   const [inputValue, setInputValue] = React.useState("")
   const [filteredOptions, setFilteredOptions] = React.useState(options)
 
-  const handleSelect = (currentValue: string) => {
-    setValue(currentValue === value ? "" : currentValue)
+  const handleSelect = (current: { key?: number; value: string }) => {
+    setValue(current.value === value ? "" : current.value)
     setOpen(false)
-    onChange && onChange({ value: currentValue })
+    onChange && onChange({ key: current.key, value: current.value })
   }
 
   React.useEffect(() => {
@@ -80,7 +80,7 @@ export function Combobox({
                 <CommandItem
                   key={option.key}
                   value={option.value}
-                  onSelect={() => handleSelect(option.value)}
+                  onSelect={() => handleSelect(option)}
                 >
                   {option.value}
                   <Check

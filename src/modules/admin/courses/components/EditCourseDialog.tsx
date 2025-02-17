@@ -30,7 +30,7 @@ interface Props {
 }
 
 const formSchema = z.object({
-	idJaveriana: z.coerce.number().int().positive({
+	javerianaId: z.coerce.number().int().positive({
 		message: "El ID debe ser un número entero positivo",
 	}),
 	name: z.string().min(2, {
@@ -44,7 +44,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 		defaultValues: {
 			...course,
 			name: undefined,
-			idJaveriana: undefined,
+			javerianaId: undefined,
 		},
 	})
 
@@ -52,7 +52,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 		form.reset({
 			...course,
 			name: course?.name,
-			idJaveriana: course?.idJaveriana,
+			javerianaId: course?.javerianaId,
 		})
 	}, [form, course])
 
@@ -84,7 +84,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 						<div className="grid gap-4 py-4">
 							<FormField
 								control={form.control}
-								name="idJaveriana"
+								name="javerianaId"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">ID</FormLabel>

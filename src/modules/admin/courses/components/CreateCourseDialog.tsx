@@ -21,8 +21,9 @@ import {
 } from "@/modules/core/components/ui/form"
 import { useEffect, useState } from "react"
 import { createCourse, getAllCoordinators } from "../services/courseService"
-import Userlist from "@/modules/core/models/userList"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
+import User from "@/modules/core/models/user"
+import { toast } from "sonner"
 
 interface Props {
 	open: boolean
@@ -45,7 +46,7 @@ const formSchema = z.object({
 })
 
 export default function CreateCourseDialog({ open, onClose }: Props) {
-	const [coordinators, setCoordinators] = useState<Userlist[]>([])
+	const [coordinators, setCoordinators] = useState<User[]>([])
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -71,15 +72,14 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 	}, [form, open])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values)
 		await createCourse({
-			idJaveriana: values.id,
+			javerianaId: values.id,
 			name: values.name,
-			coordinatorId: values.id,
-			coordinatorName: values.name,
+			coordinatorId: values.coordinator.id!,
 		})
 
 		onClose(false)
+		toast.success("Asignatura creada exitosamente")
 	}
 
 	return (
@@ -127,7 +127,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 										<FormControl>
 											<Combobox
 												placeholderText="Selecciona un coordinador"
-												options={coordinators.map((val) => ({ key: val.id, value: val.name }))}
+												options={coordinators.map((val) => ({ key: val.id, value: `${val.name} ${val.lastName}` }))}
 												itemName="coordinador"
 												onChange={(selected) => {
 													field.onChange(selected.value)

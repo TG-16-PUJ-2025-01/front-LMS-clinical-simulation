@@ -2,8 +2,8 @@ import axios from "axios"
 import { API_URL } from "@/modules/core/config/env"
 import Course from "@/modules/core/models/course"
 import ApiResponse from "@/modules/core/models/apiResponse"
-import { userListMapper } from "@/modules/core/mappers/userListMapper"
-import Userlist from "@/modules/core/models/userList"
+import CreateCourseDTO from "../dtos/createCourseDto"
+import User from "@/modules/core/models/user"
 
 const axiosInstance = axios.create({
 	baseURL: API_URL,
@@ -40,7 +40,7 @@ export async function getCourse(id: number): Promise<ApiResponse<Course>> {
 	}
 }
 
-export async function createCourse(newCourse: Course): Promise<ApiResponse<Course>> {
+export async function createCourse(newCourse: CreateCourseDTO): Promise<ApiResponse<Course>> {
 	const { data } = await axiosInstance.post("/course/add", newCourse)
 	return {
 		...data,
@@ -70,11 +70,11 @@ export async function deleteCourse(id: number): Promise<ApiResponse<Course>> {
 	}
 }
 
-export async function getAllCoordinators(): Promise<ApiResponse<Userlist[]>> {
+export async function getAllCoordinators(): Promise<ApiResponse<User[]>> {
 	const { data } = await axiosInstance.get(`/user/all/coordinator`)
 
 	return {
 		...data,
-		data: data.data.map(userListMapper),
+		data: data.data,
 	}
 }
