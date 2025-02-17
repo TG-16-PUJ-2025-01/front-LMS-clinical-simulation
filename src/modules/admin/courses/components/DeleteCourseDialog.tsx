@@ -39,7 +39,7 @@ export default function DeleteCourseDialog({ open, onClose, course }: Props) {
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancelar</AlertDialogCancel>
+					<AlertDialogCancel onClick={() => onClose(false)}>Cancelar</AlertDialogCancel>
 					<AlertDialogAction onClick={handleConfirm}>Eliminar</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
