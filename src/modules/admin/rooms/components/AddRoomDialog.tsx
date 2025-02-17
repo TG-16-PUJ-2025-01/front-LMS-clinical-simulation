@@ -38,7 +38,7 @@ const formSchema = z.object({
     type: z.object({
             id: z.number().optional(),
             name: z.string().nonempty({
-                message: "Debes seleccionar un tipo de sala",
+                message: "El tipo de la sala no puede estar vacío",
             }),
         })
 })
@@ -86,20 +86,19 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 				}
 			}
 
-			console.log("Tipo de sala seleccionado:", values.type);
-			console.log("Sala a crear:", newRoom);
-
 			await createRoom(newRoom)
-			console.log("Sala creada exitosamente:", newRoom)
 
             toast.success("Sala creada exitosamente")
 
 			onClose(false)
 
 			form.reset();
-		} catch (error) {
-			toast.error("Error al crear la sala")
-			console.error("Error al crear la sala:", error)
+		} catch (error: any) {
+			if (error.response && error.response.data && error.response.data.message) {
+				toast.error(error.response.data.message)
+			} else{
+				toast.error("Error al crear la sala")
+			}			
 		}
 	}
 

@@ -39,7 +39,7 @@ const formSchema = z.object({
 	type: z.object({
 		id: z.number().optional(),
 		name: z.string().nonempty({
-			message: "Debes seleccionar un tipo de sala",
+			message: "El tipo de la sala no puede estar vacío",
 		}),
 	}),
 })
@@ -92,14 +92,16 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 			}
 
 			await updateRoom(updatedRoom)
-			console.log("Sala actualizada exitosamente:", updatedRoom)
 
 			toast.success("Sala actualizada exitosamente")
 
 			onClose(false)
-		} catch (error) {
-			toast.error("Error al actualizar la sala")
-			console.error("Error al actualizar la sala:", error)
+		} catch (error: any) {
+			if (error.response && error.response.data && error.response.data.message) {
+				toast.error(error.response.data.message)
+			} else{
+				toast.error("Error al actualizar la sala")
+			}			
 		}
 	}
 

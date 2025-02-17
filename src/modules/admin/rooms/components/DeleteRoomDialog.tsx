@@ -26,11 +26,14 @@ export default function DeleteRoomDialog({ open, onClose, roomId }: Props) {
 
 		try {
 			await deleteRoom(roomId)
-			console.log(`Sala con ID ${roomId} eliminada exitosamente.`)
 			toast.success("Sala eliminada exitosamente.")
 			onClose(false)
-		} catch (error) {
-			console.error("Error al eliminar la sala:", error)
+		} catch (error: any) {
+			if (error.response && error.response.data && error.response.data.message) {
+				toast.error(error.response.data.message)
+			} else{
+				toast.error("Error al crear la sala")
+			}	
 		}
 	}
 
