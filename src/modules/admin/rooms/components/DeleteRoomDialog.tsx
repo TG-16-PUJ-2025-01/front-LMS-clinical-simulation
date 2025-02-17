@@ -38,15 +38,15 @@ export default function DeleteRoomDialog({ open, onClose, roomId }: Props) {
 	}
 
 	return (
-		<AlertDialog open={open} onOpenChange={onClose}>
+		<AlertDialog open={open}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar la sala?</AlertDialogTitle>
 					<AlertDialogDescription>Esta acción no es reversible.</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancelar</AlertDialogCancel>
-					<AlertDialogAction className="danger bg-red-600" onClick={onConfirmDelete}>
+					<AlertDialogCancel onClick={() => onClose(false)}>Cancelar</AlertDialogCancel>
+					<AlertDialogAction className="danger" onClick={onConfirmDelete}>
 						Eliminar
 					</AlertDialogAction>
 				</AlertDialogFooter>

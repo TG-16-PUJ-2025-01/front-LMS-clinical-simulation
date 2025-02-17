@@ -43,7 +43,7 @@ import AddRoomDialog from "./AddRoomDialog"
 
 export function RoomsDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [filter] = useState<string>("")
+	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
@@ -206,8 +206,11 @@ export function RoomsDataTable() {
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
-							value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-							onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+							value={filter}
+							onChange={(event) => {
+								setFilter(event.target.value)
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
