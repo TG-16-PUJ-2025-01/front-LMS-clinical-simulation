@@ -22,6 +22,7 @@ import {
 } from "@/modules/core/components/ui/form"
 import { useEffect } from "react"
 import { updateCourse } from "../services/courseService"
+import { toast } from "sonner"
 
 interface Props {
 	open: boolean
@@ -57,17 +58,11 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 	}, [form, course])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		const updatedCourse = {
-			...course,
-			...values, // Solo actualiza id y name
-		}
+		await updateCourse(course!.courseId as number, values)
 
-		console.log(course!.id)	
-		await updateCourse(course!.id, updatedCourse as Course)
-		console.log(values)
 		onClose(false)
+
+		toast.success("Asignatura actualizada correctamente")
 	}
 
 	return (

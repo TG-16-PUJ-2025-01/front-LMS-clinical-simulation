@@ -4,6 +4,7 @@ import Course from "@/modules/core/models/course"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import CreateCourseDTO from "../dtos/createCourseDto"
 import User from "@/modules/core/models/user"
+import EditCourseDTO from "../dtos/editCourseDTO"
 
 const axiosInstance = axios.create({
 	baseURL: API_URL,
@@ -50,10 +51,8 @@ export async function createCourse(newCourse: CreateCourseDTO): Promise<ApiRespo
 
 export async function updateCourse(
 	id: number,
-	updatedCourse: Course
+	updatedCourse: EditCourseDTO
 ): Promise<ApiResponse<Course>> {
-	console.log(updatedCourse)
-
 	const { data } = await axiosInstance.put(`/course/update/${id}`, updatedCourse)
 	return {
 		...data,
