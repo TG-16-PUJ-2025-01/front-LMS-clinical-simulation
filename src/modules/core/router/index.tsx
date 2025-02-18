@@ -7,7 +7,7 @@ import {
 	StudentRoute,
 	TeacherRoute,
 } from "@/modules/core/config/security/guards"
-import Login from "@/modules/shared/auth/pages/Login/LoginLayout"
+import Login from "@/modules/shared/auth/layout/LoginLayout"
 import CoursesPage from "@/modules/admin/courses/pages/CoursesPage"
 import VideosPage from "@/modules/admin/videos/pages/VideosPage"
 import ClassesPage from "@/modules/admin/classes/pages/ClassesPage"
