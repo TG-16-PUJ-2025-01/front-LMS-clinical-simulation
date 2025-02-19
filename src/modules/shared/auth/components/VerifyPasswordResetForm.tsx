@@ -26,7 +26,7 @@ export default function VerifyPasswordResetForm({ email, onSuccess }: VerifyPass
                 setError("Token inválido o expirado.");
                 setMessage("");
             }
-        } catch (error) {
+        } catch {
             setError("Token inválido o expirado.");
             setMessage("");
         }

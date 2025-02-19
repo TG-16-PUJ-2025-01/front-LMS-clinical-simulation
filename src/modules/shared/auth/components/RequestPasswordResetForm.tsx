@@ -23,7 +23,7 @@ export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordR
             if (response === 200) {
                 onSuccess(email + "@javeriana.edu.co"); // Llama a la función onSuccess para avanzar al siguiente paso
             }
-        } catch (error) {
+        } catch {
             setError("Error al solicitar el restablecimiento de contraseña.");
             setMessage("");
         }

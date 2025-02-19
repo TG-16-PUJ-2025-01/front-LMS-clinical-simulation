@@ -39,7 +39,7 @@ export default function ResetPasswordForm({ email, token, onSuccess }: ResetPass
             setMessage(response.message);
             setError("");
             onSuccess();
-        } catch (error) {
+        } catch {
             setError("Error al restablecer la contraseña.");
             setMessage("");
         }
