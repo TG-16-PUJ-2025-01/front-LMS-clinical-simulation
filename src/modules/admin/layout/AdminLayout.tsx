@@ -7,7 +7,7 @@ interface Props {
 
 export default function AdminLayout({ children }: Props) {
 	const navLinks = [
-		{ label: "Listado de materias", href: "/admin/materias" },
+		{ label: "Listado de asignaturas", href: "/admin/asignaturas" },
 		{ label: "Listado de clases", href: "/admin/clases" },
 		{ label: "Listado de cuentas", href: "/admin/cuentas" },
 		{ label: "Listado de salas", href: "/admin/salas" },

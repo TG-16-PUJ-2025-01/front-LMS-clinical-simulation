@@ -64,9 +64,9 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
-					<DialogTitle>Editar Materia</DialogTitle>
+					<DialogTitle>Editar Asignatura</DialogTitle>
 					<DialogDescription>
-						Puedes editar los siguientes atributos de la materia
+						Puedes editar los siguientes atributos de la asignatura
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

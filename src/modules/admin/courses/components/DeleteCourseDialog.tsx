@@ -20,9 +20,9 @@ const DeleteCourseDialog: React.FC<DeleteCourseDialogProps> = ({ open, onClose }
 		<AlertDialog open={open} onOpenChange={onClose}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>¿Seguro que desea eliminar la materia?</AlertDialogTitle>
+					<AlertDialogTitle>¿Seguro que desea eliminar la asignatura?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y se eliminarán todas las clases vinculadas a esta materia.
+						Esta acción no es reversible y se eliminarán todas las clases vinculadas a esta asignatura.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
