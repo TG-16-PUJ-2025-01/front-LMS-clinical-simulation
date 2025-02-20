@@ -1,6 +1,5 @@
 import {
 	ColumnDef,
-	ColumnFiltersState,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -10,15 +9,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import {
-	ArrowUpDown,
-	MoreHorizontal,
-	Pencil,
-	Plus,
-	Search,
-	Trash2,
-} from "lucide-react"
-
+import { ArrowUpDown, MoreHorizontal, Pencil, Plus, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -52,7 +43,7 @@ import AddRoomDialog from "./AddRoomDialog"
 
 export function RoomsDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
@@ -72,16 +63,24 @@ export function RoomsDataTable() {
 	})
 
 	useEffect(() => {
+		if (openDialog) return
+
 		const fetchRooms = async () => {
-			const res = await getAllRooms(pagination.pageIndex, pagination.pageSize)
-			setData(res.data.content)
+			const res = await getAllRooms(
+				pagination.pageIndex,
+				pagination.pageSize,
+				filter,
+				sorting[0]?.id,
+				!(sorting[0]?.desc ?? false)
+			)
+			setData(res.data)
 			setPaginationInfo({
-				total: res.data.totalElements,
-				totalPages: res.data.totalPages,
+				total: res.metadata.total,
+				totalPages: res.metadata.totalPages,
 			})
 		}
 		fetchRooms()
-	}, [pagination])
+	}, [pagination, filter, sorting, openDialog])
 
 	const handleOpenDialog = (type: "edit" | "delete" | "add", room?: Room | null) => {
 		setEditDialog(type)
@@ -91,7 +90,7 @@ export function RoomsDataTable() {
 	const handleCloseDialog = () => {
 		setEditDialog(null)
 		setSelectedRoom(null)
-		setPagination((prev) => ({ ...prev }));
+		setPagination((prev) => ({ ...prev }))
 	}
 
 	const columns: ColumnDef<Room>[] = [
@@ -146,11 +145,7 @@ export function RoomsDataTable() {
 					</Button>
 				</div>
 			),
-			cell: ({ row }) => (
-				<div className="text-center">
-					{row.getValue("type")}
-				</div>
-			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("type")}</div>,
 		},
 		{
 			id: "actions",
@@ -185,7 +180,6 @@ export function RoomsDataTable() {
 		data,
 		columns,
 		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
@@ -198,7 +192,6 @@ export function RoomsDataTable() {
 		pageCount: paginationInfo.totalPages,
 		state: {
 			sorting,
-			columnFilters,
 			columnVisibility,
 			rowSelection,
 			pagination,
@@ -213,8 +206,11 @@ export function RoomsDataTable() {
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
-							value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-							onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+							value={filter}
+							onChange={(event) => {
+								setFilter(event.target.value)
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
@@ -222,7 +218,11 @@ export function RoomsDataTable() {
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
-									<Button variant="outline" size="icon" onClick={() => handleOpenDialog("add", null)}>
+									<Button
+										variant="outline"
+										size="icon"
+										onClick={() => handleOpenDialog("add", null)}
+									>
 										<Plus className="h-5 w-5" />
 									</Button>
 								</TooltipTrigger>
@@ -295,9 +295,13 @@ export function RoomsDataTable() {
 			<EditRoomDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
-				room={selectedRoom ?? undefined}
+				room={selectedRoom!}
 			/>
-			<DeleteRoomDialog open={openDialog === "delete"} onClose={handleCloseDialog} roomId={selectedRoom?.id ?? null} />
+			<DeleteRoomDialog
+				open={openDialog === "delete"}
+				onClose={handleCloseDialog}
+				roomId={selectedRoom?.id!}
+			/>
 			<AddRoomDialog open={openDialog === "add"} onClose={handleCloseDialog} />
 		</>
 	)
