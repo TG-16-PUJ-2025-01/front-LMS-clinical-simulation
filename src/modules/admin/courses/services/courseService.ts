@@ -2,9 +2,9 @@ import axios from "axios"
 import { API_URL } from "@/modules/core/config/env"
 import Course from "@/modules/core/models/course"
 import ApiResponse from "@/modules/core/models/apiResponse"
-import CreateCourseDTO from "../dtos/createCourseDto"
 import User from "@/modules/core/models/user"
 import EditCourseDTO from "../dtos/editCourseDTO"
+import CreateCourseDTO from "../dtos/createCourseDTO"
 
 const axiosInstance = axios.create({
 	baseURL: API_URL,

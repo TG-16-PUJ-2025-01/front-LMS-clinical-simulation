@@ -35,14 +35,17 @@ import Class from "@/modules/core/models/class"
 import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
+import { getClass, getClasses } from "../services/classService"
+import CreateClassDialog from "./CreateClassDialog"
 
 export function ClassesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
+	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | null>(null)
 	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 
 	const [data, setData] = useState<Class[]>([])
@@ -58,21 +61,30 @@ export function ClassesDataTable() {
 	})
 
 	useEffect(() => {
+		if (openDialog) return
+		
 		const fetchClasses = async () => {
-			
-			setData([...initialData]) // ✅ Ahora sí estamos usando la constante "data"
-			console.log([...initialData]) // ✅ Mostramos los datos en consola
+			const res = await getClasses(
+				pagination.pageIndex,
+				pagination.pageSize,
+				filter,
+				sorting[0]?.id,
+				!(sorting[0]?.desc ?? false)
+			)
+			console.log("Classes", res)
+			setData(res.data)
 			setPaginationInfo({
-				total: data.length, // ✅ Usamos "data" para obtener el total
-				totalPages: Math.ceil(data.length / pagination.pageSize),
+				total: res.metadata.total,
+				totalPages: res.metadata.totalPages,
 			})
 		}
-		fetchClasses()
-	}, [pagination])
 
-	const handleOpenDialog = (type: "edit" | "delete", Class: Class) => {
+		fetchClasses()
+	}, [pagination, filter, sorting, openDialog])
+
+	const handleOpenDialog = (type: "create" | "edit" | "delete", Class?: Class) => {
 		setEditDialog(type)
-		setSelectedClass(Class)
+		setSelectedClass(Class ?? null)
 	}
 
 	const handleCloseDialog = () => {
@@ -82,7 +94,7 @@ export function ClassesDataTable() {
 
 	const columns: ColumnDef<Class>[] = [
 		{
-			accessorKey: "id",
+			accessorKey: "javerianaId",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -90,13 +102,13 @@ export function ClassesDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						ID la clase
+						ID 
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("id")}</div>
+				return <div className="text-center">{row.getValue("javerianaId")}</div>
 			},
 		},
 		{
@@ -118,7 +130,8 @@ export function ClassesDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
-			accessorKey: "course",
+			id: "course",
+			accessorFn: ({ course }) => `${course.name}`,
 			header: ({ column }) => {
 				return (
 					<div className="relative w-full">
@@ -135,8 +148,10 @@ export function ClassesDataTable() {
 			},
 			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
 		},
-		{
-			accessorKey: "professor",
+		{			
+			id: "professor",
+			accessorFn: ({ professor }) => `${professor.name} ${professor.lastName}`,
+
 			header: ({ column }) => {
 				return (
 					<div className="relative w-full">
@@ -154,7 +169,7 @@ export function ClassesDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("professor")}</div>,
 		},
 		{
-			accessorKey: "startDate",
+			accessorKey: "period",
 			header: ({ column }) => {
 				return (
 					<div className="relative w-full">
@@ -171,7 +186,7 @@ export function ClassesDataTable() {
 			},
 			cell: ({ row }) => (
 				<div className="text-center">
-					{(row.getValue("startDate") as Date).toLocaleDateString()}
+					{row.getValue("period")}
 				</div>
 			),
 		},
@@ -231,16 +246,20 @@ export function ClassesDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center py-4">
+				<div className="flex items-center  justify-between py-4">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
-							value={(table.getState().globalFilter as string) ?? ""}
-							onChange={(event) => table.setGlobalFilter(event.target.value)}
+							value={filter}
+							onChange={(event) => {
+								setFilter(event.target.value)
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}							
 							className="w-full pl-8"
 						/>
 					</div>
+					<Button onClick={() => handleOpenDialog("create")}>Nueva clase</Button>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -306,7 +325,12 @@ export function ClassesDataTable() {
 				onClose={handleCloseDialog}
 				classData={selectedClass ?? undefined}
 			/>
-			<DeleteClassDialog open={openDialog === "delete"} onClose={handleCloseDialog} />
+			<DeleteClassDialog 
+				open={openDialog === "delete"} 
+				onClose={handleCloseDialog} 
+				classToDelete={selectedClass ?? undefined}
+			/>
+			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>
 	)
 }
