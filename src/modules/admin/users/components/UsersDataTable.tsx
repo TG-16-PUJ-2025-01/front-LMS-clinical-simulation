@@ -65,9 +65,9 @@ export function UsersDataTable() {
       setIsLoading(true);
       setError(null);
       try {
-        const sortColumn = sorting[0]?.id || "id"; 
+        const sortColumn = sorting[0]?.id || "id";
         const sortDirection = sorting[0]?.desc ? false : true;
-        
+
         const res = await getUsers(
           pagination.pageIndex,
           pagination.pageSize,
@@ -75,7 +75,7 @@ export function UsersDataTable() {
           sortColumn === "fullName" ? "lastName" : sortColumn, // Reemplaza fullName por lastName
           sortDirection
         );
-    
+
         if (res.data) {
           setData(res.data);
           setPaginationInfo({
@@ -95,7 +95,7 @@ export function UsersDataTable() {
         setIsLoading(false);
       }
     };
-    
+
 
     fetchUsers();
   }, [pagination.pageIndex, pagination.pageSize, filter, sorting, openDialog]);
@@ -280,7 +280,7 @@ export function UsersDataTable() {
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="px-6">
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
