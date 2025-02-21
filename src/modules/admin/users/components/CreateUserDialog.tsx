@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from "@/modules/core/components/ui/dialog";
 import { Input } from "@/modules/core/components/ui/input";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +23,7 @@ import {
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { toast } from "sonner";
+import { createUser } from "../services/userService";
 
 const animatedComponents = makeAnimated();
 
@@ -29,12 +31,13 @@ const roleOptions = [
     { value: "ESTUDIANTE", label: "Estudiante" },
     { value: "ADMIN", label: "Administrador" },
     { value: "PROFESOR", label: "Profesor" },
-    { value: "INVITADO", label: "Invitado" },
+    { value: "COORDINADOR", label: "Coordinador" },
 ];
 
 interface Props {
     open: boolean;
     onClose: (open: boolean) => void;
+    onSuccess?: () => void;
 }
 
 const formSchema = z.object({
@@ -55,7 +58,9 @@ const formSchema = z.object({
     }),
 });
 
-export default function CreateUserDialog({ open, onClose }: Props) {
+export default function CreateUserDialog({ open, onClose, onSuccess }: Props) {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -67,18 +72,41 @@ export default function CreateUserDialog({ open, onClose }: Props) {
         },
     });
 
+    useEffect(() => {
+        if (open) {
+            form.reset();
+        }
+    }, [open, form]);
+
+    const handleClose = () => {
+        onClose(false);
+        form.reset();
+    };
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            console.log(values);
-            onClose(false);
-            toast.success("Usuario creado exitosamente");
+            await createUser({
+                institutionalId: values.id,
+                name: values.name,
+                lastName: values.lastName,
+                email: values.email,
+                roles: values.roles,
+            });
+                onClose(false);
+                toast.success("Usuario creado exitosamente");
+                onSuccess?.(); // Notifica al componente padre que hubo éxito
         } catch (error) {
+            console.error("Error creating user:", error);
             toast.error("Error al crear el usuario");
+        } finally {
+            setIsSubmitting(false);
         }
     }
+    
+    
 
     return (
-        <Dialog open={open} onOpenChange={onClose}>
+        <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Crear Usuario</DialogTitle>
@@ -167,7 +195,9 @@ export default function CreateUserDialog({ open, onClose }: Props) {
                             />
                         </div>
                         <DialogFooter>
-                            <Button type="submit">Crear</Button>
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? "Creando..." : "Crear"}
+                            </Button>
                         </DialogFooter>
                     </Form>
                 </form>
