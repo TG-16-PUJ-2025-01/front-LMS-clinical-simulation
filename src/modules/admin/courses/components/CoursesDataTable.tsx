@@ -1,6 +1,5 @@
 import {
 	ColumnDef,
-	ColumnFiltersState,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -33,56 +32,11 @@ import EditCourseDialog from "./EditCourseDialog"
 import DeleteCourseDialog from "./DeleteCourseDialog"
 import { useEffect, useState } from "react"
 import CreateCourseDialog from "./CreateCourseDialog"
+import { getCourses } from "../services/courseService"
 
-const initialData: Course[] = [
-	{
-		id: 23,
-		name: "ken99@yahoo.com",
-	},
-	{
-		id: 343,
-		name: "Abe45@gmail.com",
-	},
-	{
-		id: 1243,
-		name: "Monserrat44@gmail.com",
-	},
-	{
-		id: 2321,
-		name: "Silas22@gmail.com",
-	},
-	{
-		id: 6654,
-		name: "carmella@hotmail.com",
-	},
-	{
-		id: 302,
-		name: "carmella@hotmail.com",
-	},
-	{
-		id: 9302,
-		name: "carmella@hotmail.com",
-	},
-	{
-		id: 93920,
-		name: "carmella@hotmail.com",
-	},
-	{
-		id: 92912,
-		name: "carmella@hotmail.com",
-	},
-	{
-		id: 19291,
-		name: "carmella@hotmail.com",
-	},
-	{
-		id: 1391,
-		name: "carmella@hotmail.com",
-	},
-]
 export function CoursesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
@@ -102,16 +56,24 @@ export function CoursesDataTable() {
 	})
 
 	useEffect(() => {
+		if (openDialog) return
+
 		const fetchCourses = async () => {
-			setData([...initialData]) // ✅ Ahora sí estamos usando la constante "data"
-			console.log([...initialData]) // ✅ Mostramos los datos en consola
+			const res = await getCourses(
+				pagination.pageIndex,
+				pagination.pageSize,
+				filter,
+				sorting[0]?.id,
+				!(sorting[0]?.desc ?? false)
+			)
+			setData(res.data)
 			setPaginationInfo({
-				total: data.length, // ✅ Usamos "data" para obtener el total
-				totalPages: Math.ceil(data.length / pagination.pageSize),
+				total: res.metadata.total,
+				totalPages: res.metadata.totalPages,
 			})
 		}
 		fetchCourses()
-	}, [pagination, data.length])
+	}, [pagination, filter, sorting, openDialog])
 
 	const handleOpenDialog = (type: "create" | "edit" | "delete", Course?: Course) => {
 		setEditDialog(type)
@@ -125,7 +87,7 @@ export function CoursesDataTable() {
 
 	const columns: ColumnDef<Course>[] = [
 		{
-			accessorKey: "id",
+			accessorKey: "javerianaId",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -133,13 +95,13 @@ export function CoursesDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						ID la materia
+						ID de la asignatura
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("id")}</div>
+				return <div className="text-center">{row.getValue("javerianaId")}</div>
 			},
 		},
 		{
@@ -159,6 +121,25 @@ export function CoursesDataTable() {
 				)
 			},
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
+		},
+		{
+			id: "coordinator",
+			accessorFn: ({ coordinator }) => `${coordinator.name} ${coordinator.lastName}`,
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Coordinador
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => <div className="text-center">{row.getValue("coordinator")}</div>,
 		},
 		{
 			id: "actions",
@@ -192,7 +173,6 @@ export function CoursesDataTable() {
 		data,
 		columns,
 		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
@@ -205,7 +185,6 @@ export function CoursesDataTable() {
 		pageCount: paginationInfo.totalPages,
 		state: {
 			sorting,
-			columnFilters,
 			columnVisibility,
 			rowSelection,
 			pagination,
@@ -220,12 +199,15 @@ export function CoursesDataTable() {
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
-							value={(table.getState().globalFilter as string) ?? ""}
-							onChange={(event) => table.setGlobalFilter(event.target.value)}
+							value={filter}
+							onChange={(event) => {
+								setFilter(event.target.value)
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => handleOpenDialog("create", undefined)}>Nueva asignatura</Button>
+					<Button onClick={() => handleOpenDialog("create")}>Nueva asignatura</Button>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -258,7 +240,7 @@ export function CoursesDataTable() {
 							) : (
 								<TableRow>
 									<TableCell colSpan={columns.length} className="h-24 text-center">
-										No results.
+										No existen resultados.
 									</TableCell>
 								</TableRow>
 							)}
@@ -291,12 +273,12 @@ export function CoursesDataTable() {
 				onClose={handleCloseDialog}
 				course={selectedCourse ?? undefined}
 			/>
-			<DeleteCourseDialog open={openDialog === "delete"} onClose={handleCloseDialog} />
-			<CreateCourseDialog
-				open={openDialog === "create"}
+			<DeleteCourseDialog
+				open={openDialog === "delete"}
 				onClose={handleCloseDialog}
-				course={undefined}
+				course={selectedCourse ?? undefined}
 			/>
+			<CreateCourseDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>
 	)
 }

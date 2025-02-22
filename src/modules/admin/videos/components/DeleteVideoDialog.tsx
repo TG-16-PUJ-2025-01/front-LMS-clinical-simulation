@@ -37,7 +37,7 @@ export default function DeleteVideoDialog({ open, onClose, video }: Props) {
 					<AlertDialogDescription>Esta acción no es reversible.</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancelar</AlertDialogCancel>
+					<AlertDialogCancel onClick={() => onClose(false)}>Cancelar</AlertDialogCancel>
 					<AlertDialogAction onClick={handleConfirm}>Continuar</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>

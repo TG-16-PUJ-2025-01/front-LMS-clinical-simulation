@@ -36,96 +36,6 @@ import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
 
-const initialData: Class[] = [
-	{
-		id: 23,
-		name: "ken99@yahoo.com",
-		course: "course1",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 343,
-		name: "Abe45@gmail.com",
-		course: "course1",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 1243,
-		name: "Monserrat44@gmail.com",
-		course: "course1",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 2321,
-		name: "Silas22@gmail.com",
-		course: "course1",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 6654,
-		name: "carmella@hotmail.com",
-		course: "course2",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 302,
-		name: "carmella@hotmail.com",
-		course: "course1",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 9302,
-		name: "carmella@hotmail.com",
-		course: "course3",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 93920,
-		name: "carmella@hotmail.com",
-		course: "course4",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 92912,
-		name: "carmella@hotmail.com",
-		course: "course1",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 19291,
-		name: "carmella@hotmail.com",
-		course: "course1",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-	{
-		id: 1391,
-		name: "carmella@hotmail.com",
-		course: "course1",
-		startDate: new Date(),
-		endDate: new Date(),
-		professor: "professor1",
-	},
-]
 export function ClassesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -149,6 +59,7 @@ export function ClassesDataTable() {
 
 	useEffect(() => {
 		const fetchClasses = async () => {
+			
 			setData([...initialData]) // ✅ Ahora sí estamos usando la constante "data"
 			console.log([...initialData]) // ✅ Mostramos los datos en consola
 			setPaginationInfo({
@@ -216,7 +127,7 @@ export function ClassesDataTable() {
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						>
-							Materia
+							Asignatura
 							{column.getIsSorted() && <ArrowUpDown />}
 						</Button>
 					</div>

@@ -60,19 +60,19 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 	})
 
 	const handleOnCreateOption = async (option: { key: number; value: string }) => {
-			await addRoomType(option.value)
-			fetchRoomTypes()
-		}
-		
-		const fetchRoomTypes = async () => {
-			const res = await getRoomsTypes()
-			setRoomTypes(res.data)
-		}
-		
-		useEffect(() => {
-			fetchRoomTypes()
-			form.reset();
-		}, [])
+		await addRoomType(option.value)
+		fetchRoomTypes()
+	}
+
+	const fetchRoomTypes = async () => {
+		const res = await getRoomsTypes()
+		setRoomTypes(res.data)
+	}
+
+	useEffect(() => {
+		fetchRoomTypes()
+		form.reset()
+	}, [form])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -82,7 +82,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 				name: values.name,
 				type: {
 					id: values.type.id!,
-					name: values.type.name
+					name: values.type.name,
 				}
 			}
 
@@ -92,13 +92,11 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 
 			onClose(false)
 
-			form.reset();
-		} catch (error: any) {
-			if (error.response && error.response.data && error.response.data.message) {
-				toast.error(error.response.data.message)
-			} else{
-				toast.error("Error al crear la sala")
-			}			
+			form.reset()
+		} catch (error) {
+			toast.error("Error al crear la sala")
+			toast.error("Error al crear la sala")
+			console.error("Error al crear la sala:", error)
 		}
 	}
 

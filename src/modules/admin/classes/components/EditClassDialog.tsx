@@ -43,7 +43,7 @@ import { Check, ChevronsUpDown } from "lucide-react"
 import { useEffect, useState } from "react"
 import Class from "@/modules/core/models/class"
 
-const materias = [
+const asignaturas = [
 	{ value: "course1", label: "course1" },
 	{ value: "course2", label: "course2" },
 	{ value: "course3", label: "course4" },
@@ -76,7 +76,7 @@ const formSchema = z.object({
 		message: "El nombre del curso debe tener al menos 2 caracteres",
 	}),
 	professor: z.string().min(2, { 
-		message: "El nombre del curso debe tener al menos 2 caracteres",
+		message: "El nombre del profesor debe tener al menos 2 caracteres",
 	}),
 })
 
@@ -123,7 +123,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 								name="id"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Nombre</FormLabel>
+										<FormLabel className="m-0 text-right">ID</FormLabel>
 										<FormControl>
 											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
 										</FormControl>
@@ -136,7 +136,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 								name="name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Fecha de expiración</FormLabel>
+										<FormLabel className="m-0 text-right">Nombre</FormLabel>
 										<FormControl>
                                             <Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
 										</FormControl>
@@ -167,7 +167,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 												</PopoverTrigger>
 												<PopoverContent className="w-[200px] p-0">
 													<Command>
-														<CommandInput placeholder="Buscar materia..." />
+														<CommandInput placeholder="Buscar asignatura..." />
 														<CommandList>
 															<CommandEmpty>No se encontró el profesor</CommandEmpty>
 															<CommandGroup>
@@ -203,7 +203,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 								name="course"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Materia</FormLabel>
+										<FormLabel className="m-0 text-right">asignatura</FormLabel>
 										<FormControl>
 											<Popover>
 												<PopoverTrigger asChild>
@@ -214,18 +214,18 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 													>
 				
 														{field.value
-															? materias.find((fw) => fw.value === field.value)?.label
-															: "Selecciona una materia"}
+															? asignaturas.find((fw) => fw.value === field.value)?.label
+															: "Selecciona una asignatura"}
 														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 													</Button>
 												</PopoverTrigger>
 												<PopoverContent className="w-[200px] p-0">
 													<Command>
-														<CommandInput placeholder="Buscar materia..." />
+														<CommandInput placeholder="Buscar asignatura..." />
 														<CommandList>
-															<CommandEmpty>No se encontró materia</CommandEmpty>
+															<CommandEmpty>No se encontró asignatura</CommandEmpty>
 															<CommandGroup>
-																{materias.map((fw) => (
+																{asignaturas.map((fw) => (
 																	<CommandItem
 																		key={fw.value}
 																		value={fw.value}
