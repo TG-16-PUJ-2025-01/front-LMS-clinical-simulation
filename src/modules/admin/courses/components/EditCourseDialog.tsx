@@ -20,9 +20,11 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/modules/core/components/ui/form"
-import { useEffect } from "react"
-import { updateCourse } from "../services/courseService"
+import { useEffect, useState } from "react"
+import { getAllCoordinators, updateCourse } from "../services/courseService"
 import { toast } from "sonner"
+import User from "@/modules/core/models/user"
+import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 
 interface Props {
 	open: boolean
@@ -37,19 +39,39 @@ const formSchema = z.object({
 	name: z.string().min(2, {
 		message: "El nombre debe tener al menos 2 caracteres",
 	}),
+	coordinator: z.object({
+		id: z.number().optional(),
+		name: z.string().nonempty({
+			message: "Debe seleccionar un coordinador",
+		}),
+	})
 })
 
 export default function EditCourseDialog({ open, onClose, course }: Props) {
+	const [coordinators, setCoordinators] = useState<User[]>([])
+	
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			...course,
 			name: undefined,
 			javerianaId: undefined,
+			coordinator: {
+				id: 0,
+				name: "",
+			}
 		},
 	})
 
 	useEffect(() => {
+		
+		const fetchCoordinators = async () => {
+					const res = await getAllCoordinators()
+					setCoordinators(res.data)
+				}
+		
+		fetchCoordinators()
+		
 		form.reset({
 			...course,
 			name: course?.name,
@@ -59,7 +81,11 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			await updateCourse(course!.courseId as number, values)
+			await updateCourse(course!.courseId as number, {
+				javerianaId: values.javerianaId,
+				name: values.name,
+				coordinatorId: values.coordinator.id!,
+			})
 	
 			onClose(false)
 	
@@ -102,6 +128,27 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 										<FormLabel className="m-0 text-right">Nombre</FormLabel>
 										<FormControl>
 											<Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="coordinator.name"
+								render={({field}) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Coordinador</FormLabel>
+										<FormControl>
+											<Combobox
+												placeholderText={field.value}
+												options={coordinators.map((val) => ({ key: val.id, value: `${val.name} ${val.lastName}` }))}
+												itemName="coordinador"
+												onChange={(selected) => {
+													field.onChange(selected.value)
+													form.setValue("coordinator.id", selected.key)
+												}}
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>

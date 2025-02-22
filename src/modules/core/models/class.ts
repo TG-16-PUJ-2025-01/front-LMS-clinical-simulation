@@ -1,11 +1,12 @@
+import Course from "./course";
+import User from "./user";
+
 export default interface Class {
     id: number;
     javerianaId: number;
     name: string;
-    courseName: string;
-    courseId: number;
+    course: Course;
+    professor: User;
     beginningDate: Date;
-    professorName: string;
-    professorId: number;
     period: string;
   }
