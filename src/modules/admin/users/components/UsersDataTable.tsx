@@ -112,22 +112,6 @@ export function UsersDataTable() {
 
   const columns: ColumnDef<User>[] = [
     {
-      accessorKey: "id",
-      header: ({ column }) => (
-        <div className="relative w-full">
-          <Button
-            variant="ghost"
-            className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            ID
-            {column.getIsSorted() && <ArrowUpDown className="ml-2 h-4 w-4" />}
-          </Button>
-        </div>
-      ),
-      cell: ({ row }) => <div className="text-center">{row.getValue("id")}</div>,
-    },
-    {
       accessorKey: "institutionalId",
       header: ({ column }) => (
         <div className="relative w-full">
@@ -160,7 +144,7 @@ export function UsersDataTable() {
       cell: ({ row }) => <div className="text-center">{row.getValue("email")}</div>,
     },
     {
-      accessorKey: "fullName", // Nueva columna combinada
+      accessorKey: "fullName", 
       header: ({ column }) => (
         <div className="relative w-full">
           <Button
@@ -175,7 +159,7 @@ export function UsersDataTable() {
       ),
       cell: ({ row }) => (
         <div className="text-center">
-          {`${row.original.lastName} ${row.original.name}`} {/* Combina Apellido y Nombre */}
+          {`${row.original.lastName} ${row.original.name}`}
         </div>
       ),
     },
@@ -275,46 +259,46 @@ export function UsersDataTable() {
         )}
 
         <div className="rounded-md border">
-          <Table>
+            <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="px-6">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                <TableHead key={header.id} className="pl-5"> {/* Added className="pl-4" */}
+                  {header.isPlaceholder
+                  ? null
+                  : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+                ))}
+              </TableRow>
               ))}
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Cargando...
-                  </TableCell>
-                </TableRow>
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                Cargando...
+                </TableCell>
+              </TableRow>
               ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No existen resultados.
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="pl-5"> {/* Added className="pl-4" */}
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
+                ))}
                 </TableRow>
+              ))
+              ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                No existen resultados.
+                </TableCell>
+              </TableRow>
               )}
             </TableBody>
-          </Table>
+            </Table>
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="space-x-2">
