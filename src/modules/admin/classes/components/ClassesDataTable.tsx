@@ -35,9 +35,8 @@ import Class from "@/modules/core/models/class"
 import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
-import { getClass, getClasses } from "../services/classService"
+import { getClasses } from "../services/classService"
 import CreateClassDialog from "./CreateClassDialog"
-import { StudentsClassDataTable } from "./StudentsClassDataTable"
 
 export function ClassesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
