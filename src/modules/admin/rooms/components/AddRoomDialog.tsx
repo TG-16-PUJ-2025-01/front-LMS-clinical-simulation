@@ -32,20 +32,18 @@ interface Props {
 }
 
 const formSchema = z.object({
-    name: z.string().nonempty({ 
-        message: "El nombre no puede estar vacío",
-    }),
-    type: z.object({
-            id: z.number().optional(),
-            name: z.string().nonempty({
-                message: "El tipo de la sala no puede estar vacío",
-            }),
-        })
+	name: z.string().nonempty({
+		message: "El nombre no puede estar vacío",
+	}),
+	type: z.object({
+		id: z.number().optional(),
+		name: z.string().nonempty({
+			message: "El tipo de la sala no puede estar vacío",
+		}),
+	}),
 })
 
-
 export default function AddRoomDialog({ open, onClose }: Props) {
-
 	const [roomTypes, setRoomTypes] = useState<RoomType[]>([])
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -70,12 +68,13 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 	}
 
 	useEffect(() => {
-		fetchRoomTypes()
-		form.reset()
-	}, [form])
+		if (open) {
+			fetchRoomTypes()
+			form.reset()
+		}
+	}, [open])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-
 		try {
 			const newRoom: Room = {
 				id: undefined,
@@ -83,20 +82,22 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 				type: {
 					id: values.type.id!,
 					name: values.type.name,
-				}
+				},
 			}
 
 			await createRoom(newRoom)
 
-            toast.success("Sala creada exitosamente")
+			toast.success("Sala creada exitosamente")
 
 			onClose(false)
 
 			form.reset()
-		} catch (error) {
-			toast.error("Error al crear la sala")
-			toast.error("Error al crear la sala")
-			console.error("Error al crear la sala:", error)
+		} catch (error: any) {
+			if (error.response && error.response.data && error.response.data.message) {
+				toast.error(error.response.data.message)
+			} else {
+				toast.error("Error al crear la sala")
+			}
 		}
 	}
 
@@ -105,7 +106,9 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Agregar Sala</DialogTitle>
-					<DialogDescription>Puedes agregar una nueva sala con los siguientes atributos</DialogDescription>
+					<DialogDescription>
+						Puedes agregar una nueva sala con los siguientes atributos
+					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
@@ -131,7 +134,10 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 										<FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
 										<FormControl>
 											<ComboboxCreate
-												options={roomTypes.map(roomType => ({ key: roomType.id, value: roomType.name }))}
+												options={roomTypes.map((roomType) => ({
+													key: roomType.id,
+													value: roomType.name,
+												}))}
 												onCreateOption={handleOnCreateOption}
 												placeholderText="Seleccionar..."
 												itemName="tipo de sala"
@@ -140,7 +146,8 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 														field.onChange(selected.value)
 														form.setValue("type.id", selected.key)
 													}
-												}}																							
+												}}
+												selectedValue={field.value}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

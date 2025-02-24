@@ -99,9 +99,9 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 		} catch (error: any) {
 			if (error.response && error.response.data && error.response.data.message) {
 				toast.error(error.response.data.message)
-			} else{
+			} else {
 				toast.error("Error al actualizar la sala")
-			}			
+			}
 		}
 	}
 
@@ -149,6 +149,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 														form.setValue("type.id", selected.key)
 													}
 												}}
+												selectedValue={field.value}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
