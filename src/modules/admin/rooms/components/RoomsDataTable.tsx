@@ -95,24 +95,6 @@ export function RoomsDataTable() {
 
 	const columns: ColumnDef<Room>[] = [
 		{
-			accessorKey: "id",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						ID
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("id")}</div>
-			},
-		},
-		{
 			accessorKey: "name",
 			header: ({ column }) => (
 				<div className="relative w-full">
