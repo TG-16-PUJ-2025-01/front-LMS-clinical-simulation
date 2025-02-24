@@ -8,34 +8,37 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/modules/core/components/ui/alert-dialog"
-import Course from "@/modules/core/models/course"
-import { deleteCourse } from "../services/courseService"
+import { deleteClass } from "../services/classService"
 import { toast } from "sonner"
+import User from "@/modules/core/models/user"
+
 
 interface Props {
-	open: boolean
-	onClose: (open: boolean) => void
-	course?: Course
+  open: boolean
+  onClose: (open: boolean) => void
+  studentToDelete?: User
 }
 
-export default function DeleteCourseDialog({ open, onClose, course }: Props) {
+export default function DeleteStudentClassDialog({ open, onClose, studentToDelete }: Props) {
+	
 	const handleConfirm = async () => {
-		try {
-			await deleteCourse(course!.courseId as number)
-			onClose(false)
-			toast.success("Asignatura eliminada correctamente")
-		} catch (error) {
-			toast.error("Error al eliminar la asignatura")
-		}
+			try {
+				await deleteClass(studentToDelete!.id as number)
+				onClose(false)
+				toast.success("Asignatura eliminada correctamente")
+			} catch (error) {
+				toast.error("Error al eliminar la asignatura")
+			}
 	}
-
+	
+	
 	return (
 		<AlertDialog open={open}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>¿Seguro que desea eliminar la asignatura?</AlertDialogTitle>
+					<AlertDialogTitle>¿Seguro que desea eliminar el estudiante de la clase?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y se eliminarán todas las clases vinculadas a esta asignatura.
+						Con esta acción se desvinculará al estudiante de la clase.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
@@ -45,4 +48,4 @@ export default function DeleteCourseDialog({ open, onClose, course }: Props) {
 			</AlertDialogContent>
 		</AlertDialog>
 	)
-};
+}

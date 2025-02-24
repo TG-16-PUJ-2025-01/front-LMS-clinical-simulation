@@ -8,7 +8,6 @@ import {
 	DialogTitle,
 } from "@/modules/core/components/ui/dialog"
 import { Input } from "@/modules/core/components/ui/input"
-import Course from "@/modules/core/models/course"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,12 +19,15 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/modules/core/components/ui/form"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { createCourse, getAllCoordinators } from "../services/courseService"
+import { Combobox } from "@/modules/core/components/Combobox/Combobox"
+import User from "@/modules/core/models/user"
+import { toast } from "sonner"
 
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
-	course?: Course
 }
 
 const formSchema = z.object({
@@ -35,34 +37,58 @@ const formSchema = z.object({
 	name: z.string().min(2, {
 		message: "El nombre debe tener al menos 2 caracteres",
 	}),
+	coordinator: z.object({
+		id: z.number().optional(),
+		name: z.string().nonempty({
+			message: "Debe seleccionar un coordinador",
+		}),
+	})
 })
 
-export default function CreateCourseDialog({ open, onClose, course }: Props) {
+export default function CreateCourseDialog({ open, onClose }: Props) {
+	const [coordinators, setCoordinators] = useState<User[]>([])
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			name: undefined,
-			id: undefined,
+			name: "",
+			id: 0,
+			coordinator: {
+				id: 0,
+				name: "",
+			}
 		},
 	})
 
 	useEffect(() => {
-		form.reset({
-			name: course?.name,
-			id: course?.id,
-		})
-	}, [form, course])
+		const fetchCoordinators = async () => {
+			const res = await getAllCoordinators()
+			setCoordinators(res.data)
+		}
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values)
-		onClose(false)
+		fetchCoordinators()
+
+		form.reset()
+	}, [form, open])
+
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+			await createCourse({
+				javerianaId: values.id,
+				name: values.name,
+				coordinatorId: values.coordinator.id!,
+			})
+	
+			onClose(false)
+			toast.success("Asignatura creada exitosamente")
+		} catch (error) {
+			toast.error("Error al crear la asignatura")
+		}
 	}
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
+			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
 					<DialogTitle>Crear Asignatura</DialogTitle>
 					<DialogDescription>Para crear una asignatura llena los siguientes campos</DialogDescription>
@@ -75,7 +101,7 @@ export default function CreateCourseDialog({ open, onClose, course }: Props) {
 								name="id"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Nombre</FormLabel>
+										<FormLabel className="m-0 text-right">ID</FormLabel>
 										<FormControl>
 											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
 										</FormControl>
@@ -88,9 +114,30 @@ export default function CreateCourseDialog({ open, onClose, course }: Props) {
 								name="name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Fecha de expiración</FormLabel>
+										<FormLabel className="m-0 text-right">Nombre</FormLabel>
 										<FormControl>
 											<Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="coordinator.name"
+								render={({field}) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Coordinador</FormLabel>
+										<FormControl>
+											<Combobox
+												placeholderText="Selecciona un coordinador"
+												options={coordinators.map((val) => ({ key: val.id, value: `${val.name} ${val.lastName}` }))}
+												itemName="coordinador"
+												onChange={(selected) => {
+													field.onChange(selected.value)
+													form.setValue("coordinator.id", selected.key)
+												}}
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>

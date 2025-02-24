@@ -31,24 +31,21 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import Class from "@/modules/core/models/class"
-import EditClassDialog from "./EditClassDialog"
-import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
-import { getClasses } from "../services/classService"
-import CreateClassDialog from "./CreateClassDialog"
-
-export function ClassesDataTable() {
+import { getClass, getClasses } from "../services/classService"
+import DeleteStudentClassDialog from "./DeleteStudentClassDialogue"
+import UserModel from "@/modules/core/models/user"
+export function StudentsClassDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "student"  | null>(null)
-	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
+	const [openDialog, setEditDialog] = useState<"delete" | null>(null)
+	const [selectedStudent, setSelectedStudent] = useState<UserModel | null>(null)
 
-	const [data, setData] = useState<Class[]>([])
+	const [data, setData] = useState<UserModel[]>([])
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
@@ -63,7 +60,7 @@ export function ClassesDataTable() {
 	useEffect(() => {
 		if (openDialog) return
 		
-		const fetchClasses = async () => {
+		const fetchStudents = async () => {
 			const res = await getClasses(
 				pagination.pageIndex,
 				pagination.pageSize,
@@ -72,27 +69,27 @@ export function ClassesDataTable() {
 				!(sorting[0]?.desc ?? false)
 			)
 			console.log("Classes", res)
-			setData(res.data)
+		    //setData(res.data)
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
 			})
 		}
 
-		fetchClasses()
+		fetchStudents()
 	}, [pagination, filter, sorting, openDialog])
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete" | "student", Class?: Class) => {
+	const handleOpenDialog = (type: "delete", Usermodel?: UserModel) => {
 		setEditDialog(type)
-		setSelectedClass(Class ?? null)
+		setSelectedStudent(Usermodel ?? null)
 	}
 
 	const handleCloseDialog = () => {
 		setEditDialog(null)
-		setSelectedClass(null)
+		setSelectedStudent(null)
 	}
 
-	const columns: ColumnDef<Class>[] = [
+	const columns: ColumnDef<UserModel>[] = [
 		{
 			accessorKey: "javerianaId",
 			header: ({ column }) => (
@@ -121,7 +118,7 @@ export function ClassesDataTable() {
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						>
-							Nombre
+							Nombres
 							{column.getIsSorted() && <ArrowUpDown />}
 						</Button>
 					</div>
@@ -130,8 +127,8 @@ export function ClassesDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
-			id: "course",
-			accessorFn: ({ course }) => `${course.name}`,
+			id: "lastName",
+			accessorFn: ({ lastName }) => lastName,
 			header: ({ column }) => {
 				return (
 					<div className="relative w-full">
@@ -140,55 +137,13 @@ export function ClassesDataTable() {
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						>
-							Asignatura
+							Apellidos
 							{column.getIsSorted() && <ArrowUpDown />}
 						</Button>
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
-		},
-		{			
-			id: "professor",
-			accessorFn: ({ professor }) => `${professor.name} ${professor.lastName}`,
-
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						>
-							Profesor
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("professor")}</div>,
-		},
-		{
-			accessorKey: "period",
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						>
-							Periodo
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{row.getValue("period")}
-				</div>
-			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
 		},
 		{
 			id: "actions",
@@ -206,12 +161,6 @@ export function ClassesDataTable() {
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => handleOpenDialog("student", Class)}>
-								<User /> Lista de estudiantes
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => handleOpenDialog("edit", Class)}>
-								<Pencil /> Editar
-							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("delete", Class)}>
 								<Trash2 /> Borrar
 							</DropdownMenuItem>
@@ -257,12 +206,11 @@ export function ClassesDataTable() {
 							value={filter}
 							onChange={(event) => {
 								setFilter(event.target.value)
-								setPagination({ ...pagination, pageIndex: 0 })
+								setPagination({ ...pagination, pageIndex: 0})
 							}}							
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => handleOpenDialog("create")}>Nueva clase</Button>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -323,22 +271,16 @@ export function ClassesDataTable() {
 					</div>
 				</div>
 			</div>
-			<EditClassDialog
-				open={openDialog === "edit"}
-				onClose={handleCloseDialog}
-				classData={selectedClass ?? undefined}
-			/>
-			<DeleteClassDialog 
+			<DeleteStudentClassDialog 
 				open={openDialog === "delete"} 
 				onClose={handleCloseDialog} 
-				classToDelete={selectedClass ?? undefined}
+				studentToDelete={selectedStudent ?? undefined}
 			/>
-			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>
 	)
 }
 
-export const columns: ColumnDef<Class>[] = [
+export const columns: ColumnDef<UserModel>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
