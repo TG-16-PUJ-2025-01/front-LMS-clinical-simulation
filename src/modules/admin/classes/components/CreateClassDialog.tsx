@@ -1,3 +1,4 @@
+import DatePicker from "@/modules/core/components/DatePicker"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	Dialog,
@@ -25,10 +26,9 @@ import Class from "@/modules/core/models/class"
 import { toast } from "sonner"
 import User from "@/modules/core/models/user"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
-import { getAllProfessors, updateClass } from "../services/classService"
+import { createClass, getAllProfessors, updateClass } from "../services/classService"
 import Course from "@/modules/core/models/course"
 import { getCourses } from "../../courses/services/courseService"
-import DatePicker from "@/modules/core/components/DatePicker"
 
 interface Props {
 	open: boolean
@@ -60,7 +60,7 @@ const formSchema = z.object({
 	}),
 })
 
-export default function EditClassDialog({ open, onClose, classData }: Props) {
+export default function CreateClassDialog({ open, onClose}: Props) {
 	
 	const [courses, setCourses] = useState<Course[]>([])
 	const [professors, setProfessors] = useState<User[]>([])
@@ -68,7 +68,6 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			...classData,
 			name: undefined,
 			javerianaId: undefined,
 			professor: {
@@ -98,19 +97,16 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 		
 		fetchCourses()
 
-		form.reset({
-			...classData,
-			name: classData?.name,
-			javerianaId: classData?.javerianaId,
-		})
+		form.reset()
 
 
-	}, [form, classData])
+	}, [form, open])
 
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			await updateClass(classData!.id as number, {
+			console.log(values)
+			await createClass({
 				javerianaId: values.javerianaId,
 				name: values.name,
 				professorId: values.professor.id!,
@@ -120,9 +116,9 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 	
 			onClose(false)
 	
-			toast.success("Clase actualizada correctamente")
+			toast.success("Clase creada correctamente")
 		} catch (error) {
-			toast.error("Error al actualizar la clase")
+			toast.error("Error al crear la clase")
 		}
 	}
 
@@ -130,8 +126,8 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
-					<DialogTitle>Editar Clase</DialogTitle>
-					<DialogDescription>Puedes editar los siguientes atributos de la clase</DialogDescription>
+					<DialogTitle>Crear Clase</DialogTitle>
+					<DialogDescription>Ingreasa los siguientes atributos de la nueva clase</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
@@ -170,9 +166,9 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 										<FormLabel className="m-0 text-right">Profesor</FormLabel>
 										<FormControl>
 											<Combobox
-												placeholderText={field.value}
+												placeholderText="Selecciona un profesor"
 												options={professors.map((val) => ({ key: val.id, value: `${val.name} ${val.lastName}` }))}
-												itemName="coordinador"
+												itemName="profesor"
 												onChange={(selected) => {
 													field.onChange(selected.value)
 													form.setValue("professor.id", selected.key)
@@ -188,12 +184,12 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 								name="course.name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-									<FormLabel className="m-0 text-right">Coordinador</FormLabel>
+									<FormLabel className="m-0 text-right">Curso</FormLabel>
 									<FormControl>
 										<Combobox
-											placeholderText={field.value}
+											placeholderText="Selecciona un curso"
 											options={courses.map((val) => ({ key: val.courseId, value: `${val.name}` }))}
-											itemName="coordinador"
+											itemName="curso"
 											onChange={(selected) => {
 												field.onChange(selected.value)
 												form.setValue("course.id", selected.key)
@@ -224,7 +220,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 							/>
 						</div>
 						<DialogFooter>
-							<Button type="submit">Guardar</Button>
+							<Button type="submit">Crear</Button>
 						</DialogFooter>
 					</Form>
 				</form>

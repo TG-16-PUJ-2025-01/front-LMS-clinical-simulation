@@ -18,19 +18,21 @@ import {
   PopoverTrigger,
 } from "@/modules/core/components/ui/popover"
 
-interface ComboboxSelectProps {
+interface ComboboxCreateProps {
   options: { key?: number; value: string }[]
   onCreateOption: (option: { key: number; value: string }) => void
   placeholderText?: string
   itemName?: string
+  onChange?: (selected: { key?: number; value: string }) => void;
 }
 
-export function ComboboxSelect({
+export function ComboboxCreate({
   options,
   onCreateOption,
   placeholderText = "Seleccionar...",
-  itemName = "Tipo"
-}: ComboboxSelectProps) {
+  itemName = "Tipo",
+  onChange,
+}: ComboboxCreateProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
   const [inputValue, setInputValue] = React.useState("")
@@ -39,18 +41,24 @@ export function ComboboxSelect({
   const handleSelect = (currentValue: string) => {
     setValue(currentValue === value ? "" : currentValue)
     setOpen(false)
+    onChange && onChange({ value: currentValue })
+    
   }
 
   const handleCreateOption = () => {
-    const newOption = { key: 0, value: inputValue }
+    const newOption = { key: Date.now(), value: inputValue }
     onCreateOption(newOption)
-    setValue(inputValue)
-    setFilteredOptions([...filteredOptions, newOption])
+    setValue(newOption.value === value ? "" : newOption.value)
+    onChange && onChange({ value: newOption.value })
     setOpen(false)
   }
 
   React.useEffect(() => {
-    setFilteredOptions(options.filter(option => option.value.toLowerCase().includes(inputValue.toLowerCase())))
+    setFilteredOptions(
+      options.filter(option =>
+        option.value.toLowerCase().includes(inputValue.toLowerCase())
+      )
+    )
   }, [inputValue, options])
 
   const popoverWidth = filteredOptions.length === 0 ? Math.max(300, (inputValue.length + itemName.length + 30) * 10) : 300
@@ -65,7 +73,7 @@ export function ComboboxSelect({
           className="col-span-3 justify-between"
         >
           {value
-            ? options.find((option) => option.value === value)?.value
+            ? options.find((option) => option.value === value)?.value || value
             : placeholderText}
           <ChevronsUpDown className="opacity-50" />
         </Button>
@@ -91,7 +99,7 @@ export function ComboboxSelect({
                 <CommandItem
                   key={option.key}
                   value={option.value}
-                  onSelect={handleSelect}
+                  onSelect={() => handleSelect(option.value)}
                 >
                   {option.value}
                   <Check

@@ -1,0 +1,100 @@
+import * as React from "react"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { cn } from "@/modules/core/lib/utils"
+import { Button } from "@/modules/core/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/modules/core/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/modules/core/components/ui/popover"
+
+interface ComboboxSelectProps {
+  options: { key?: number; value: string }[]
+  placeholderText?: string
+  itemName?: string
+  onChange?: (selected: { key?: number; value: string }) => void;
+}
+
+export function Combobox({
+  options,
+  placeholderText = "Seleccionar...",
+  itemName = "Tipo",
+  onChange,
+}: ComboboxSelectProps) {
+  const [open, setOpen] = React.useState(false)
+  const [value, setValue] = React.useState("")
+  const [inputValue, setInputValue] = React.useState("")
+  const [filteredOptions, setFilteredOptions] = React.useState(options)
+
+  const handleSelect = (current: { key?: number; value: string }) => {
+    setValue(current.value === value ? "" : current.value)
+    setOpen(false)
+    onChange && onChange({ key: current.key, value: current.value })
+  }
+
+  React.useEffect(() => {
+    setFilteredOptions(
+      options.filter(option =>
+        option.value.toLowerCase().includes(inputValue.toLowerCase())
+      )
+    )
+  }, [inputValue, options])
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="col-span-3 justify-between"
+        >
+          {value
+            ? options.find((option) => option.value === value)?.value || value
+            : placeholderText}
+          <ChevronsUpDown className="opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0 w-72">
+        <Command>
+          <CommandInput
+            placeholder={`Buscar ${itemName}...`}
+            className="h-9"
+            value={inputValue}
+            onValueChange={(val) => setInputValue(val)}
+          />
+          <CommandList>
+            {filteredOptions.length === 0 && (
+              <CommandEmpty>No se encontraron resultados</CommandEmpty>
+            )}
+            <CommandGroup>
+              {filteredOptions.map((option) => (
+                <CommandItem
+                  key={option.key}
+                  value={option.value}
+                  onSelect={() => handleSelect(option)}
+                >
+                  {option.value}
+                  <Check
+                    className={cn(
+                      "ml-auto",
+                      value === option.value ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}
