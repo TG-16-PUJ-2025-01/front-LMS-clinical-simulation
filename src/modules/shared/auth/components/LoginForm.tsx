@@ -6,6 +6,7 @@ import { Input } from "@/modules/core/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
 import { login } from "../services/authService"; // Importa el servicio de autenticación
 
+
 interface LoginFormProps {
     onForgotPassword: () => void;
 }
@@ -17,11 +18,8 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
     const handleLogin = async (email: string, password: string) => {
         try {
             email = email + "@javeriana.edu.co";
-            const { token } = await login(email, password); 
-            console.log("Token recibido:", token);
+            await login(email, password); 
             setError(null); 
-
-            localStorage.setItem("token", token);
             window.location.href = "/admin/asignaturas"; 
         } catch (error) {
             setError( "Credenciales incorrectas. Por favor, inténtalo de nuevo.");

@@ -1,0 +1,43 @@
+import axios from 'axios';
+
+export const setToken = (newToken: string): void => {
+  localStorage.setItem('token', newToken);
+  axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+  console.log("Token set:", newToken);
+};
+
+export const clearToken = (): void => {
+  localStorage.removeItem('token');
+  delete axios.defaults.headers.common['Authorization'];
+};
+
+export const getToken = (): string | null => {
+  return localStorage.getItem('token');
+};
+
+// Interceptor para agregar el token en cada solicitud
+axios.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      console.log("Enviando solicitud con token:", config);
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor para manejar errores 401
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      clearToken();
+      console.error("Token inválido o expirado. Por favor, inicia sesión nuevamente.");
+    }
+    return Promise.reject(error);
+  }
+);

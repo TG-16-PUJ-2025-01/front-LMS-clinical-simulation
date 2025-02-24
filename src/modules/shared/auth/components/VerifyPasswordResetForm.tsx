@@ -1,3 +1,4 @@
+// components/VerifyPasswordResetForm.tsx
 import { useState } from "react";
 import { Button } from "@/modules/core/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/modules/core/components/ui/input-otp";
@@ -6,9 +7,10 @@ import { verifyPasswordReset } from "../services/resetPasswordService";
 interface VerifyPasswordResetFormProps {
     email: string;
     onSuccess: (token: string) => void;
+    onBack: () => void; // Nueva prop para manejar el retroceso
 }
 
-export default function VerifyPasswordResetForm({ email, onSuccess }: VerifyPasswordResetFormProps) {
+export default function VerifyPasswordResetForm({ email, onSuccess, onBack }: VerifyPasswordResetFormProps) {
     const [token, setToken] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
@@ -57,7 +59,12 @@ export default function VerifyPasswordResetForm({ email, onSuccess }: VerifyPass
                 </div>
                 {message && <p className="text-green-500 text-sm">{message}</p>}
                 {error && <p className="text-red-500 text-sm">{error}</p>}
-                <Button type="submit">Verificar el código</Button>
+                <div className="flex flex-col gap-2">
+                    <Button type="submit">Verificar el código</Button>
+                    <Button type="button" variant="outline" onClick={onBack}>
+                        Volver
+                    </Button>
+                </div>
             </div>
         </form>
     );

@@ -1,28 +1,28 @@
+// components/ResetPasswordForm.tsx
 import { useState } from "react";
 import { Button } from "@/modules/core/components/ui/button";
 import { Input } from "@/modules/core/components/ui/input";
 import { resetPassword } from "../services/resetPasswordService";
+import { validatePassword } from "@/modules/core/lib/utils";
 
 interface ResetPasswordFormProps {
-    email: string; // El correo electrónico del usuario
-    token: string; // El token de restablecimiento
-    onSuccess: () => void; // Función para manejar el éxito
+    email: string;
+    token: string;
+    onSuccess: () => void;
+    onBack: () => void; // Nueva prop para manejar el retroceso
 }
 
-export default function ResetPasswordForm({ email, token, onSuccess }: ResetPasswordFormProps) {
+export default function ResetPasswordForm({ email, token, onSuccess, onBack }: ResetPasswordFormProps) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
-    // Expresión regular para validar una contraseña segura
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!passwordRegex.test(password)) {
+        if (!validatePassword(password)) {
             setError("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un carácter especial.");
             setMessage("");
             return;
@@ -71,7 +71,12 @@ export default function ResetPasswordForm({ email, token, onSuccess }: ResetPass
                 {message && <p className="text-green-500 text-sm">{message}</p>}
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 
-                <Button type="submit">Restablecer contraseña</Button>
+                <div className="flex flex-col gap-2">
+                    <Button type="submit">Restablecer contraseña</Button>
+                    <Button type="button" variant="outline" onClick={onBack}>
+                        Volver
+                    </Button>
+                </div>
             </div>
         </form>
     );

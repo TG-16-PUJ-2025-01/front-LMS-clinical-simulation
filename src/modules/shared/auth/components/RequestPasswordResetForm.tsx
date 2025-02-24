@@ -5,10 +5,11 @@ import { Input } from "@/modules/core/components/ui/input";
 import { requestPasswordReset } from "../services/resetPasswordService";
 
 interface RequestPasswordResetFormProps {
-    onSuccess: (email : string) => void; 
+    onSuccess: (email: string) => void;
+    onBack: () => void; // Nueva prop para manejar el retroceso
 }
 
-export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordResetFormProps) {
+export default function RequestPasswordResetForm({ onSuccess, onBack }: RequestPasswordResetFormProps) {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
@@ -21,7 +22,7 @@ export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordR
             setMessage("Se ha enviado un correo con las instrucciones para restablecer tu contraseña.");
             setError("");
             if (response === 200) {
-                onSuccess(email + "@javeriana.edu.co"); // Llama a la función onSuccess para avanzar al siguiente paso
+                onSuccess(email + "@javeriana.edu.co");
             }
         } catch {
             setError("Error al solicitar el restablecimiento de contraseña.");
@@ -42,7 +43,12 @@ export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordR
                 />
                 {message && <p className="text-green-500 text-sm">{message}</p>}
                 {error && <p className="text-red-500 text-sm">{error}</p>}
-                <Button type="submit">Solicitar restablecimiento</Button>
+                <div className="flex flex-col gap-2">
+                    <Button type="submit">Solicitar restablecimiento</Button>
+                    <Button type="button" variant="outline" onClick={onBack}>
+                        Volver
+                    </Button>
+                </div>
             </div>
         </form>
     );

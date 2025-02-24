@@ -36,6 +36,16 @@ export default function AuthFlow() {
         }
     };
 
+    const handleBack = () => {
+        if (authStep === "requestEmail") {
+            setAuthStep("login");
+        } else if (authStep === "verifyCode") {
+            setAuthStep("requestEmail");
+        } else if (authStep === "newPassword") {
+            setAuthStep("verifyCode");
+        }
+    };
+
     return (
         <div className="flex-1 flex flex-col justify-center items-center p-6 bg-gray-50">
             <div className="flex flex-col items-center gap-2 mb-8">
@@ -53,12 +63,14 @@ export default function AuthFlow() {
                 {authStep === "requestEmail" && (
                     <RequestEmailForm
                         onSuccess={handleRequestEmail}
+                        onBack={handleBack}
                     />
                 )}
                 {authStep === "verifyCode" && (
                     <VerifyCodeForm
                         email={email}
                         onSuccess={handleVerifyCode}
+                        onBack={handleBack}
                     />
                 )}
                 {authStep === "newPassword" && (
@@ -66,6 +78,7 @@ export default function AuthFlow() {
                         email={email}
                         token={token}
                         onSuccess={handleNewPassword}
+                        onBack={handleBack}
                     />
                 )}
             </div>

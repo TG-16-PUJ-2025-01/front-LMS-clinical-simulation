@@ -83,7 +83,7 @@ export function UsersDataTable() {
             totalPages: res.metadata.totalPages,
           });
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error fetching users:", error);
         setError(error.response?.data?.message || "Error al cargar los usuarios");
         setData([]);

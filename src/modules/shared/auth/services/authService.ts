@@ -1,40 +1,37 @@
-// services/authService.ts
-import axios from 'axios';
 import { API_URL } from "@/modules/core/config/env";
+import { setToken } from "@/modules/core/lib/tokenHandler";
+import axios from "axios";
 
-const axiosInstance = axios.create({
-    baseURL: API_URL,
-});
+
 
 interface LoginData {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
-interface AuthResponse {
-    token: string;
+interface ChangePasswordData {
+  password: string;
+  newPassword: string;
 }
 
-export const login = async (email: string, password: string): Promise<AuthResponse> => {
-    try {
-        const loginData: LoginData = { email, password };
-        const response = await axiosInstance.post<AuthResponse>('/auth/login', loginData);
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                console.error("Error response:", error.response.data);
-                throw new Error(error.response.data.message || "Error during login");
-            } else if (error.request) {
-                console.error("No response received:", error.request);
-                throw new Error("No response received from the server");
-            } else {
-                console.error("Error setting up the request:", error.message);
-                throw new Error("Error setting up the request");
-            }
-        } else {
-            console.error("Unexpected error:", error);
-            throw new Error("An unexpected error occurred");
-        }
-    }
+export const login = async (email: string, password: string) => {
+  try {
+    const loginData: LoginData = { email, password };
+    const response = await axios.post<string>(`${API_URL}/auth/login`, loginData);
+    setToken(response.data); 
+  } catch (error) {
+    console.error("Error durante el login:", error);
+    throw new Error("Error durante el login");
+  }
+};
+
+export const changePassword = async (password: string, newPassword: string) => {
+  try {
+    const changePasswordData: ChangePasswordData = { password, newPassword };
+    const response = await axios.post<string>(`${API_URL}/auth/change-password`, changePasswordData);
+    setToken(response.data.toString()); 
+  } catch (error) {
+    console.error("Error al cambiar la contraseña:", error);
+    throw new Error("Error al cambiar la contraseña");
+  }
 };
