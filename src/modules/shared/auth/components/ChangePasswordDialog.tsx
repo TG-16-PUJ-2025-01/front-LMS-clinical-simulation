@@ -12,7 +12,7 @@ import { changePassword } from "../services/authService";
 
 import { toast } from "sonner";
 import { validatePassword } from "@/modules/core/lib/utils";
-import { setToken } from "@/modules/core/lib/tokenHandler";
+
 
 
 
@@ -21,7 +21,7 @@ interface ChangePasswordDialogProps {
   onOpenChange: (isOpen: boolean) => void;
 }
 
-export function ChangePasswordDialog({ isOpen, onOpenChange, email }: ChangePasswordDialogProps) {
+export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDialogProps) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");

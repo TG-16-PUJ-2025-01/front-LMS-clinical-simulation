@@ -18,7 +18,7 @@ interface PasswordResetData {
 
 export const requestPasswordReset = async (email: string): Promise<number> => {
     try {
-        const response = await axiosInstance.post('/reset-password/request', { email });
+        const response = await axios.post(`${API_URL}/reset-password/request`, { email });
         return response.status;
     } catch (error) {
         console.error("Error requesting password reset:", error);
@@ -31,7 +31,7 @@ export const verifyPasswordReset = async (email: string, token: string): Promise
         const password = null;
         const passwordResetData : PasswordResetData = { email, password, token };
         console.log("passwordResetData", passwordResetData);
-        const response = await axiosInstance.post('/reset-password/verify', passwordResetData);
+        const response = await axios.post(`${API_URL}/reset-password/verify`, passwordResetData);
         return response.status;
     } catch (error) {
         console.error("Error verifying password reset token:", error);
@@ -42,7 +42,7 @@ export const verifyPasswordReset = async (email: string, token: string): Promise
 export const resetPassword = async (email: string, password: string, token: string): Promise<ResetPasswordResponse> => {
     try {
         const passwordResetData : PasswordResetData = { email, password, token };
-        const response = await axiosInstance.post<ResetPasswordResponse>('/reset-password/reset', passwordResetData);
+        const response = await axios.post<ResetPasswordResponse>(`${API_URL}/reset-password/reset`, passwordResetData);
         return response.data;
     } catch (error) {
         console.error("Error resetting password:", error);

@@ -3,7 +3,6 @@ import { setToken } from "@/modules/core/lib/tokenHandler";
 import axios from "axios";
 
 
-
 interface LoginData {
   email: string;
   password: string;
