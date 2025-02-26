@@ -2,10 +2,6 @@
 import axios from 'axios';
 import { API_URL } from "@/modules/core/config/env";
 
-const axiosInstance = axios.create({
-    baseURL: API_URL,
-});
-
 interface ResetPasswordResponse {
     message: string;
 }

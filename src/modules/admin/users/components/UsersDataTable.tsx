@@ -31,9 +31,10 @@ import { useEffect, useState } from "react";
 
 import DeleteUserDialog from "./DeleteUserDialog";
 import CreateUserDialog from "./CreateUserDialog";
-import { User } from "@/modules/core/models/user";
+
 import { getUsers } from "../services/userService";
 import EditUserDialog from "./EditUserDialog";
+import User from "@/modules/core/models/user";
 
 export function UsersDataTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
