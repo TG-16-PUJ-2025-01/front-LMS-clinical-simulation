@@ -9,7 +9,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Plus, Search, Trash2 } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -33,12 +33,6 @@ import EditRoomDialog from "./EditRoomDialog"
 import DeleteRoomDialog from "./DeleteRoomDialog"
 import { useEffect, useState } from "react"
 import { getAllRooms } from "../services/roomService"
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/modules/core/components/ui/tooltip"
 import AddRoomDialog from "./AddRoomDialog"
 
 export function RoomsDataTable() {
@@ -82,7 +76,7 @@ export function RoomsDataTable() {
 		fetchRooms()
 	}, [pagination, filter, sorting, openDialog])
 
-	const handleOpenDialog = (type: "edit" | "delete" | "add", room?: Room | null) => {
+	const handleOpenDialog = (type: "edit" | "delete" | "add", room?: Room) => {
 		setEditDialog(type)
 		setSelectedRoom(room ?? null)
 	}
@@ -183,7 +177,7 @@ export function RoomsDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center py-4">
+				<div className="flex items-center justify-between py-4">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -196,24 +190,7 @@ export function RoomsDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
-					<div className="ml-auto flex space-x-2">
-						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<Button
-										variant="outline"
-										size="icon"
-										onClick={() => handleOpenDialog("add", null)}
-									>
-										<Plus className="h-5 w-5" />
-									</Button>
-								</TooltipTrigger>
-								<TooltipContent>
-									<span>Agregar nueva sala</span>
-								</TooltipContent>
-							</Tooltip>
-						</TooltipProvider>
-					</div>
+					<Button onClick={() => handleOpenDialog("add")}>Nueva Sala</Button>
 				</div>
 				<div className="rounded-md border">
 					<Table>
