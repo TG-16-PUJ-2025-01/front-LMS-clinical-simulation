@@ -3,7 +3,6 @@ import { setToken } from "@/modules/core/lib/tokenHandler";
 import axios from "axios";
 
 
-
 interface LoginData {
   email: string;
   password: string;
@@ -33,5 +32,15 @@ export const changePassword = async (password: string, newPassword: string) => {
   } catch (error) {
     console.error("Error al cambiar la contraseña:", error);
     throw new Error("Error al cambiar la contraseña");
+  }
+};
+
+export const getRolesByToken = async (): Promise<string[]> => {
+  try {
+    const response = await axios.get<{ data: string[] }>(`${API_URL}/auth/roles`);
+    return response.data.data; // Devuelve los roles
+  } catch (error) {
+    console.error("Error al obtener los roles:", error);
+    throw new Error("Error al obtener los roles");
   }
 };
