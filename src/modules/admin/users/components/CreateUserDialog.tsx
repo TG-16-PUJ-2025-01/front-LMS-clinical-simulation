@@ -52,8 +52,6 @@ const formSchema = z.object({
     }),
     email: z.string().email({
         message: "Debe ser un email válido",
-    }).refine((email) => email.endsWith("@javeriana.edu.co"), {
-        message: "El email debe ser de la Pontificia Universidad Javeriana",
     }),
     roles: z.array(z.string()).min(1, {
         message: "Debe seleccionar al menos un rol",
@@ -168,7 +166,7 @@ export default function CreateUserDialog({ open, onClose, onSuccess }: Props) {
                                     <FormItem className="grid grid-cols-4 items-center gap-4">
                                         <FormLabel className="m-0 text-right">Email</FormLabel>
                                         <FormControl>
-                                            <Input id="email" placeholder="Email" className="col-span-3 m-0" {...field} />
+                                            <Input id="email" placeholder="Email" type="email" className="col-span-3 m-0" {...field} />
                                         </FormControl>
                                         <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
                                     </FormItem>

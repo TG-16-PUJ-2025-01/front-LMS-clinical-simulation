@@ -17,7 +17,6 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
 
     const handleLogin = async (email: string, password: string) => {
         try {
-            email = email + "@javeriana.edu.co";
             await login(email, password); 
             setError(null); 
             window.location.href = "/admin/asignaturas"; 
@@ -47,7 +46,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
             <div className="flex flex-col gap-6">
                 <div className="grid gap-3">
                     <Label htmlFor="email" className="text-gray-700">Usuario</Label>
-                    <Input id="email" name="email" type="text" placeholder="Usuario sin @javeriana.edu.co" required />
+                    <Input id="email" name="email" type="email" placeholder="Correo registrado" required />
                 </div>
                 <div className="grid gap-3">
                     <Label htmlFor="password" className="text-gray-700">Contraseña</Label>

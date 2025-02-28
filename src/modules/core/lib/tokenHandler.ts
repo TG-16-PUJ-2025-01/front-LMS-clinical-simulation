@@ -20,7 +20,6 @@ axios.interceptors.request.use(
   (config) => {
     const token = getToken();
     if (token) {
-      console.log("Enviando solicitud con token:", config);
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;

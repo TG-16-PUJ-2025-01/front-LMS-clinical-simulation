@@ -18,11 +18,11 @@ export default function RequestPasswordResetForm({ onSuccess, onBack }: RequestP
         e.preventDefault();
 
         try {
-            const response = await requestPasswordReset(email + "@javeriana.edu.co");
+            const response = await requestPasswordReset(email);
             setMessage("Se ha enviado un correo con las instrucciones para restablecer tu contraseña.");
             setError("");
             if (response === 200) {
-                onSuccess(email + "@javeriana.edu.co");
+                onSuccess(email);
             }
         } catch {
             setError("Error al solicitar el restablecimiento de contraseña.");
@@ -35,10 +35,10 @@ export default function RequestPasswordResetForm({ onSuccess, onBack }: RequestP
             <div className="flex flex-col gap-4">
                 <p>Ingresa tu usuario para restablecer tu contraseña.</p>
                 <Input
-                    type="text"
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Usuario sin @javeriana.edu.co"
+                    placeholder="Correo registrado"
                     required
                 />
                 {message && <p className="text-green-500 text-sm">{message}</p>}
