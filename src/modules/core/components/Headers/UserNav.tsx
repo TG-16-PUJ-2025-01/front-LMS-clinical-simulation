@@ -1,10 +1,9 @@
 // components/UserNav.tsx
 import { LogOut, Key } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
-  AvatarFallback,
-  AvatarImage,
+  AvatarFallback
 } from "@/modules/core/components/ui/avatar";
 import { Button } from "@/modules/core/components/ui/button";
 import {
@@ -18,10 +17,14 @@ import {
 } from "@/modules/core/components/ui/dropdown-menu";
 import { ChangePasswordDialog } from "@/modules/shared/auth/components/ChangePasswordDialog";
 import { clearToken } from "../../lib/tokenHandler";
+import { getEmailByToken, getNameByToken } from "@/modules/shared/auth/services/authService";
 
 
 export function UserNav() {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Estado para controlar el Dialog
+  const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("");
 
   function handleLogout(event: Event): void {
     event.preventDefault();
@@ -29,23 +32,42 @@ export function UserNav() {
     window.location.href = "/login";
   }
 
+  function getInitials(name: string): string {
+    const [firstName, lastName] = name.split(" ");
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`
+  }
+
+  useEffect(() => {
+    const fetchEmailAndName = async () => {
+      try {
+        const email = await getEmailByToken();
+        setEmail(email);
+        const name = await getNameByToken();
+        setName(name);
+        setAvatar(getInitials(name));
+      } catch (error) {
+        console.error("Error al obtener el email:", error);
+      }
+    }
+    fetchEmailAndName();
+  }, []);
+
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>SC</AvatarFallback>
+              <AvatarFallback>{avatar}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">Nombre</p>
+              <p className="text-sm font-medium leading-none">{name}</p>
               <p className="text-xs leading-none text-muted-foreground">
-                correo@example.com
+                {email}
               </p>
             </div>
           </DropdownMenuLabel>
