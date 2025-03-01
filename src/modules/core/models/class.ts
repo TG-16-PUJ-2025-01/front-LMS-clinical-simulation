@@ -2,11 +2,11 @@ import Course from "./course";
 import User from "./user";
 
 export default interface Class {
-    id: number;
+    classId: number;
     javerianaId: number;
     name: string;
     course: Course;
-    professor: User;
+    professors: User[];
     beginningDate: Date;
     period: string;
   }

@@ -11,9 +11,8 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
-import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -32,18 +31,25 @@ import {
 	TableRow,
 } from "@/modules/core/components/ui/table"
 import { useEffect, useState } from "react"
-import { getClass, getClasses } from "../services/classService"
-import DeleteStudentClassDialog from "./DeleteStudentClassDialogue"
 import UserModel from "@/modules/core/models/user"
+import { getClassMembers } from "../services/membersService"
+import Role from "@/modules/core/models/role"
+import { useParams } from "react-router-dom"
+import AddMembersDialog from "./AddMembersDialog"
+import DeleteStudentClassDialog from "./deleteStudentDialog"
+
+
 export function StudentsClassDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
+	const { id } = useParams()
 
-	const [openDialog, setEditDialog] = useState<"delete" | null>(null)
-	const [selectedStudent, setSelectedStudent] = useState<UserModel | null>(null)
+	const [openDialog, setEditDialog] = useState<"delete"  | "students" | null>(null)
+	const [selectedStudent, setSelectedStudent] = useState<UserModel | undefined>(undefined)
+	const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
 
 	const [data, setData] = useState<UserModel[]>([])
 
@@ -59,39 +65,46 @@ export function StudentsClassDataTable() {
 
 	useEffect(() => {
 		if (openDialog) return
-		
-		const fetchStudents = async () => {
-			const res = await getClasses(
+
+		const fetchMembers = async () => {
+			const res = await getClassMembers(
 				pagination.pageIndex,
 				pagination.pageSize,
 				filter,
 				sorting[0]?.id,
-				!(sorting[0]?.desc ?? false)
+				!(sorting[0]?.desc ?? false),
+				Number(id) //obtener el id de la url navigate(`/admin/classes/${Class.id}/members`)}
 			)
-			console.log("Classes", res)
-		    //setData(res.data)
+			console.log("Respuesta completa de getClassMembers:", res);
+			console.log("Tipo de res.data:", typeof res.data);
+			console.log("Contenido de res.data:", res.data);
+			
+			
+			setData(res.data);
+			
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
 			})
 		}
 
-		fetchStudents()
+		fetchMembers()
 	}, [pagination, filter, sorting, openDialog])
 
-	const handleOpenDialog = (type: "delete", Usermodel?: UserModel) => {
+	const handleOpenDialog = (type: "delete" | "students", Usermodel?: UserModel) => {
 		setEditDialog(type)
-		setSelectedStudent(Usermodel ?? null)
+		setSelectedStudent(Usermodel ?? undefined)
+		setSelectedClassId(id ? Number(id) : null)
 	}
 
 	const handleCloseDialog = () => {
 		setEditDialog(null)
-		setSelectedStudent(null)
+		setSelectedStudent(undefined)
 	}
 
 	const columns: ColumnDef<UserModel>[] = [
 		{
-			accessorKey: "javerianaId",
+			accessorKey: "institutionalId",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -99,13 +112,13 @@ export function StudentsClassDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						ID 
+						ID
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("javerianaId")}</div>
+				return <div className="text-center">{row.getValue("institutionalId")}</div>
 			},
 		},
 		{
@@ -127,8 +140,39 @@ export function StudentsClassDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
-			id: "lastName",
-			accessorFn: ({ lastName }) => lastName,
+			accessorKey: "lastName",  // ✅ Cambiado de id a accessorKey
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Apellidos
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
+		},
+		{
+			accessorKey: "email",  // ✅ Cambiado de id a accessorKey
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Correo
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("email")}</div>,
+		},		
+		{
+			accessorKey: "roles",
 			header: ({ column }) => {
 				return (
 					<div className="relative w-full">
@@ -137,13 +181,16 @@ export function StudentsClassDataTable() {
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						>
-							Apellidos
+							Cargo
 							{column.getIsSorted() && <ArrowUpDown />}
 						</Button>
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
+			cell: ({ row }) => {
+				const roles = row.getValue("roles") as Role[]
+				return <div className="text-center">{roles[0]}</div>
+			},
 		},
 		{
 			id: "actions",
@@ -206,11 +253,12 @@ export function StudentsClassDataTable() {
 							value={filter}
 							onChange={(event) => {
 								setFilter(event.target.value)
-								setPagination({ ...pagination, pageIndex: 0})
-							}}							
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
+					<Button onClick={() => handleOpenDialog("students")}>Anadir miembros</Button>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -271,84 +319,17 @@ export function StudentsClassDataTable() {
 					</div>
 				</div>
 			</div>
+			<AddMembersDialog
+				open={openDialog === "students"}
+				onClose={handleCloseDialog}
+				classId= {Number(id)}
+			/>
 			<DeleteStudentClassDialog 
-				open={openDialog === "delete"} 
-				onClose={handleCloseDialog} 
-				studentToDelete={selectedStudent ?? undefined}
+				open={openDialog === "delete"}
+				onClose={handleCloseDialog}
+				studentToDelete={selectedStudent}
+				classId={selectedClassId ?? 0}
 			/>
 		</>
 	)
 }
-
-export const columns: ColumnDef<UserModel>[] = [
-	{
-		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-				aria-label="Select all"
-			/>
-		),
-		cell: ({ row }) => (
-			<Checkbox
-				checked={row.getIsSelected()}
-				onCheckedChange={(value) => row.toggleSelected(!!value)}
-				aria-label="Select row"
-			/>
-		),
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		accessorKey: "id",
-		header: () => <div>id</div>,
-		cell: ({ row }) => {
-			return <div className="font-medium">{row.getValue("id")}</div>
-		},
-	},
-	{
-		accessorKey: "name",
-		header: ({ column }) => {
-			return (
-				<Button
-					variant="ghost"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					Nombre
-					<ArrowUpDown />
-				</Button>
-			)
-		},
-		cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-	},
-	{
-		id: "actions",
-		enableHiding: false,
-		cell: ({ row }) => {
-			const Class = row.original
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" className="h-8 w-8 p-0">
-							<span className="sr-only">Open menu</span>
-							<MoreHorizontal />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Class.id.toString())}>
-							Copy Class ID
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>View customer</DropdownMenuItem>
-						<DropdownMenuItem>View Class details</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		},
-	},
-]

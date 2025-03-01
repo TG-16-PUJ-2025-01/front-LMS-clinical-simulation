@@ -8,7 +8,7 @@ import {
 	DialogTitle,
 } from "@/modules/core/components/ui/dialog"
 import { Input } from "@/modules/core/components/ui/input"
-import { useForm} from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -38,17 +38,19 @@ interface Props {
 
 const formSchema = z.object({
 	javerianaId: z.coerce.number().int().positive({
-        message: "El ID debe ser un número entero positivo",
-    }),
+		message: "El ID debe ser un número entero positivo",
+	}),
 	name: z.string().min(2, {
 		message: "El nombre debe tener al menos 2 caracteres",
 	}),
-	professor: z.object({
-		id: z.number().optional(),
-		name: z.string().nonempty({
-			message: "Debe seleccionar un profesor",
-		}),
-	}),
+	professors: z.array(
+		z.object({
+			id: z.number().optional(),
+			name: z.string().nonempty({
+				message: "Debe seleccionar un profesor",
+			}),
+		})
+	),
 	course: z.object({
 		id: z.number().optional(),
 		name: z.string().nonempty({
@@ -61,41 +63,33 @@ const formSchema = z.object({
 })
 
 export default function EditClassDialog({ open, onClose, classData }: Props) {
-	
 	const [courses, setCourses] = useState<Course[]>([])
-	const [professors, setProfessors] = useState<User[]>([])
-	
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			...classData,
 			name: undefined,
 			javerianaId: undefined,
-			professor: {
+			professors: [{
 				id: 0,
 				name: "",
-			},
+			}],
 			course: {
 				id: 0,
 				name: "",
-			}, 
+			},
 			beginningDate: new Date(),
 		},
 	})
 
 	useEffect(() => {
-		const fetchProfessors = async () => {
-					const res = await getAllProfessors()
-					setProfessors(res.data)
-				}
-				
-		fetchProfessors()
 
 		const fetchCourses = async () => {
 			const res = await getCourses(0, 10, "", "name", true)
 			setCourses(res.data)
 		}
-		
+
 		fetchCourses()
 
 		form.reset({
@@ -103,23 +97,20 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 			name: classData?.name,
 			javerianaId: classData?.javerianaId,
 		})
-
-
 	}, [form, classData])
-
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			await updateClass(classData!.id as number, {
+			await updateClass(classData!.classId as number, {
 				javerianaId: values.javerianaId,
 				name: values.name,
-				professorId: values.professor.id!,
+				professorsIds: values.professors.map((professor) => professor.id!),
 				courseId: values.course.id!,
 				beginningDate: values.beginningDate,
 			})
-	
+
 			onClose(false)
-	
+
 			toast.success("Clase actualizada correctamente")
 		} catch (error) {
 			toast.error("Error al actualizar la clase")
@@ -156,28 +147,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Nombre</FormLabel>
 										<FormControl>
-                                            <Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
-										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="professor.name"
-								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Profesor</FormLabel>
-										<FormControl>
-											<Combobox
-												placeholderText={field.value}
-												options={professors.map((val) => ({ key: val.id, value: `${val.name} ${val.lastName}` }))}
-												itemName="coordinador"
-												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("professor.id", selected.key)
-												}}
-											/>
+											<Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
@@ -188,20 +158,23 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 								name="course.name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-									<FormLabel className="m-0 text-right">Coordinador</FormLabel>
-									<FormControl>
-										<Combobox
-											placeholderText={field.value}
-											options={courses.map((val) => ({ key: val.courseId, value: `${val.name}` }))}
-											itemName="coordinador"
-											onChange={(selected) => {
-												field.onChange(selected.value)
-												form.setValue("course.id", selected.key)
-											}}
-										/>
-									</FormControl>
-									<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-								</FormItem>	
+										<FormLabel className="m-0 text-right">Coordinador</FormLabel>
+										<FormControl>
+											<Combobox
+												placeholderText={field.value}
+												options={courses.map((val) => ({
+													key: val.courseId,
+													value: `${val.name}`,
+												}))}
+												itemName="coordinador"
+												onChange={(selected) => {
+													field.onChange(selected.value)
+													form.setValue("course.id", selected.key)
+												}}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
 								)}
 							/>
 							<FormField

@@ -26,7 +26,7 @@ import Class from "@/modules/core/models/class"
 import { toast } from "sonner"
 import User from "@/modules/core/models/user"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
-import { createClass, getAllProfessors, updateClass } from "../services/classService"
+import { createClass, getAllProfessors} from "../services/classService"
 import Course from "@/modules/core/models/course"
 import { getCourses } from "../../courses/services/courseService"
 
@@ -109,7 +109,7 @@ export default function CreateClassDialog({ open, onClose}: Props) {
 			await createClass({
 				javerianaId: values.javerianaId,
 				name: values.name,
-				professorId: values.professor.id!,
+				professorsIds: [values.professor.id!],
 				courseId: values.course.id!,
 				beginningDate: values.beginningDate,
 			})

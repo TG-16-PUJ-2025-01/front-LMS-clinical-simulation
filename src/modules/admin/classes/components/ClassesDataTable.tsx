@@ -35,9 +35,9 @@ import Class from "@/modules/core/models/class"
 import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
-import { getClass, getClasses } from "../services/classService"
 import CreateClassDialog from "./CreateClassDialog"
-import { StudentsClassDataTable } from "./StudentsClassDataTable"
+import { getClasses } from "../services/classService"
+import { useNavigate } from "react-router-dom"
 
 export function ClassesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -45,8 +45,9 @@ export function ClassesDataTable() {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
+	const navigate = useNavigate()
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "student"  | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create"  | null>(null)
 	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 
 	const [data, setData] = useState<Class[]>([])
@@ -83,7 +84,7 @@ export function ClassesDataTable() {
 		fetchClasses()
 	}, [pagination, filter, sorting, openDialog])
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete" | "student", Class?: Class) => {
+	const handleOpenDialog = (type: "create" | "edit" | "delete", Class?: Class) => {
 		setEditDialog(type)
 		setSelectedClass(Class ?? null)
 	}
@@ -150,8 +151,8 @@ export function ClassesDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
 		},
 		{			
-			id: "professor",
-			accessorFn: ({ professor }) => `${professor.name} ${professor.lastName}`,
+			id: "professors",
+			accessorFn: ({ professors }) => professors && professors[0]? `${professors[0]?.name} ${professors[0]?.lastName} `: "No asignado",
 
 			header: ({ column }) => {
 				return (
@@ -167,7 +168,7 @@ export function ClassesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("professor")}</div>,
+			cell: ({ row }) => <div className="text-center">{row.getValue("professors")}</div>,
 		},
 		{
 			accessorKey: "period",
@@ -207,8 +208,8 @@ export function ClassesDataTable() {
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => handleOpenDialog("student", Class)}>
-								<User /> Lista de estudiantes
+							<DropdownMenuItem onClick={() => navigate(`/admin/classes/${Class.classId}/members`)}>
+								<User /> Lista de miembros
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("edit", Class)}>
 								<Pencil /> Editar
@@ -399,7 +400,7 @@ export const columns: ColumnDef<Class>[] = [
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Class.id.toString())}>
+						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Class.classId.toString())}>
 							Copy Class ID
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
