@@ -44,3 +44,23 @@ export const getRolesByToken = async (): Promise<string[]> => {
     throw new Error("Error al obtener los roles");
   }
 };
+
+export const getEmailByToken = async (): Promise<string> => {
+  try {
+    const response = await axios.get<{ data: string }>(`${API_URL}/auth/email`);
+    return response.data.data; // Devuelve el email
+  } catch (error) {
+    console.error("Error al obtener el email:", error);
+    throw new Error("Error al obtener el email");
+  }
+}
+
+export const getNameByToken = async (): Promise<string> => {
+  try {
+    const response = await axios.get<{ data: string }>(`${API_URL}/auth/name`);
+    return response.data.data; // Devuelve el nombre
+  } catch (error) {
+    console.error("Error al obtener el nombre:", error);
+    throw new Error("Error al obtener el nombre");
+  }
+}
