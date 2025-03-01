@@ -49,7 +49,7 @@ export default function AddMembersDialog({ open, onClose, classId }: Props) {
 		}
 
 		fetchNonMembers()
-	}, [filter, classId])
+	}, [filter, classId, open])
 
 	const handleConfirm = async () => {
 		//borrar el contenido de todas las listas
