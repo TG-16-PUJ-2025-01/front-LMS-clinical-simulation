@@ -38,7 +38,6 @@ import { useParams } from "react-router-dom"
 import AddMembersDialog from "./AddMembersDialog"
 import DeleteStudentClassDialog from "./deleteStudentDialog"
 
-
 export function StudentsClassDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
@@ -47,7 +46,7 @@ export function StudentsClassDataTable() {
 	const [rowSelection, setRowSelection] = useState({})
 	const { id } = useParams()
 
-	const [openDialog, setEditDialog] = useState<"delete"  | "students" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"delete" | "students" | null>(null)
 	const [selectedStudent, setSelectedStudent] = useState<UserModel | undefined>(undefined)
 	const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
 
@@ -75,13 +74,9 @@ export function StudentsClassDataTable() {
 				!(sorting[0]?.desc ?? false),
 				Number(id) //obtener el id de la url navigate(`/admin/classes/${Class.id}/members`)}
 			)
-			console.log("Respuesta completa de getClassMembers:", res);
-			console.log("Tipo de res.data:", typeof res.data);
-			console.log("Contenido de res.data:", res.data);
-			
-			
-			setData(res.data);
-			
+
+			setData(res.data)
+
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
@@ -92,13 +87,13 @@ export function StudentsClassDataTable() {
 	}, [pagination, filter, sorting, openDialog])
 
 	const handleOpenDialog = (type: "delete" | "students", Usermodel?: UserModel) => {
-		setEditDialog(type)
+		setOpenDialog(type)
 		setSelectedStudent(Usermodel ?? undefined)
 		setSelectedClassId(id ? Number(id) : null)
 	}
 
 	const handleCloseDialog = () => {
-		setEditDialog(null)
+		setOpenDialog(null)
 		setSelectedStudent(undefined)
 	}
 
@@ -140,7 +135,7 @@ export function StudentsClassDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
-			accessorKey: "lastName",  // ✅ Cambiado de id a accessorKey
+			accessorKey: "lastName", // ✅ Cambiado de id a accessorKey
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -156,7 +151,7 @@ export function StudentsClassDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
 		},
 		{
-			accessorKey: "email",  // ✅ Cambiado de id a accessorKey
+			accessorKey: "email", // ✅ Cambiado de id a accessorKey
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -170,7 +165,7 @@ export function StudentsClassDataTable() {
 				</div>
 			),
 			cell: ({ row }) => <div className="text-center">{row.getValue("email")}</div>,
-		},		
+		},
 		{
 			accessorKey: "roles",
 			header: ({ column }) => {
@@ -245,7 +240,7 @@ export function StudentsClassDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center  justify-between py-4">
+				<div className="flex items-center justify-between py-4">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -322,9 +317,9 @@ export function StudentsClassDataTable() {
 			<AddMembersDialog
 				open={openDialog === "students"}
 				onClose={handleCloseDialog}
-				classId= {Number(id)}
+				classId={Number(id)}
 			/>
-			<DeleteStudentClassDialog 
+			<DeleteStudentClassDialog
 				open={openDialog === "delete"}
 				onClose={handleCloseDialog}
 				studentToDelete={selectedStudent}

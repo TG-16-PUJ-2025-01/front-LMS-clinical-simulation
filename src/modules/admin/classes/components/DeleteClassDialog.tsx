@@ -23,7 +23,7 @@ export default function DeleteClassDialog({ open, onClose, classToDelete }: Prop
 	
 	const handleConfirm = async () => {
 			try {
-				await deleteClass(classToDelete!.id as number)
+				await deleteClass(classToDelete!.classId)
 				onClose(false)
 				toast.success("Asignatura eliminada correctamente")
 			} catch (error) {

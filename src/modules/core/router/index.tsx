@@ -38,7 +38,7 @@ export default function Router() {
 					<Route path="/admin/videos" element={<VideosPage />}></Route>
 					<Route path="/admin/clases" element={<ClassesPage />}></Route>
 					<Route path="/admin/salas" element={<RoomsPage />}></Route>
-					<Route path= "/admin/classes/:id/members" element={<MembersPage />}></Route>
+					<Route path= "/admin/clases/:id/miembros" element={<MembersPage />}></Route>
 				</Route>
 
 				{/* Default Route */}

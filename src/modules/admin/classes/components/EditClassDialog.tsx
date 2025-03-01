@@ -23,9 +23,8 @@ import {
 import { useEffect, useState } from "react"
 import Class from "@/modules/core/models/class"
 import { toast } from "sonner"
-import User from "@/modules/core/models/user"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
-import { getAllProfessors, updateClass } from "../services/classService"
+import { updateClass } from "../services/classService"
 import Course from "@/modules/core/models/course"
 import { getCourses } from "../../courses/services/courseService"
 import DatePicker from "@/modules/core/components/DatePicker"
@@ -39,9 +38,6 @@ interface Props {
 const formSchema = z.object({
 	javerianaId: z.coerce.number().int().positive({
 		message: "El ID debe ser un número entero positivo",
-	}),
-	name: z.string().min(2, {
-		message: "El nombre debe tener al menos 2 caracteres",
 	}),
 	professors: z.array(
 		z.object({
@@ -69,7 +65,6 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			...classData,
-			name: undefined,
 			javerianaId: undefined,
 			professors: [{
 				id: 0,
@@ -94,7 +89,6 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 
 		form.reset({
 			...classData,
-			name: classData?.name,
 			javerianaId: classData?.javerianaId,
 		})
 	}, [form, classData])
@@ -103,7 +97,6 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 		try {
 			await updateClass(classData!.classId as number, {
 				javerianaId: values.javerianaId,
-				name: values.name,
 				professorsIds: values.professors.map((professor) => professor.id!),
 				courseId: values.course.id!,
 				beginningDate: values.beginningDate,
@@ -135,19 +128,6 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 										<FormLabel className="m-0 text-right">ID</FormLabel>
 										<FormControl>
 											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
-										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="name"
-								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Nombre</FormLabel>
-										<FormControl>
-											<Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>

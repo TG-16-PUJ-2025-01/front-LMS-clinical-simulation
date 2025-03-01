@@ -9,12 +9,13 @@ import {
 } from "@/modules/core/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/modules/core/components/ui/avatar"
 import { Input } from "@/modules/core/components/ui/input"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { Search, X, Sheet } from "lucide-react"
-import { getStudentsNotInClass } from "../services/membersService"
+import { getStudentsNotInClass, updateClassMembers } from "../services/membersService"
 import Role from "../../../core/models/role"
 import { ScrollArea } from "@/modules/core/components/ui/scroll-area"
 import { Separator } from "@/modules/core/components/ui/separator"
+import { toast } from "sonner"
 
 interface User {
 	id: number
@@ -50,11 +51,19 @@ export default function AddMembersDialog({ open, onClose, classId }: Props) {
 		fetchNonMembers()
 	}, [filter, classId])
 
-	const handleConfirm = () => {
-		onClose(false)
+	const handleConfirm = async () => {
 		//borrar el contenido de todas las listas
 		setSelectedStudents([]) // Borra la lista de estudiantes seleccionados
 		// Aquí podrías agregar lógica para añadir los estudiantes seleccionados
+		selectedStudents
+		
+		try {
+			await updateClassMembers(classId, selectedStudents)
+			toast.success("Miembros anadidos a la clase correctamente")
+		} catch (error) {
+			toast.error("Error al anadir miembros en la clase")
+		}
+		onClose(false)
 	}
 
 	const handleSelectStudent = (student: User) => {
