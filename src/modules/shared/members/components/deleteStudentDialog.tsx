@@ -26,9 +26,9 @@ export default function DeleteStudentClassDialog({ open, onClose, studentToDelet
 			try {
 				await deleteStudentFromClass(classId, studentToDelete!.id as number)
 				onClose(false)
-				toast.success("Estudiante eliminado de la clase correctamente")
+				toast.success("Miembro eliminado de la clase correctamente")
 			} catch (error) {
-				toast.error("Error al eliminar el estudiante de clase")
+				toast.error("Error al eliminar el miembro de clase")
 			}
 	}
 	

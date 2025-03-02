@@ -184,7 +184,15 @@ export function StudentsClassDataTable() {
 			},
 			cell: ({ row }) => {
 				const roles = row.getValue("roles") as Role[]
-				return <div className="text-center">{roles[0]}</div>
+				
+				let displayRole = "Sin rol"; 
+				if (roles.includes(Role.PROFESOR)) {
+					displayRole = Role.PROFESOR;
+				} else if (roles.includes(Role.ESTUDIANTE)) {
+					displayRole = Role.ESTUDIANTE;
+				}
+			
+				return <div className="text-center">{displayRole}</div>;
 			},
 		},
 		{

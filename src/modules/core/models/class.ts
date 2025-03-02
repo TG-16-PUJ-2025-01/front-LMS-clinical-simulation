@@ -7,6 +7,5 @@ export default interface Class {
     name: string;
     course: Course;
     professors: User[];
-    beginningDate: Date;
     period: string;
   }

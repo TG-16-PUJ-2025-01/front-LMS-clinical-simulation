@@ -36,16 +36,19 @@ interface Props {
 export default function AddMembersDialog({ open, onClose, classId }: Props) {
 	const [filter, setFilter] = useState<string>("")
 	const [students, setStudents] = useState<User[]>([])
-	const filteredStudents = students.filter((student) =>
-		`${student.name} ${student.lastName}`.toLowerCase().includes(filter.toLowerCase())
-	)
+	const [filteredStudents, setFilteredStudents] = useState<User[]>([])
 	const [isSearchFocused, setIsSearchFocused] = useState(false)
 	const [selectedStudents, setSelectedStudents] = useState<User[]>([])
 
 	useEffect(() => {
 		const fetchNonMembers = async () => {
 			const res = await getStudentsNotInClass(Number(classId), filter)
-			setStudents(res.data) // Guardamos los estudiantes en el estado
+			setStudents(res.data) // Guardamos los estudiantes en el estado\
+			setFilteredStudents(
+				res.data.filter((student) =>
+					`${student.name} ${student.lastName}`.toLowerCase().includes(filter.toLowerCase())
+				)
+			)
 		}
 
 		fetchNonMembers()
@@ -56,7 +59,7 @@ export default function AddMembersDialog({ open, onClose, classId }: Props) {
 		setSelectedStudents([]) // Borra la lista de estudiantes seleccionados
 		// Aquí podrías agregar lógica para añadir los estudiantes seleccionados
 		selectedStudents
-		
+
 		try {
 			await updateClassMembers(classId, selectedStudents)
 			toast.success("Miembros anadidos a la clase correctamente")

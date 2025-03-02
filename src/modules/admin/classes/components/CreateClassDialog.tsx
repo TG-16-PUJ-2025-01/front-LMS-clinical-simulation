@@ -52,10 +52,16 @@ const formSchema = z.object({
 			message: "Debe seleccionar la asignatura asociada",
 		}),
 	}),
-	beginningDate: z.date({
-		required_error: "La fecha de inicio debe ser una fecha válida",
+	year: z.number({
+		required_error: "El año es requerido",
+	}),
+	yearPeriod: z.string({
+		required_error: "El periodo academico es requerido",
 	}),
 })
+
+//lista de trings
+const periods = ["10", "20", "30"]
 
 export default function CreateClassDialog({ open, onClose }: Props) {
 	const [courses, setCourses] = useState<Course[]>([])
@@ -73,7 +79,8 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 				id: 0,
 				name: "",
 			},
-			beginningDate: new Date(),
+			year: new Date().getFullYear(),
+			yearPeriod: "10",
 		},
 	})
 
@@ -101,7 +108,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 				javerianaId: values.javerianaId,
 				professorsIds: [values.professor.id!],
 				courseId: values.course.id!,
-				beginningDate: values.beginningDate,
+				period: values.year.toString() + "-" + values.yearPeriod,
 			})
 
 			onClose(false)
@@ -164,7 +171,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 								name="course.name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Curso</FormLabel>
+										<FormLabel className="m-0 text-right">Asignatura</FormLabel>
 										<FormControl>
 											<Combobox
 												placeholderText="Selecciona un curso"
@@ -183,24 +190,52 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 									</FormItem>
 								)}
 							/>
-							<FormField
-								control={form.control}
-								name="beginningDate"
-								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Fecha de inicio</FormLabel>
-										<FormControl>
-											<DatePicker
-												id="beginningDate"
-												className="col-span-3 m-0"
-												selected={field.value}
-												onSelect={(date) => field.onChange(date ?? null)}
-											/>
-										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-									</FormItem>
-								)}
-							/>
+
+							<div className="flex w-full items-center justify-center gap-2">
+								<div className="w-24">
+									<FormField
+										control={form.control}
+										name="year"
+										render={({ field }) => (
+											<FormItem className="flex items-center">
+												<FormControl>
+													<Combobox
+														placeholderText="Año"
+														options={[...Array(3)].map((_, i) => {
+															const year = new Date().getFullYear() + i
+															return { key: year, value: year.toString() }
+														})}
+														itemName="año"
+														onChange={(selected) => field.onChange(Number(selected.value))}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								</div>
+								<span className="text-xs">-</span>
+								<div className="w-16">
+									<FormField
+										control={form.control}
+										name="yearPeriod"
+										render={({ field }) => (
+											<FormItem className="flex items-center">
+												<FormControl>
+													<Combobox
+														placeholderText="Período"
+														options={periods.map((period) => ({
+															key: Number(period),
+															value: period,
+														}))}
+														itemName="período"
+														onChange={(selected) => field.onChange(selected.value.toString())}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								</div>
+							</div>
 						</div>
 						<DialogFooter>
 							<Button type="submit">Crear</Button>
