@@ -36,6 +36,9 @@ const formSchema = z.object({
 	name: z.string().nonempty({
 		message: "El nombre no puede estar vacío",
 	}),
+	capacity: z.number().int().min(1, {
+		message: "La capacidad debe ser mayor a 0",
+	}),
 	type: z.object({
 		id: z.number().optional(),
 		name: z.string().nonempty({
@@ -51,6 +54,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: "",
+			capacity: 0,
 			type: {
 				name: "",
 			},
@@ -72,6 +76,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 		if (room) {
 			form.reset({
 				name: room.name,
+				capacity: room.capacity,
 				type: {
 					name: room.type.name,
 					id: room.type.id,
@@ -85,11 +90,14 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 			const updatedRoom: Room = {
 				id: room?.id!,
 				name: values.name,
+				capacity: values?.capacity!,
 				type: {
 					id: values.type.id!,
 					name: values.type.name,
 				},
 			}
+
+			console.log(updatedRoom)
 
 			await updateRoom(updatedRoom)
 
@@ -150,6 +158,26 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 													}
 												}}
 												selectedValue={field.value}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="capacity"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Capacidad</FormLabel>
+										<FormControl>
+											<Input
+												id="capacity"
+												placeholder="Capacidad"
+												type="number"
+												className="col-span-3 m-0"
+												{...field}
+												onChange={(e) => field.onChange(Number(e.target.value))}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

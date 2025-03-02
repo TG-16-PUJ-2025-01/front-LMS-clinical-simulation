@@ -39,6 +39,8 @@ export async function getRoomsTypes(): Promise<ApiResponse<RoomType[]>> {
 }
 
 export async function updateRoom(room: Room): Promise<ApiResponse<Room>> {
+	console.log("Room to Update on Service front")
+	console.log(room)
 	const { data } = await axiosInstance.put(`/rooms/update`, room)
 	return data
 }
