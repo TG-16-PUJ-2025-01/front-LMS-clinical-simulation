@@ -32,7 +32,7 @@ export default function Router() {
 
 				{/* Coordinator Routes */}
 				<Route element={<CoordinatorRoute />}>
-					<Route path="/coordinator/simulation/:id" element={<CoordinatorSimulationPage />}></Route>
+					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
 				</Route>
 
 				{/* Admin Routes */}

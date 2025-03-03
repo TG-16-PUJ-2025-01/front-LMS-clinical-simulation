@@ -4,6 +4,7 @@ import AdminLayout from "@/modules/admin/layout/AdminLayout"
 import CoordinatorLayout from "@/modules/coordinator/layout/CoordinatorLayout"
 import StudentLayout from "@/modules/student/layout/StudentLayout"
 import TeacherLayout from "@/modules/teacher/layout/TeacherLayout"
+import { SlotProvider } from "../../components/Slots/SlotContext"
 
 export function PrivateRoute() {
 	// Assert is authenticated
@@ -13,7 +14,11 @@ export function PrivateRoute() {
 		return <Navigate to="/login" />
 	}
 
-	return <Outlet />
+	return (
+		<SlotProvider>
+			<Outlet />
+		</SlotProvider>
+	)
 }
 
 export function StudentRoute() {
