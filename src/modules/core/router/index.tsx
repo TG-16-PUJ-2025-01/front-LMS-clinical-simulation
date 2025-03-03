@@ -8,11 +8,12 @@ import {
 	TeacherRoute,
 } from "@/modules/core/config/security/guards"
 import Login from "@/modules/shared/auth/layout/LoginLayout"
-import CoursesPage from "@/modules/admin/courses/pages/CoursesPage"
-import VideosPage from "@/modules/admin/videos/pages/VideosPage"
-import ClassesPage from "@/modules/admin/classes/pages/ClassesPage"
-import RoomsPage from "@/modules/admin/rooms/pages/RoomsPage"
-import UsersPage from "@/modules/admin/users/pages/UsersPage"
+import AdminCoursesPage from "@/modules/admin/courses/pages/CoursesPage"
+import AdminVideosPage from "@/modules/admin/videos/pages/VideosPage"
+import AdminClassesPage from "@/modules/admin/classes/pages/ClassesPage"
+import AdminRoomsPage from "@/modules/admin/rooms/pages/RoomsPage"
+import AdminUsersPage from "@/modules/admin/users/pages/UsersPage"
+import CoordinatorSimulationPage from "@/modules/coordinator/simulations/pages/SimulationPage"
 
 export default function Router() {
 	return (
@@ -30,15 +31,17 @@ export default function Router() {
 				<Route element={<TeacherRoute />}></Route>
 
 				{/* Coordinator Routes */}
-				<Route element={<CoordinatorRoute />}></Route>
+				<Route element={<CoordinatorRoute />}>
+					<Route path="/coordinator/simulation/:id" element={<CoordinatorSimulationPage />}></Route>
+				</Route>
 
 				{/* Admin Routes */}
 				<Route element={<AdminRoute />}>
-					<Route path="/admin/asignaturas" element={<CoursesPage />}></Route>
-					<Route path="/admin/videos" element={<VideosPage />}></Route>
-					<Route path="/admin/clases" element={<ClassesPage />}></Route>
-					<Route path="/admin/salas" element={<RoomsPage />}></Route>
-					<Route path="/admin/usuarios" element={<UsersPage />}></Route>
+					<Route path="/admin/asignaturas" element={<AdminCoursesPage />}></Route>
+					<Route path="/admin/videos" element={<AdminVideosPage />}></Route>
+					<Route path="/admin/clases" element={<AdminClassesPage />}></Route>
+					<Route path="/admin/salas" element={<AdminRoomsPage />}></Route>
+					<Route path="/admin/usuarios" element={<AdminUsersPage />}></Route>
 				</Route>
 
 				{/* Default Route */}
