@@ -90,14 +90,12 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 			const updatedRoom: Room = {
 				id: room?.id!,
 				name: values.name,
-				capacity: values?.capacity!,
+				capacity: values.capacity,
 				type: {
 					id: values.type.id!,
 					name: values.type.name,
 				},
 			}
-
-			console.log(updatedRoom)
 
 			await updateRoom(updatedRoom)
 

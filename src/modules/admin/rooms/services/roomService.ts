@@ -1,12 +1,8 @@
 import axios from "axios"
-import { API_URL } from "@/modules/core/config/env"
 import Room from "@/modules/core/models/room"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import RoomType from "@/modules/core/models/roomType"
-
-const axiosInstance = axios.create({
-	baseURL: API_URL,
-})
+import { API_URL } from "@/modules/core/config/env"
 
 export async function getAllRooms(
 	page: number,
@@ -15,7 +11,7 @@ export async function getAllRooms(
 	sort: string,
 	asc: boolean
 ): Promise<ApiResponse<Room[]>> {
-	const { data } = await axiosInstance.get(`/rooms/all`, {
+	const { data } = await axios.get(`${API_URL}/room/all`, {
 		params: {
 			page,
 			size,
@@ -29,33 +25,31 @@ export async function getAllRooms(
 }
 
 export async function getRoomById(id: number): Promise<ApiResponse<Room>> {
-	const { data } = await axiosInstance.get(`/rooms/${id}`)
+	const { data } = await axios.get(`${API_URL}/room/${id}`)
 	return data
 }
 
 export async function getRoomsTypes(): Promise<ApiResponse<RoomType[]>> {
-	const { data } = await axiosInstance.get(`/rooms/types`)
+	const { data } = await axios.get(`${API_URL}/room/types`)
 	return data
 }
 
 export async function updateRoom(room: Room): Promise<ApiResponse<Room>> {
-	console.log("Room to Update on Service front")
-	console.log(room)
-	const { data } = await axiosInstance.put(`/rooms/update`, room)
+	const { data } = await axios.put(`${API_URL}/room/update`, room)
 	return data
 }
 
 export async function deleteRoom(id: number): Promise<ApiResponse<null>> {
-	const { data } = await axiosInstance.delete(`/rooms/delete/${id}`)
+	const { data } = await axios.delete(`${API_URL}/room/delete/${id}`)
 	return data
 }
 
 export async function createRoom(room: Room): Promise<ApiResponse<Room>> {
-	const { data } = await axiosInstance.post(`/rooms/add`, room)
+	const { data } = await axios.post(`${API_URL}/room/add`, room)
 	return data
 }
 
 export async function addRoomType(name: string): Promise<ApiResponse<RoomType>> {
-	const { data } = await axiosInstance.post(`/rooms/type/add`, { name })
+	const { data } = await axios.post(`${API_URL}/room/type/add`, { name })
 	return data
 }
