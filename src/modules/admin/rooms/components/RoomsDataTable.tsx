@@ -124,6 +124,23 @@ export function RoomsDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("type")}</div>,
 		},
 		{
+			id: "capacity",
+			accessorKey: "capacity",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Capacidad
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("capacity")}</div>,
+		},
+		{
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {

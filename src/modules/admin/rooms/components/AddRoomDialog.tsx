@@ -35,6 +35,9 @@ const formSchema = z.object({
 	name: z.string().nonempty({
 		message: "El nombre no puede estar vacío",
 	}),
+	capacity: z.number().int().min(1, {
+		message: "La capacidad debe ser mayor a 0",
+	}),
 	type: z.object({
 		id: z.number().optional(),
 		name: z.string().nonempty({
@@ -50,6 +53,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: "",
+			capacity: 0,
 			type: {
 				id: undefined,
 				name: "",
@@ -79,6 +83,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 			const newRoom: Room = {
 				id: undefined,
 				name: values.name,
+				capacity: values.capacity,
 				type: {
 					id: values.type.id!,
 					name: values.type.name,
@@ -94,7 +99,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 			form.reset()
 		} catch (error: any) {
 			if (error.response && error.response.data && error.response.data.message) {
-				toast.error(error.response.data.message)
+				toast.error("El nombre de la sala ya existe")
 			} else {
 				toast.error("Error al crear la sala")
 			}
@@ -148,6 +153,26 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 													}
 												}}
 												selectedValue={field.value}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="capacity"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Capacidad</FormLabel>
+										<FormControl>
+											<Input
+												id="capacity"
+												type="number"
+												placeholder="Capacidad"
+												className="col-span-3 m-0"
+												{...field}
+												onChange={(e) => field.onChange(Number(e.target.value))}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
