@@ -35,6 +35,7 @@ import CreateUserDialog from "./CreateUserDialog";
 import { getUsers } from "../services/userService";
 import EditUserDialog from "./EditUserDialog";
 import User from "@/modules/core/models/user";
+import { UpdateMailConfigDialog } from "./UpdateMailConfigDialog";
 
 export function UsersDataTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -44,6 +45,8 @@ export function UsersDataTable() {
 
   const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const [openMailConfigDialog, setOpenMailConfigDialog] = useState(false);
 
   const [data, setData] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -234,6 +237,10 @@ export function UsersDataTable() {
     },
   });
 
+  function handleSaveMailConfig(host: string, username: string, password: string): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <>
       <div className="w-full">
@@ -250,7 +257,12 @@ export function UsersDataTable() {
               className="w-full pl-8"
             />
           </div>
-          <Button onClick={() => handleOpenDialog("create")}>Nuevo usuario</Button>
+          <div className="flex space-x-2">
+            <Button onClick={() => setOpenMailConfigDialog(true)}>
+              Configurar servidor de correo
+            </Button>
+            <Button onClick={() => handleOpenDialog("create")}>Nuevo usuario</Button>
+          </div>
         </div>
 
         {error && (
@@ -336,6 +348,12 @@ export function UsersDataTable() {
       <CreateUserDialog
         open={openDialog === "create"}
         onClose={handleCloseDialog}
+      />
+
+      <UpdateMailConfigDialog
+        open={openMailConfigDialog}
+        onClose={() => setOpenMailConfigDialog(false)}
+        onSave={handleSaveMailConfig}
       />
     </>
   );
