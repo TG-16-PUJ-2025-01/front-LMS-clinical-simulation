@@ -1,10 +1,10 @@
-import Slot from "@/modules/core/components/Slots/Slot"
+import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 
 export default function SimulationPage() {
 	return (
 		<>
-      <Slot name="header">Header</Slot>
-			<Slot name="title">Title</Slot>
+      <LayoutSlot name="header">Header</LayoutSlot>
+			<LayoutSlot name="title">Title</LayoutSlot>
 			<div>SimulationPage</div>
 		</>
 	)

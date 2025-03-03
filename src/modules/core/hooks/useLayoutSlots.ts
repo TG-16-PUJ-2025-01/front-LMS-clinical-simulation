@@ -1,6 +1,6 @@
 import { useContext, createContext } from "react";
 
-export const SlotContext = createContext<{
+export const LayoutSlotContext = createContext<{
 	slots: Record<string, React.ReactNode>
 	registerSlot: (name: string, node: React.ReactNode) => void
 	unregisterSlot: (name: string) => void
@@ -10,6 +10,6 @@ export const SlotContext = createContext<{
 	unregisterSlot: () => {}
 })
 
-export function useSlots() {
-	return useContext(SlotContext)
+export function useLayoutSlots() {
+	return useContext(LayoutSlotContext)
 }

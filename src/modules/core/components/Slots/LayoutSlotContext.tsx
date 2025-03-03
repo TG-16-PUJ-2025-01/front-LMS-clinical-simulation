@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react"
-import { SlotContext } from "../../hooks/useSlots"
+import { LayoutSlotContext } from "../../hooks/useLayoutSlots"
 
-export function SlotProvider({ children }: { children: React.ReactNode }) {
+export function LayoutSlotProvider({ children }: { children: React.ReactNode }) {
 	const [slots, setSlots] = useState<Record<string, React.ReactNode>>({})
 
 	const registerSlot = useCallback((name: string, node: React.ReactNode) => {
@@ -17,8 +17,8 @@ export function SlotProvider({ children }: { children: React.ReactNode }) {
 	}, [])
 
 	return (
-		<SlotContext.Provider value={{ slots, registerSlot, unregisterSlot }}>
+		<LayoutSlotContext.Provider value={{ slots, registerSlot, unregisterSlot }}>
 			{children}
-		</SlotContext.Provider>
+		</LayoutSlotContext.Provider>
 	)
 }

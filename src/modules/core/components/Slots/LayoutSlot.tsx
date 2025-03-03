@@ -1,13 +1,13 @@
 import { useEffect } from "react"
-import { useSlots } from "../../hooks/useSlots"
+import { useLayoutSlots } from "../../hooks/useLayoutSlots"
 
 interface Props {
 	name: string
 	children: React.ReactNode
 }
 
-export default function Slot({ name, children }: Props) {
-	const { registerSlot, unregisterSlot } = useSlots()
+export default function LayoutSlot({ name, children }: Props) {
+	const { registerSlot, unregisterSlot } = useLayoutSlots()
 
 	useEffect(() => {
 		registerSlot(name, children)
