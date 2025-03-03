@@ -39,7 +39,7 @@ interface Props {
     onSuccess?: () => void;
     user: {
         id: number;
-        institutionalId: number;
+        institutionalId: string;
         name: string;
         lastName: string;
         email: string;
@@ -48,9 +48,9 @@ interface Props {
 }
 
 const formSchema = z.object({
-    institutionalId: z.coerce.number().int().positive({
-        message: "El ID debe ser un número entero positivo",
-    }),
+    institutionalId: z.string()
+        .length(11, { message: "El ID debe tener 11 caracteres" })
+        .regex(/^\d+$/, { message: "El ID debe contener solo números" }),
     name: z.string().min(2, {
         message: "El nombre debe tener al menos 2 caracteres",
     }),

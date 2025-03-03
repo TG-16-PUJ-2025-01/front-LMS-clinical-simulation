@@ -41,8 +41,10 @@ interface Props {
 }
 
 const formSchema = z.object({
-    id: z.coerce.number().int().positive({
-        message: "El ID debe ser un número entero positivo",
+    id: z.string().length(11, {
+        message: "El ID debe tener 11 caracteres",
+    }).regex(/^\d+$/, {
+        message: "El ID debe contener solo números",
     }),
     name: z.string().min(2, {
         message: "El nombre debe tener al menos 2 caracteres",
@@ -64,7 +66,7 @@ export default function CreateUserDialog({ open, onClose, onSuccess }: Props) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            id: 0,
+            id: "",
             name: "",
             lastName: "",
             email: "",
@@ -86,7 +88,7 @@ export default function CreateUserDialog({ open, onClose, onSuccess }: Props) {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             await createUser({
-                institutionalId: values.id,
+                institutionalId: values.id.toString(),
                 name: values.name,
                 lastName: values.lastName,
                 email: values.email,
