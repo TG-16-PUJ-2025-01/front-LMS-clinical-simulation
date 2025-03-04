@@ -27,7 +27,7 @@ export async function getClasses(
     })
     return {
         ...data,
-        data: data.data.map((classModel: { beginningDate: string | number | Date }) => ({...classModel,beginningDate: new Date(classModel.beginningDate)})),
+        data: data.data,
     }
 }
 

@@ -35,8 +35,9 @@ import Class from "@/modules/core/models/class"
 import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
-import { getClasses } from "../services/classService"
 import CreateClassDialog from "./CreateClassDialog"
+import { getClasses } from "../services/classService"
+import { useNavigate } from "react-router-dom"
 
 export function ClassesDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -44,8 +45,9 @@ export function ClassesDataTable() {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
+	const navigate = useNavigate()
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "student"  | null>(null)
+	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
 	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 
 	const [data, setData] = useState<Class[]>([])
@@ -62,7 +64,7 @@ export function ClassesDataTable() {
 
 	useEffect(() => {
 		if (openDialog) return
-		
+
 		const fetchClasses = async () => {
 			const res = await getClasses(
 				pagination.pageIndex,
@@ -71,8 +73,9 @@ export function ClassesDataTable() {
 				sorting[0]?.id,
 				!(sorting[0]?.desc ?? false)
 			)
-			console.log("Classes", res)
+
 			setData(res.data)
+			console.log("fetching classes"+ `${res.data.forEach((element) => console.log(element))}`)
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
@@ -82,13 +85,13 @@ export function ClassesDataTable() {
 		fetchClasses()
 	}, [pagination, filter, sorting, openDialog])
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete" | "student", Class?: Class) => {
-		setEditDialog(type)
+	const handleOpenDialog = (type: "create" | "edit" | "delete", Class?: Class) => {
+		setOpenDialog(type)
 		setSelectedClass(Class ?? null)
 	}
 
 	const handleCloseDialog = () => {
-		setEditDialog(null)
+		setOpenDialog(null)
 		setSelectedClass(null)
 	}
 
@@ -102,7 +105,7 @@ export function ClassesDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						ID 
+						ID
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
@@ -110,24 +113,6 @@ export function ClassesDataTable() {
 			cell: ({ row }) => {
 				return <div className="text-center">{row.getValue("javerianaId")}</div>
 			},
-		},
-		{
-			accessorKey: "name",
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						>
-							Nombre
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
 			id: "course",
@@ -148,9 +133,12 @@ export function ClassesDataTable() {
 			},
 			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
 		},
-		{			
-			id: "professor",
-			accessorFn: ({ professor }) => `${professor.name} ${professor.lastName}`,
+		{
+			id: "professors",
+			accessorFn: ({ professors }) =>
+				professors && professors[0]
+					? `${professors[0]?.name} ${professors[0]?.lastName} `
+					: "No asignado",
 
 			header: ({ column }) => {
 				return (
@@ -166,7 +154,7 @@ export function ClassesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("professor")}</div>,
+			cell: ({ row }) => <div className="text-center">{row.getValue("professors")}</div>,
 		},
 		{
 			accessorKey: "period",
@@ -184,11 +172,7 @@ export function ClassesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{row.getValue("period")}
-				</div>
-			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("period")}</div>,
 		},
 		{
 			id: "actions",
@@ -205,10 +189,10 @@ export function ClassesDataTable() {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => handleOpenDialog("student", Class)}>
-								<User /> Lista de estudiantes
+							<DropdownMenuItem onClick={() => navigate(`/admin/clases/${Class.classId}/miembros`)}>
+								<User /> Lista de miembros
 							</DropdownMenuItem>
+							<DropdownMenuSeparator />
 							<DropdownMenuItem onClick={() => handleOpenDialog("edit", Class)}>
 								<Pencil /> Editar
 							</DropdownMenuItem>
@@ -249,7 +233,7 @@ export function ClassesDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center  justify-between py-4">
+				<div className="flex items-center justify-between py-4">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -258,7 +242,7 @@ export function ClassesDataTable() {
 							onChange={(event) => {
 								setFilter(event.target.value)
 								setPagination({ ...pagination, pageIndex: 0 })
-							}}							
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
@@ -328,9 +312,9 @@ export function ClassesDataTable() {
 				onClose={handleCloseDialog}
 				classData={selectedClass ?? undefined}
 			/>
-			<DeleteClassDialog 
-				open={openDialog === "delete"} 
-				onClose={handleCloseDialog} 
+			<DeleteClassDialog
+				open={openDialog === "delete"}
+				onClose={handleCloseDialog}
 				classToDelete={selectedClass ?? undefined}
 			/>
 			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
@@ -381,32 +365,5 @@ export const columns: ColumnDef<Class>[] = [
 			)
 		},
 		cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-	},
-	{
-		id: "actions",
-		enableHiding: false,
-		cell: ({ row }) => {
-			const Class = row.original
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" className="h-8 w-8 p-0">
-							<span className="sr-only">Open menu</span>
-							<MoreHorizontal />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Class.id.toString())}>
-							Copy Class ID
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>View customer</DropdownMenuItem>
-						<DropdownMenuItem>View Class details</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		},
-	},
+	}
 ]
