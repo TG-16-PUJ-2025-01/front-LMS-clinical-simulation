@@ -1,4 +1,3 @@
-"use client"
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -13,7 +12,6 @@ import {
 } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
-import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -233,7 +231,7 @@ export function ClassesDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center justify-between py-4">
+				<div className="flex items-center justify-between">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -248,7 +246,7 @@ export function ClassesDataTable() {
 					</div>
 					<Button onClick={() => handleOpenDialog("create")}>Nueva clase</Button>
 				</div>
-				<div className="rounded-md border">
+				<div className="rounded-md border mt-4">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -286,7 +284,7 @@ export function ClassesDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="flex items-center justify-end space-x-2 pt-4">
 					<div className="space-x-2">
 						<Button
 							variant="outline"
@@ -321,49 +319,3 @@ export function ClassesDataTable() {
 		</>
 	)
 }
-
-export const columns: ColumnDef<Class>[] = [
-	{
-		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-				aria-label="Select all"
-			/>
-		),
-		cell: ({ row }) => (
-			<Checkbox
-				checked={row.getIsSelected()}
-				onCheckedChange={(value) => row.toggleSelected(!!value)}
-				aria-label="Select row"
-			/>
-		),
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		accessorKey: "id",
-		header: () => <div>id</div>,
-		cell: ({ row }) => {
-			return <div className="font-medium">{row.getValue("id")}</div>
-		},
-	},
-	{
-		accessorKey: "name",
-		header: ({ column }) => {
-			return (
-				<Button
-					variant="ghost"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					Nombre
-					<ArrowUpDown />
-				</Button>
-			)
-		},
-		cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-	}
-]

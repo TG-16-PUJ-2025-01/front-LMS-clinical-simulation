@@ -25,7 +25,7 @@ export default function WatchVideoDialog({ open, onClose, video }: Props) {
 				</DialogHeader>
 				{video?.available ? (
 					<video
-						className="aspect-video h-full w-full"
+						className="aspect-video h-full w-full rounded-md"
 						src={`${API_URL}/streaming/video/${video?.name}`}
 						controls
 					></video>
