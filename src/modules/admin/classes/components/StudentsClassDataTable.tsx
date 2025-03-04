@@ -11,9 +11,8 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
-import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -32,7 +31,7 @@ import {
 	TableRow,
 } from "@/modules/core/components/ui/table"
 import { useEffect, useState } from "react"
-import { getClass, getClasses } from "../services/classService"
+import { getClasses } from "../services/classService"
 import DeleteStudentClassDialog from "./DeleteStudentClassDialogue"
 import UserModel from "@/modules/core/models/user"
 export function StudentsClassDataTable() {
@@ -45,7 +44,7 @@ export function StudentsClassDataTable() {
 	const [openDialog, setEditDialog] = useState<"delete" | null>(null)
 	const [selectedStudent, setSelectedStudent] = useState<UserModel | null>(null)
 
-	const [data, setData] = useState<UserModel[]>([])
+	const [data] = useState<UserModel[]>([])
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
@@ -59,7 +58,7 @@ export function StudentsClassDataTable() {
 
 	useEffect(() => {
 		if (openDialog) return
-		
+
 		const fetchStudents = async () => {
 			const res = await getClasses(
 				pagination.pageIndex,
@@ -69,7 +68,7 @@ export function StudentsClassDataTable() {
 				!(sorting[0]?.desc ?? false)
 			)
 			console.log("Classes", res)
-		    //setData(res.data)
+			//setData(res.data)
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
@@ -99,7 +98,7 @@ export function StudentsClassDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						ID 
+						ID
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
@@ -198,7 +197,7 @@ export function StudentsClassDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center  justify-between py-4">
+				<div className="flex items-center justify-between">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -206,13 +205,13 @@ export function StudentsClassDataTable() {
 							value={filter}
 							onChange={(event) => {
 								setFilter(event.target.value)
-								setPagination({ ...pagination, pageIndex: 0})
-							}}							
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
 				</div>
-				<div className="rounded-md border">
+				<div className="mt-4 rounded-md border">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -250,7 +249,7 @@ export function StudentsClassDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="flex items-center justify-end space-x-2 pt-4">
 					<div className="space-x-2">
 						<Button
 							variant="outline"
@@ -271,84 +270,11 @@ export function StudentsClassDataTable() {
 					</div>
 				</div>
 			</div>
-			<DeleteStudentClassDialog 
-				open={openDialog === "delete"} 
-				onClose={handleCloseDialog} 
+			<DeleteStudentClassDialog
+				open={openDialog === "delete"}
+				onClose={handleCloseDialog}
 				studentToDelete={selectedStudent ?? undefined}
 			/>
 		</>
 	)
 }
-
-export const columns: ColumnDef<UserModel>[] = [
-	{
-		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-				aria-label="Select all"
-			/>
-		),
-		cell: ({ row }) => (
-			<Checkbox
-				checked={row.getIsSelected()}
-				onCheckedChange={(value) => row.toggleSelected(!!value)}
-				aria-label="Select row"
-			/>
-		),
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		accessorKey: "id",
-		header: () => <div>id</div>,
-		cell: ({ row }) => {
-			return <div className="font-medium">{row.getValue("id")}</div>
-		},
-	},
-	{
-		accessorKey: "name",
-		header: ({ column }) => {
-			return (
-				<Button
-					variant="ghost"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					Nombre
-					<ArrowUpDown />
-				</Button>
-			)
-		},
-		cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-	},
-	{
-		id: "actions",
-		enableHiding: false,
-		cell: ({ row }) => {
-			const Class = row.original
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" className="h-8 w-8 p-0">
-							<span className="sr-only">Open menu</span>
-							<MoreHorizontal />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Class.id.toString())}>
-							Copy Class ID
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>View customer</DropdownMenuItem>
-						<DropdownMenuItem>View Class details</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		},
-	},
-]

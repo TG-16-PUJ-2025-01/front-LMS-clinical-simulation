@@ -1,4 +1,3 @@
-"use client"
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -13,7 +12,6 @@ import {
 } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
-import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -45,7 +43,9 @@ export function ClassesDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "student"  | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "student" | null>(
+		null
+	)
 	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 
 	const [data, setData] = useState<Class[]>([])
@@ -62,7 +62,7 @@ export function ClassesDataTable() {
 
 	useEffect(() => {
 		if (openDialog) return
-		
+
 		const fetchClasses = async () => {
 			const res = await getClasses(
 				pagination.pageIndex,
@@ -102,7 +102,7 @@ export function ClassesDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						ID 
+						ID
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
@@ -148,7 +148,7 @@ export function ClassesDataTable() {
 			},
 			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
 		},
-		{			
+		{
 			id: "professor",
 			accessorFn: ({ professor }) => `${professor.name} ${professor.lastName}`,
 
@@ -184,11 +184,7 @@ export function ClassesDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{row.getValue("period")}
-				</div>
-			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("period")}</div>,
 		},
 		{
 			id: "actions",
@@ -249,7 +245,7 @@ export function ClassesDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center  justify-between py-4">
+				<div className="flex items-center justify-between">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -258,13 +254,13 @@ export function ClassesDataTable() {
 							onChange={(event) => {
 								setFilter(event.target.value)
 								setPagination({ ...pagination, pageIndex: 0 })
-							}}							
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
 					<Button onClick={() => handleOpenDialog("create")}>Nueva clase</Button>
 				</div>
-				<div className="rounded-md border">
+				<div className="rounded-md border mt-4">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -302,7 +298,7 @@ export function ClassesDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="flex items-center justify-end space-x-2 pt-4">
 					<div className="space-x-2">
 						<Button
 							variant="outline"
@@ -328,85 +324,12 @@ export function ClassesDataTable() {
 				onClose={handleCloseDialog}
 				classData={selectedClass ?? undefined}
 			/>
-			<DeleteClassDialog 
-				open={openDialog === "delete"} 
-				onClose={handleCloseDialog} 
+			<DeleteClassDialog
+				open={openDialog === "delete"}
+				onClose={handleCloseDialog}
 				classToDelete={selectedClass ?? undefined}
 			/>
 			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>
 	)
 }
-
-export const columns: ColumnDef<Class>[] = [
-	{
-		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-				aria-label="Select all"
-			/>
-		),
-		cell: ({ row }) => (
-			<Checkbox
-				checked={row.getIsSelected()}
-				onCheckedChange={(value) => row.toggleSelected(!!value)}
-				aria-label="Select row"
-			/>
-		),
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		accessorKey: "id",
-		header: () => <div>id</div>,
-		cell: ({ row }) => {
-			return <div className="font-medium">{row.getValue("id")}</div>
-		},
-	},
-	{
-		accessorKey: "name",
-		header: ({ column }) => {
-			return (
-				<Button
-					variant="ghost"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					Nombre
-					<ArrowUpDown />
-				</Button>
-			)
-		},
-		cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-	},
-	{
-		id: "actions",
-		enableHiding: false,
-		cell: ({ row }) => {
-			const Class = row.original
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" className="h-8 w-8 p-0">
-							<span className="sr-only">Open menu</span>
-							<MoreHorizontal />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem onClick={() => navigator.clipboard.writeText(Class.id.toString())}>
-							Copy Class ID
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>View customer</DropdownMenuItem>
-						<DropdownMenuItem>View Class details</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		},
-	},
-]

@@ -194,7 +194,7 @@ export function CoursesDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center justify-between py-4">
+				<div className="flex items-center justify-between">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -209,7 +209,7 @@ export function CoursesDataTable() {
 					</div>
 					<Button onClick={() => handleOpenDialog("create")}>Nueva asignatura</Button>
 				</div>
-				<div className="rounded-md border">
+				<div className="rounded-md border mt-4">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -247,7 +247,7 @@ export function CoursesDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="flex items-center justify-end space-x-2 pt-4">
 					<div className="space-x-2">
 						<Button
 							variant="outline"
