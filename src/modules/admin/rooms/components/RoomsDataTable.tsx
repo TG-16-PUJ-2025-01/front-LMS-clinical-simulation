@@ -1,6 +1,5 @@
 import {
 	ColumnDef,
-	ColumnFiltersState,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -10,15 +9,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import {
-	ArrowUpDown,
-	MoreHorizontal,
-	Pencil,
-	Plus,
-	Search,
-	Trash2,
-} from "lucide-react"
-
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -42,17 +33,11 @@ import EditRoomDialog from "./EditRoomDialog"
 import DeleteRoomDialog from "./DeleteRoomDialog"
 import { useEffect, useState } from "react"
 import { getAllRooms } from "../services/roomService"
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/modules/core/components/ui/tooltip"
 import AddRoomDialog from "./AddRoomDialog"
 
 export function RoomsDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
@@ -72,18 +57,26 @@ export function RoomsDataTable() {
 	})
 
 	useEffect(() => {
+		if (openDialog) return
+
 		const fetchRooms = async () => {
-			const res = await getAllRooms(pagination.pageIndex, pagination.pageSize)
-			setData(res.data.content)
+			const res = await getAllRooms(
+				pagination.pageIndex,
+				pagination.pageSize,
+				filter,
+				sorting[0]?.id,
+				!(sorting[0]?.desc ?? false)
+			)
+			setData(res.data)
 			setPaginationInfo({
-				total: res.data.totalElements,
-				totalPages: res.data.totalPages,
+				total: res.metadata.total,
+				totalPages: res.metadata.totalPages,
 			})
 		}
 		fetchRooms()
-	}, [pagination])
+	}, [pagination, filter, sorting, openDialog])
 
-	const handleOpenDialog = (type: "edit" | "delete" | "add", room?: Room | null) => {
+	const handleOpenDialog = (type: "edit" | "delete" | "add", room?: Room) => {
 		setEditDialog(type)
 		setSelectedRoom(room ?? null)
 	}
@@ -91,28 +84,10 @@ export function RoomsDataTable() {
 	const handleCloseDialog = () => {
 		setEditDialog(null)
 		setSelectedRoom(null)
-		setPagination((prev) => ({ ...prev }));
+		setPagination((prev) => ({ ...prev }))
 	}
 
 	const columns: ColumnDef<Room>[] = [
-		{
-			accessorKey: "id",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						ID
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("id")}</div>
-			},
-		},
 		{
 			accessorKey: "name",
 			header: ({ column }) => (
@@ -146,11 +121,24 @@ export function RoomsDataTable() {
 					</Button>
 				</div>
 			),
-			cell: ({ row }) => (
-				<div className="text-center">
-					{row.getValue("type")}
+			cell: ({ row }) => <div className="text-center">{row.getValue("type")}</div>,
+		},
+		{
+			id: "capacity",
+			accessorKey: "capacity",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Capacidad
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
 				</div>
 			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("capacity")}</div>,
 		},
 		{
 			id: "actions",
@@ -185,7 +173,6 @@ export function RoomsDataTable() {
 		data,
 		columns,
 		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
@@ -198,7 +185,6 @@ export function RoomsDataTable() {
 		pageCount: paginationInfo.totalPages,
 		state: {
 			sorting,
-			columnFilters,
 			columnVisibility,
 			rowSelection,
 			pagination,
@@ -208,30 +194,20 @@ export function RoomsDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center py-4">
+				<div className="flex items-center justify-between py-4">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
 							placeholder="Buscar..."
-							value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-							onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+							value={filter}
+							onChange={(event) => {
+								setFilter(event.target.value)
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
 							className="w-full pl-8"
 						/>
 					</div>
-					<div className="ml-auto flex space-x-2">
-						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<Button variant="outline" size="icon" onClick={() => handleOpenDialog("add", null)}>
-										<Plus className="h-5 w-5" />
-									</Button>
-								</TooltipTrigger>
-								<TooltipContent>
-									<span>Agregar nueva sala</span>
-								</TooltipContent>
-							</Tooltip>
-						</TooltipProvider>
-					</div>
+					<Button onClick={() => handleOpenDialog("add")}>Nueva Sala</Button>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -295,9 +271,13 @@ export function RoomsDataTable() {
 			<EditRoomDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
-				room={selectedRoom ?? undefined}
+				room={selectedRoom!}
 			/>
-			<DeleteRoomDialog open={openDialog === "delete"} onClose={handleCloseDialog} roomId={selectedRoom?.id ?? null} />
+			<DeleteRoomDialog
+				open={openDialog === "delete"}
+				onClose={handleCloseDialog}
+				roomId={selectedRoom?.id!}
+			/>
 			<AddRoomDialog open={openDialog === "add"} onClose={handleCloseDialog} />
 		</>
 	)

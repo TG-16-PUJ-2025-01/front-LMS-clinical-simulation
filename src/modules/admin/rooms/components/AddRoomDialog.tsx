@@ -32,13 +32,16 @@ interface Props {
 }
 
 const formSchema = z.object({
-	name: z.string().min(2, {
-		message: "El nombre debe tener al menos 2 caracteres",
+	name: z.string().nonempty({
+		message: "El nombre no puede estar vacío",
+	}),
+	capacity: z.number().int().min(1, {
+		message: "La capacidad debe ser mayor a 0",
 	}),
 	type: z.object({
 		id: z.number().optional(),
-		name: z.string().min(2, {
-			message: "El nombre del tipo de sala debe tener al menos 2 caracteres",
+		name: z.string().nonempty({
+			message: "El tipo de la sala no puede estar vacío",
 		}),
 	}),
 })
@@ -50,6 +53,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: "",
+			capacity: 0,
 			type: {
 				id: undefined,
 				name: "",
@@ -68,34 +72,37 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 	}
 
 	useEffect(() => {
-		fetchRoomTypes()
-		form.reset()
-	}, [form])
+		if (open) {
+			fetchRoomTypes()
+			form.reset()
+		}
+	}, [open])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			const newRoom: Room = {
 				id: undefined,
 				name: values.name,
+				capacity: values.capacity,
 				type: {
 					id: values.type.id!,
 					name: values.type.name,
-				}
+				},
 			}
 
 			await createRoom(newRoom)
-			console.log("Sala creada exitosamente:", newRoom)
 
-			toast.success("Sala creada exitosamente")
 			toast.success("Sala creada exitosamente")
 
 			onClose(false)
 
 			form.reset()
-		} catch (error) {
-			toast.error("Error al crear la sala")
-			toast.error("Error al crear la sala")
-			console.error("Error al crear la sala:", error)
+		} catch (error: any) {
+			if (error.response && error.response.data && error.response.data.message) {
+				toast.error("El nombre de la sala ya existe")
+			} else {
+				toast.error("Error al crear la sala")
+			}
 		}
 	}
 
@@ -126,8 +133,8 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 							/>
 							<FormField
 								control={form.control}
-								name="type"
-								render={() => (
+								name="type.name"
+								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
 										<FormControl>
@@ -140,8 +147,32 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 												placeholderText="Seleccionar..."
 												itemName="tipo de sala"
 												onChange={(selected) => {
-													form.setValue("type", { id: selected.key, name: selected.value })
+													if (selected) {
+														field.onChange(selected.value)
+														form.setValue("type.id", selected.key)
+													}
 												}}
+												selectedValue={field.value}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="capacity"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Capacidad</FormLabel>
+										<FormControl>
+											<Input
+												id="capacity"
+												type="number"
+												placeholder="Capacidad"
+												className="col-span-3 m-0"
+												{...field}
+												onChange={(e) => field.onChange(Number(e.target.value))}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

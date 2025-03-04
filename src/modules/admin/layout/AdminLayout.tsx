@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: Props) {
 	const navLinks = [
 		{ label: "Listado de asignaturas", href: "/admin/asignaturas" },
 		{ label: "Listado de clases", href: "/admin/clases" },
-		{ label: "Listado de cuentas", href: "/admin/cuentas" },
+		{ label: "Listado de cuentas", href: "/admin/usuarios" },
 		{ label: "Listado de salas", href: "/admin/salas" },
 		{ label: "Listado de videos", href: "/admin/videos" },
 	]

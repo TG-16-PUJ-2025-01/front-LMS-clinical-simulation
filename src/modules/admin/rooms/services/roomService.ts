@@ -1,59 +1,55 @@
-import axios from "axios";
-import { API_URL } from "@/modules/core/config/env";
-import Room from "@/modules/core/models/room";
+import axios from "axios"
+import Room from "@/modules/core/models/room"
+import ApiResponse from "@/modules/core/models/apiResponse"
+import RoomType from "@/modules/core/models/roomType"
+import { API_URL } from "@/modules/core/config/env"
 
-const axiosInstance = axios.create({
-    baseURL: API_URL,
-});
+export async function getAllRooms(
+	page: number,
+	size: number,
+	filter: string,
+	sort: string,
+	asc: boolean
+): Promise<ApiResponse<Room[]>> {
+	const { data } = await axios.get(`${API_URL}/room/all`, {
+		params: {
+			page,
+			size,
+			sort,
+			asc,
+			filter,
+		},
+	})
 
-export async function getAllRooms(page: number, size: number) {
-    const response = await axiosInstance.get(`/rooms/all`, {
-        params: { page, size },
-    });
-    console.log("Dentro de getAllRooms");
-    console.log(response.data);
-    return response.data;
+	return data
 }
 
-export async function getRoomById(id: number) {
-    const response = await axiosInstance.get(`/rooms/${id}`);
-    console.log("Dentro de getRoomById");
-    console.log(response.data);
-    return response.data;
+export async function getRoomById(id: number): Promise<ApiResponse<Room>> {
+	const { data } = await axios.get(`${API_URL}/room/${id}`)
+	return data
 }
 
-export async function getRoomsTypes() {
-    const response = await axiosInstance.get(`/rooms/types`);
-    console.log("Dentro de getRoomsTypes");
-    console.log(response.data);
-    return response.data;
+export async function getRoomsTypes(): Promise<ApiResponse<RoomType[]>> {
+	const { data } = await axios.get(`${API_URL}/room/types`)
+	return data
 }
 
-export async function updateRoom(room: Room) {
-    const response = await axiosInstance.put(`/rooms/update`, room);
-    console.log("Dentro de updateRoom");
-    console.log(response.data);
-    return response.data;
+export async function updateRoom(room: Room): Promise<ApiResponse<Room>> {
+	const { data } = await axios.put(`${API_URL}/room/update`, room)
+	return data
 }
 
-export async function deleteRoom(id: number) {
-    const response = await axiosInstance.delete(`/rooms/delete/${id}`);
-    console.log("Dentro de deleteRoom");
-    console.log(response.data);
-    return response.data;
+export async function deleteRoom(id: number): Promise<ApiResponse<null>> {
+	const { data } = await axios.delete(`${API_URL}/room/delete/${id}`)
+	return data
 }
 
-export async function createRoom(room: Room) {
-    const response = await axiosInstance.post(`/rooms/add`, room);
-    console.log("Dentro de createRoom");
-    console.log(response.data);
-    return response.data;
+export async function createRoom(room: Room): Promise<ApiResponse<Room>> {
+	const { data } = await axios.post(`${API_URL}/room/add`, room)
+	return data
 }
 
-export async function addRoomType(name: string) {
-    const response = await axiosInstance.post(`/rooms/type/add`, { name });
-    console.log("Dentro de addRoomType");
-    console.log(response.data);
-    return response.data;
+export async function addRoomType(name: string): Promise<ApiResponse<RoomType>> {
+	const { data } = await axios.post(`${API_URL}/room/type/add`, { name })
+	return data
 }
-
