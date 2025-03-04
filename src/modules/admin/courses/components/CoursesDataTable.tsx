@@ -72,6 +72,7 @@ export function CoursesDataTable() {
 				totalPages: res.metadata.totalPages,
 			})
 		}
+
 		fetchCourses()
 	}, [pagination, filter, sorting, openDialog])
 

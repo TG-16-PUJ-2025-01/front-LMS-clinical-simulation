@@ -9,7 +9,7 @@ import {
 	DialogTitle,
 } from "@/modules/core/components/ui/dialog"
 import { Input } from "@/modules/core/components/ui/input"
-import { useForm} from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -26,7 +26,7 @@ import Class from "@/modules/core/models/class"
 import { toast } from "sonner"
 import User from "@/modules/core/models/user"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
-import { createClass, getAllProfessors, updateClass } from "../services/classService"
+import { createClass, getAllProfessors } from "../services/classService"
 import Course from "@/modules/core/models/course"
 import { getCourses } from "../../courses/services/courseService"
 
@@ -38,10 +38,7 @@ interface Props {
 
 const formSchema = z.object({
 	javerianaId: z.coerce.number().int().positive({
-        message: "El ID debe ser un número entero positivo",
-    }),
-	name: z.string().min(2, {
-		message: "El nombre debe tener al menos 2 caracteres",
+		message: "El ID debe ser un número entero positivo",
 	}),
 	professor: z.object({
 		id: z.number().optional(),
@@ -55,20 +52,24 @@ const formSchema = z.object({
 			message: "Debe seleccionar la asignatura asociada",
 		}),
 	}),
-	beginningDate: z.date({
-		required_error: "La fecha de inicio debe ser una fecha válida",
+	year: z.number({
+		required_error: "El año es requerido",
+	}),
+	yearPeriod: z.string({
+		required_error: "El periodo academico es requerido",
 	}),
 })
 
-export default function CreateClassDialog({ open, onClose}: Props) {
-	
+//lista de trings
+const periods = ["10", "20", "30"]
+
+export default function CreateClassDialog({ open, onClose }: Props) {
 	const [courses, setCourses] = useState<Course[]>([])
 	const [professors, setProfessors] = useState<User[]>([])
-	
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			name: undefined,
 			javerianaId: undefined,
 			professor: {
 				id: 0,
@@ -77,45 +78,41 @@ export default function CreateClassDialog({ open, onClose}: Props) {
 			course: {
 				id: 0,
 				name: "",
-			}, 
-			beginningDate: new Date(),
+			},
+			year: new Date().getFullYear(),
+			yearPeriod: "10",
 		},
 	})
 
 	useEffect(() => {
 		const fetchProfessors = async () => {
-					const res = await getAllProfessors()
-					setProfessors(res.data)
-				}
-				
+			const res = await getAllProfessors()
+			setProfessors(res.data)
+		}
+
 		fetchProfessors()
 
 		const fetchCourses = async () => {
 			const res = await getCourses(0, 10, "", "name", true)
 			setCourses(res.data)
 		}
-		
+
 		fetchCourses()
 
 		form.reset()
-
-
 	}, [form, open])
-
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			console.log(values)
 			await createClass({
 				javerianaId: values.javerianaId,
-				name: values.name,
-				professorId: values.professor.id!,
+				professorsIds: [values.professor.id!],
 				courseId: values.course.id!,
-				beginningDate: values.beginningDate,
+				period: values.year.toString() + "-" + values.yearPeriod,
 			})
-	
+
 			onClose(false)
-	
+
 			toast.success("Clase creada correctamente")
 		} catch (error) {
 			toast.error("Error al crear la clase")
@@ -147,19 +144,6 @@ export default function CreateClassDialog({ open, onClose}: Props) {
 							/>
 							<FormField
 								control={form.control}
-								name="name"
-								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Nombre</FormLabel>
-										<FormControl>
-                                            <Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
-										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
 								name="professor.name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
@@ -167,7 +151,10 @@ export default function CreateClassDialog({ open, onClose}: Props) {
 										<FormControl>
 											<Combobox
 												placeholderText="Selecciona un profesor"
-												options={professors.map((val) => ({ key: val.id, value: `${val.name} ${val.lastName}` }))}
+												options={professors.map((val) => ({
+													key: val.id,
+													value: `${val.name} ${val.lastName}`,
+												}))}
 												itemName="profesor"
 												onChange={(selected) => {
 													field.onChange(selected.value)
@@ -184,40 +171,71 @@ export default function CreateClassDialog({ open, onClose}: Props) {
 								name="course.name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-									<FormLabel className="m-0 text-right">Curso</FormLabel>
-									<FormControl>
-										<Combobox
-											placeholderText="Selecciona un curso"
-											options={courses.map((val) => ({ key: val.courseId, value: `${val.name}` }))}
-											itemName="curso"
-											onChange={(selected) => {
-												field.onChange(selected.value)
-												form.setValue("course.id", selected.key)
-											}}
-										/>
-									</FormControl>
-									<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-								</FormItem>	
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="beginningDate"
-								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Fecha de inicio</FormLabel>
+										<FormLabel className="m-0 text-right">Asignatura</FormLabel>
 										<FormControl>
-											<DatePicker
-												id="beginningDate"
-												className="col-span-3 m-0"
-												selected={field.value}
-												onSelect={(date) => field.onChange(date ?? null)}
+											<Combobox
+												placeholderText="Selecciona un curso"
+												options={courses.map((val) => ({
+													key: val.courseId,
+													value: `${val.name}`,
+												}))}
+												itemName="curso"
+												onChange={(selected) => {
+													field.onChange(selected.value)
+													form.setValue("course.id", selected.key)
+												}}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
 								)}
 							/>
+
+							<div className="flex w-full items-center justify-center gap-2">
+								<div className="w-24">
+									<FormField
+										control={form.control}
+										name="year"
+										render={({ field }) => (
+											<FormItem className="flex items-center">
+												<FormControl>
+													<Combobox
+														placeholderText="Año"
+														options={[...Array(3)].map((_, i) => {
+															const year = new Date().getFullYear() + i
+															return { key: year, value: year.toString() }
+														})}
+														itemName="año"
+														onChange={(selected) => field.onChange(Number(selected.value))}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								</div>
+								<span className="text-xs">-</span>
+								<div className="w-16">
+									<FormField
+										control={form.control}
+										name="yearPeriod"
+										render={({ field }) => (
+											<FormItem className="flex items-center">
+												<FormControl>
+													<Combobox
+														placeholderText="Período"
+														options={periods.map((period) => ({
+															key: Number(period),
+															value: period,
+														}))}
+														itemName="período"
+														onChange={(selected) => field.onChange(selected.value.toString())}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								</div>
+							</div>
 						</div>
 						<DialogFooter>
 							<Button type="submit">Crear</Button>

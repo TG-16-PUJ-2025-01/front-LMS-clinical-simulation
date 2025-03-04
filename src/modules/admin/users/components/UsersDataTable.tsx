@@ -237,10 +237,6 @@ export function UsersDataTable() {
     },
   });
 
-  function handleSaveMailConfig(host: string, username: string, password: string): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
     <>
       <div className="w-full">
@@ -353,7 +349,6 @@ export function UsersDataTable() {
       <UpdateMailConfigDialog
         open={openMailConfigDialog}
         onClose={() => setOpenMailConfigDialog(false)}
-        onSave={handleSaveMailConfig}
       />
     </>
   );

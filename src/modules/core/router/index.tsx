@@ -14,6 +14,7 @@ import AdminClassesPage from "@/modules/admin/classes/pages/ClassesPage"
 import AdminRoomsPage from "@/modules/admin/rooms/pages/RoomsPage"
 import AdminUsersPage from "@/modules/admin/users/pages/UsersPage"
 import CoordinatorSimulationPage from "@/modules/coordinator/simulations/pages/SimulationPage"
+import MembersPage from "@/modules/shared/members/pages/MembersPage"
 
 export default function Router() {
 	return (
@@ -42,6 +43,7 @@ export default function Router() {
 					<Route path="/admin/clases" element={<AdminClassesPage />}></Route>
 					<Route path="/admin/salas" element={<AdminRoomsPage />}></Route>
 					<Route path="/admin/usuarios" element={<AdminUsersPage />}></Route>
+					<Route path= "/admin/clases/:id/miembros" element={<MembersPage />}></Route>
 				</Route>
 
 				{/* Default Route */}

@@ -31,20 +31,26 @@ import {
 	TableRow,
 } from "@/modules/core/components/ui/table"
 import { useEffect, useState } from "react"
-import { getClasses } from "../services/classService"
-import DeleteStudentClassDialog from "./DeleteStudentClassDialogue"
 import UserModel from "@/modules/core/models/user"
+import { getClassMembers } from "../services/membersService"
+import Role from "@/modules/core/models/role"
+import { useParams } from "react-router-dom"
+import AddMembersDialog from "./AddMembersDialog"
+import DeleteStudentClassDialog from "./deleteStudentDialog"
+
 export function StudentsClassDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
+	const { id } = useParams()
 
-	const [openDialog, setEditDialog] = useState<"delete" | null>(null)
-	const [selectedStudent, setSelectedStudent] = useState<UserModel | null>(null)
+	const [openDialog, setOpenDialog] = useState<"delete" | "students" | null>(null)
+	const [selectedStudent, setSelectedStudent] = useState<UserModel | undefined>(undefined)
+	const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
 
-	const [data] = useState<UserModel[]>([])
+	const [data, setData] = useState<UserModel[]>([])
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
@@ -59,38 +65,40 @@ export function StudentsClassDataTable() {
 	useEffect(() => {
 		if (openDialog) return
 
-		const fetchStudents = async () => {
-			const res = await getClasses(
+		const fetchMembers = async () => {
+			const res = await getClassMembers(
 				pagination.pageIndex,
 				pagination.pageSize,
 				filter,
 				sorting[0]?.id,
-				!(sorting[0]?.desc ?? false)
+				!(sorting[0]?.desc ?? false),
+				Number(id) //obtener el id de la url navigate(`/admin/classes/${Class.id}/members`)}
 			)
-			console.log("Classes", res)
-			//setData(res.data)
+			setData(res.data)
+
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
 			})
 		}
 
-		fetchStudents()
-	}, [pagination, filter, sorting, openDialog])
+		fetchMembers()
+	}, [pagination, filter, sorting, openDialog, id])
 
-	const handleOpenDialog = (type: "delete", Usermodel?: UserModel) => {
-		setEditDialog(type)
-		setSelectedStudent(Usermodel ?? null)
+	const handleOpenDialog = (type: "delete" | "students", Usermodel?: UserModel) => {
+		setOpenDialog(type)
+		setSelectedStudent(Usermodel ?? undefined)
+		setSelectedClassId(id ? Number(id) : null)
 	}
 
 	const handleCloseDialog = () => {
-		setEditDialog(null)
-		setSelectedStudent(null)
+		setOpenDialog(null)
+		setSelectedStudent(undefined)
 	}
 
 	const columns: ColumnDef<UserModel>[] = [
 		{
-			accessorKey: "javerianaId",
+			accessorKey: "institutionalId",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -104,7 +112,7 @@ export function StudentsClassDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("javerianaId")}</div>
+				return <div className="text-center">{row.getValue("institutionalId")}</div>
 			},
 		},
 		{
@@ -126,8 +134,39 @@ export function StudentsClassDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
-			id: "lastName",
-			accessorFn: ({ lastName }) => lastName,
+			accessorKey: "lastName", // ✅ Cambiado de id a accessorKey
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Apellidos
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
+		},
+		{
+			accessorKey: "email", // ✅ Cambiado de id a accessorKey
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Correo
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("email")}</div>,
+		},
+		{
+			accessorKey: "roles",
 			header: ({ column }) => {
 				return (
 					<div className="relative w-full">
@@ -136,13 +175,24 @@ export function StudentsClassDataTable() {
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						>
-							Apellidos
+							Cargo
 							{column.getIsSorted() && <ArrowUpDown />}
 						</Button>
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
+			cell: ({ row }) => {
+				const roles = row.getValue("roles") as Role[]
+				
+				let displayRole = "Sin rol"; 
+				if (roles.includes(Role.PROFESOR)) {
+					displayRole = Role.PROFESOR;
+				} else if (roles.includes(Role.ESTUDIANTE)) {
+					displayRole = Role.ESTUDIANTE;
+				}
+			
+				return <div className="text-center">{displayRole}</div>;
+			},
 		},
 		{
 			id: "actions",
@@ -210,6 +260,7 @@ export function StudentsClassDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
+					<Button onClick={() => handleOpenDialog("students")}>Anadir miembros</Button>
 				</div>
 				<div className="mt-4 rounded-md border">
 					<Table>
@@ -270,10 +321,16 @@ export function StudentsClassDataTable() {
 					</div>
 				</div>
 			</div>
+			<AddMembersDialog
+				open={openDialog === "students"}
+				onClose={handleCloseDialog}
+				classId={Number(id)}
+			/>
 			<DeleteStudentClassDialog
 				open={openDialog === "delete"}
 				onClose={handleCloseDialog}
-				studentToDelete={selectedStudent ?? undefined}
+				studentToDelete={selectedStudent}
+				classId={selectedClassId ?? 0}
 			/>
 		</>
 	)

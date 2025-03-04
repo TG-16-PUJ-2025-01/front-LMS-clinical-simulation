@@ -2,6 +2,6 @@ export interface CreateUserDTO {
     name: string;
     lastName: string;
     email: string;
-    institutionalId: number;
+    institutionalId: string;
     roles: string[];
 }
