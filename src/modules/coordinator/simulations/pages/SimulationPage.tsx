@@ -2,6 +2,8 @@ import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { API_URL } from "@/modules/core/config/env"
 import { useRef, useEffect, useState } from "react"
+import { CommentForm } from "../components/CommentForm"
+import { Separator } from "@/modules/core/components/ui/separator"
 
 export default function SimulationPage() {
 	const videoRef = useRef<HTMLVideoElement>(null)
@@ -35,17 +37,20 @@ export default function SimulationPage() {
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">Práctica (Grupo X)</LayoutSlot>
-			<section className="grid grid-cols-2">
-				<div>
+			<div className="grid grid-cols-2">
+				<section>
 					<video
 						ref={videoRef}
 						src={`${API_URL}/streaming/video/test.mp4`}
 						className="aspect-video w-full rounded-md"
 						controls
 					></video>
-					<p>Current Time: {currentTime}</p>
-				</div>
-			</section>
+					<CommentForm timestamp={currentTime} />
+					<Separator className="my-2" />
+					<h2 className="font-semibold">Comentarios anteriores</h2>
+					
+				</section>
+			</div>
 		</>
 	)
 }
