@@ -4,6 +4,7 @@ import AdminLayout from "@/modules/admin/layout/AdminLayout"
 import CoordinatorLayout from "@/modules/coordinator/layout/CoordinatorLayout"
 import StudentLayout from "@/modules/student/layout/StudentLayout"
 import TeacherLayout from "@/modules/teacher/layout/TeacherLayout"
+import { LayoutSlotProvider } from "../../components/Slots/LayoutSlotContext"
 
 export function PrivateRoute() {
 	// Assert is authenticated
@@ -13,13 +14,17 @@ export function PrivateRoute() {
 		return <Navigate to="/login" />
 	}
 
-	return <Outlet />
+	return (
+		<LayoutSlotProvider>
+			<Outlet />
+		</LayoutSlotProvider>
+	)
 }
 
 export function StudentRoute() {
 	// Assert is student
 	// If not student, redirect to login
-	const isStudent = false
+	const isStudent = true
 	if (!isStudent) {
 		return <Navigate to="/login" />
 	}
@@ -34,7 +39,7 @@ export function StudentRoute() {
 export function TeacherRoute() {
 	// Assert is teacher
 	// If not teacher, redirect to login
-	const isTeacher = false
+	const isTeacher = true
 	if (!isTeacher) {
 		return <Navigate to="/login" />
 	}
@@ -49,7 +54,7 @@ export function TeacherRoute() {
 export function CoordinatorRoute() {
 	// Assert is coordinator
 	// If not coordinator, redirect to login
-	const isCoordinator = false
+	const isCoordinator = true
 	if (!isCoordinator) {
 		return <Navigate to="/login" />
 	}

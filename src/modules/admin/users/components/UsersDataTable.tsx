@@ -240,7 +240,7 @@ export function UsersDataTable() {
   return (
     <>
       <div className="w-full">
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between">
           <div className="relative w-1/2 max-w-sm">
             <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
             <Input
@@ -253,7 +253,7 @@ export function UsersDataTable() {
               className="w-full pl-8"
             />
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 mt-4">
             <Button onClick={() => setOpenMailConfigDialog(true)}>
               Configurar servidor de correo
             </Button>
@@ -309,7 +309,7 @@ export function UsersDataTable() {
             </TableBody>
             </Table>
         </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex items-center justify-end space-x-2 pt-4">
           <div className="space-x-2">
             <Button
               variant="outline"

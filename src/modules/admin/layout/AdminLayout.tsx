@@ -1,5 +1,6 @@
 import NavBar from "@/modules/core/components/Headers/NavBar"
-import { Toaster } from "sonner"
+import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
+import PrivateLayout from "@/modules/shared/layout/PrivateLayout"
 
 interface Props {
 	children: React.ReactNode
@@ -15,10 +16,11 @@ export default function AdminLayout({ children }: Props) {
 	]
 
 	return (
-		<div className="min-h-screen bg-gray-100">
-			<NavBar navLinks={navLinks} />
-			<div className="container mx-auto p-4">{children}</div>
-			<Toaster />
-		</div>
+		<PrivateLayout>
+			<LayoutSlot name="header">
+				<NavBar navLinks={navLinks} />
+			</LayoutSlot>
+			{children}
+		</PrivateLayout>
 	)
 }

@@ -74,7 +74,6 @@ export function StudentsClassDataTable() {
 				!(sorting[0]?.desc ?? false),
 				Number(id) //obtener el id de la url navigate(`/admin/classes/${Class.id}/members`)}
 			)
-
 			setData(res.data)
 
 			setPaginationInfo({
@@ -84,7 +83,7 @@ export function StudentsClassDataTable() {
 		}
 
 		fetchMembers()
-	}, [pagination, filter, sorting, openDialog])
+	}, [pagination, filter, sorting, openDialog, id])
 
 	const handleOpenDialog = (type: "delete" | "students", Usermodel?: UserModel) => {
 		setOpenDialog(type)
@@ -248,7 +247,7 @@ export function StudentsClassDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center justify-between py-4">
+				<div className="flex items-center justify-between">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -263,7 +262,7 @@ export function StudentsClassDataTable() {
 					</div>
 					<Button onClick={() => handleOpenDialog("students")}>Anadir miembros</Button>
 				</div>
-				<div className="rounded-md border">
+				<div className="mt-4 rounded-md border">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -301,7 +300,7 @@ export function StudentsClassDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="flex items-center justify-end space-x-2 pt-4">
 					<div className="space-x-2">
 						<Button
 							variant="outline"
