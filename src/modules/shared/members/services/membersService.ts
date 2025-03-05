@@ -5,9 +5,6 @@ import ApiResponse from "@/modules/core/models/apiResponse";
 import User from "@/modules/core/models/user";
 import Class from "@/modules/core/models/class";
 
-const axiosInstance = axios.create({
-  baseURL: API_URL,
-});
 
 export async function getClassMembers(
   page: number,
@@ -17,35 +14,57 @@ export async function getClassMembers(
   asc: boolean,
   classId: number
 ): Promise<ApiResponse<User[]>> {
-  const { data } = await axiosInstance.get(`/class/${classId}/member/all`, {
-    params: { page, size, filter, sort, asc },
-  });
-  setToken(data.token); // Asigna el token
-  return { ...data, data: data.data };
+    const { data } = await axios.get(`${API_URL}/class/${classId}/member/all`, {
+        params: {
+            page,
+            size,
+            filter,
+            sort,
+            asc,
+        },
+    })
+    return {
+        ...data,
+        data: (data.data),
+    }
 }
 
 export async function getAllUsers(): Promise<ApiResponse<User[]>> {
-  const { data } = await axiosInstance.get("/member/all");
-  setToken(data.token); // Asigna el token
-  return { ...data, data: data.data };
+    const { data } = await axios.get(`${API_URL}/member/all`)
+
+    return {
+        ...data,
+        data: (data.data),
+    }
 }
 
 export async function getStudentsNotInClass(classId: number, filter: string): Promise<ApiResponse<User[]>> {
-  const { data } = await axiosInstance.get(`/class/${classId}/member/all/outside`, {
-    params: { filter },
-  });
-  setToken(data.token); // Asigna el token
-  return { ...data, data: data.data };
+    const { data } = await axios.get(`${API_URL}/class/${classId}/member/all/outside`, {
+        params: {
+            filter,
+        },
+    })
+
+    return {
+        ...data,
+        data: (data.data),
+    }
 }
 
 export async function deleteStudentFromClass(classId: number, studentId: number): Promise<ApiResponse<User>> {
-  const { data } = await axiosInstance.delete(`/class/delete/${classId}/member/${studentId}`);
-  setToken(data.token); // Asigna el token
-  return { ...data, data: data.data };
+    const { data } = await axios.delete(`${API_URL}/class/delete/${classId}/member/${studentId}`)
+
+    return {
+        ...data,
+        data: (data.data),
+    }
 }
 
-export async function updateClassMembers(classId: number, selectedMembers: User[]): Promise<Class> {
-  const { data } = await axiosInstance.put(`/class/update/${classId}/members`, selectedMembers);
-  setToken(data.token); // Asigna el token
-  return { ...data, data: data.data };
+export async function updateClassMembers(classId: number, selectecMembers: User[]): Promise<Class> {
+    const { data } = await axios.put(`${API_URL}/class/update/${classId}/members`, selectecMembers)
+
+    return {
+        ...data,
+        data: (data.data),
+    }
 }

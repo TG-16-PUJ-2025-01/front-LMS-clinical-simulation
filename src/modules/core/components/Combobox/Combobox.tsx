@@ -35,10 +35,9 @@ export function Combobox({
 	const handleSelect = (currentValue: string) => {
 		setValue(currentValue === value ? "" : currentValue)
 		setOpen(false)
-		const result = options.find((option) => option.value === currentValue)
-		
-		onChange && onChange({ value: currentValue, key: result?.key })
-		//console.log("Combobox.tsx: Combobox -> result", result)
+
+		const keyValue = options.find((option) => option.value === currentValue)?.key
+		onChange && onChange({ value: currentValue , key: keyValue})
 	}
 
 	React.useEffect(() => {

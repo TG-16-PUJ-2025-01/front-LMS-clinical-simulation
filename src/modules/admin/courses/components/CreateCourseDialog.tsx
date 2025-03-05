@@ -38,7 +38,7 @@ const formSchema = z.object({
 		message: "El nombre debe tener al menos 2 caracteres",
 	}),
 	coordinator: z.object({
-		id: z.number().optional(),
+		coordinatorId: z.number().optional(),
 		name: z.string().nonempty({
 			message: "Debe seleccionar un coordinador",
 		}),
@@ -54,7 +54,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 			name: "",
 			id: 0,
 			coordinator: {
-				id: 0,
+				coordinatorId: 0,
 				name: "",
 			}
 		},
@@ -77,7 +77,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 			await createCourse({
 				javerianaId: values.id,
 				name: values.name,
-				coordinatorId: values.coordinator.id!,
+				coordinatorId: values.coordinator.coordinatorId!,
 			})
 	
 			onClose(false)
@@ -136,7 +136,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 												itemName="coordinador"
 												onChange={(selected) => {
 													field.onChange(selected.value)
-													form.setValue("coordinator.id", selected.key)
+													form.setValue("coordinator.coordinatorId", selected.key)
 												}}
 											/>
 										</FormControl>
