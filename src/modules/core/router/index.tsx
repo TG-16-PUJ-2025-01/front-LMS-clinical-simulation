@@ -15,6 +15,7 @@ import AdminRoomsPage from "@/modules/admin/rooms/pages/RoomsPage"
 import AdminUsersPage from "@/modules/admin/users/pages/UsersPage"
 import CoordinatorSimulationPage from "@/modules/coordinator/simulations/pages/SimulationPage"
 import MembersPage from "@/modules/shared/members/pages/MembersPage"
+import RubricTemplatePage from "@/modules/coordinator/rubric_templates/pages/rubricTemplatePage"
 
 export default function Router() {
 	return (
@@ -34,6 +35,7 @@ export default function Router() {
 				{/* Coordinator Routes */}
 				<Route element={<CoordinatorRoute />}>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
+					<Route path="/coordinador/rubricas" element={<RubricTemplatePage />}></Route>
 				</Route>
 
 				{/* Admin Routes */}
