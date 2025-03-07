@@ -20,19 +20,19 @@ import {
 
 type CardProps = React.ComponentProps<typeof Card>
 
-export function CardDemo({ className, ...props }: CardProps) {
+export function CardPractice({ className, ...props }: CardProps) {
 	const handleOpenDialog = (action: string, data: any) => {
 		console.log(`${action} clicked`, data)
 	}
 
 	return (
-		<Card className={cn("h-[200px] w-[260px] overflow-hidden", className)} {...props}>
-			<CardHeader className="bg-blue-javeriana h-1/2 p-0" />
+		<Card className={cn("h-[300px] w-[300px] overflow-hidden", className)} {...props}>
+			<CardHeader className="bg-blue-javeriana h-3/5 p-0" />
 
 			<CardContent className="flex flex-row items-end p-2">
 				<div className="flex flex-1 flex-col">
-					<CardTitle>Practica X</CardTitle>
-					<CardDescription>Descripción de la práctica X con temáticas.</CardDescription>
+					<CardTitle className="text-2xl">Practica X</CardTitle>
+					<CardDescription>Descripción de la práctica X con temáticasss hola hola hola hola hola hola hola hola hola hola.</CardDescription>
 				</div>
 
 				<div className="flex-shrink-0">
