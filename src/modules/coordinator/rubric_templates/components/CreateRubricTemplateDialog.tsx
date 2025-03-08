@@ -92,7 +92,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Titulo</FormLabel>
 										<FormControl>
-											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
+											<Input id="id" placeholder="titulo" className="col-span-3 m-0" {...field} />
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
