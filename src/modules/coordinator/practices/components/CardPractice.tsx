@@ -23,6 +23,8 @@ type CardProps = React.ComponentProps<typeof Card> & {
 	description: string
 	numberOfGroups: number
 	type: "GRUPAL" | "INDIVIDUAL"
+	onEdit: () => void
+	onDelete: () => void
 }
 
 export function CardPractice({
@@ -31,11 +33,9 @@ export function CardPractice({
 	description,
 	numberOfGroups,
 	type,
+	onEdit,
+	onDelete,
 }: CardProps) {
-	const handleOpenDialog = (action: string, data: any) => {
-		console.log(`${action} clicked`, data)
-	}
-
 	return (
 		<>
 			<Card
@@ -72,10 +72,10 @@ export function CardPractice({
 							<DropdownMenuContent align="end">
 								<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem onClick={() => handleOpenDialog("edit", {})}>
+								<DropdownMenuItem onClick={onEdit}>
 									<Pencil className="mr-2 h-4 w-4" /> Editar
 								</DropdownMenuItem>
-								<DropdownMenuItem onClick={() => handleOpenDialog("delete", {})}>
+								<DropdownMenuItem onClick={onDelete}>
 									<Trash2 className="mr-2 h-4 w-4" /> Borrar
 								</DropdownMenuItem>
 							</DropdownMenuContent>

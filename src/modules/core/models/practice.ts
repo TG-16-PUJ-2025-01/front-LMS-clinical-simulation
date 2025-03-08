@@ -6,6 +6,6 @@ export default interface Practice{
     description: string;
     type: Type;
     gradeable: boolean;
-    numberOfGroups: number;
-    maxStudentsGroup: number;
+    numberOfGroups: number | null;
+    maxStudentsGroup: number | null;
 }

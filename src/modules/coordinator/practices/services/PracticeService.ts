@@ -34,12 +34,12 @@ export async function getPracticeByClassId(id: number): Promise<ApiResponse<Prac
 }
 
 export async function updatePractice(id: number, practice: Practice): Promise<ApiResponse<Practice>> {
-    const { data } = await axios.put(`${API_URL}/practice/update/${id}`, practice)
+    const { data } = await axios.put(`${API_URL}/practice/${id}`, practice)
     return data
 }
 
 export async function deletePractice(id: number): Promise<ApiResponse<null>> {
-    const { data } = await axios.delete(`${API_URL}/practice/delete/${id}`)
+    const { data } = await axios.delete(`${API_URL}/practice/${id}`)
     return data
 }
 
