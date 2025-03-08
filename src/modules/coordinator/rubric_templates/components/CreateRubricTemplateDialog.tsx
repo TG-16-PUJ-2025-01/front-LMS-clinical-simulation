@@ -164,7 +164,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 							/>
 						</div>
 						<section className="flex flex-col gap-2">
-							<div className="flex h-[100px] w-full gap-2">
+							<div className="flex h-full w-full gap-2">
 								<article className="flex-1 overflow-auto rounded-md border">
 									<Table className="h-full">
 										<TableHeader>
@@ -182,19 +182,29 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 												<TableCell>Unicornios por doquier</TableCell>
 												<TableCell className="text-right">Unicornios por doquier</TableCell>
 											</TableRow>
+											<TableRow>
+												<TableCell className="font-medium">Unicornios por doquier</TableCell>
+												<TableCell>Unicornios por doquier</TableCell>
+												<TableCell>Unicornios por doquier</TableCell>
+												<TableCell className="text-right">Unicornios por doquier</TableCell>
+											</TableRow>
 										</TableBody>
 									</Table>
 								</article>
-								<Button
-									variant="ghost"
-									className="flex h-full items-center justify-center rounded-md border px-1"
-								>
-									+
-								</Button>
+								<div className="flex flex-col">
+									<Button
+										type="button"
+										variant="ghost"
+										className="h-full flex-grow rounded-md border px-1"
+									>
+										+
+									</Button>
+								</div>
 							</div>
 							<Button
+								type="button"
 								variant="ghost"
-								className="flex w-[calc(100%-28px)] items-center justify-center rounded-md border h-5"
+								className="flex h-5 w-[calc(100%-28px)] items-center justify-center rounded-md border"
 							>
 								+
 							</Button>
