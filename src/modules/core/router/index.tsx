@@ -15,7 +15,7 @@ import AdminRoomsPage from "@/modules/admin/rooms/pages/RoomsPage"
 import AdminUsersPage from "@/modules/admin/users/pages/UsersPage"
 import CoordinatorSimulationPage from "@/modules/coordinator/simulations/pages/SimulationPage"
 import MembersPage from "@/modules/shared/members/pages/MembersPage"
-import RubricTemplatePage from "@/modules/coordinator/rubric_templates/pages/rubricTemplatePage"
+import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
 
 export default function Router() {
 	return (
