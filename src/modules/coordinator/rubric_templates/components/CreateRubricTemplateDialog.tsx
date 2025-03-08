@@ -19,15 +19,20 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/modules/core/components/ui/form"
-
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { toast } from "sonner"
-import User from "@/modules/core/models/user"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
-import { } from "../services/rubricTemplateService"
-import Course from "@/modules/core/models/course"
+import {} from "../services/rubricTemplateService"
 import { getCourses } from "../../../admin/courses/services/courseService"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/modules/core/components/ui/table"
 
 interface Props {
 	open: boolean
@@ -37,13 +42,52 @@ interface Props {
 
 const formSchema = z.object({
 	title: z.string().nonempty({
-        message: "Debe seleccionar la asignatura asociada",
-    }),
+		message: "Debes seleccionar la asignatura asociada",
+	}),
+	courses: z
+		.array(
+			z.object({
+				id: z.number(),
+				name: z.string().min(1, {
+					message: "Debes ingresar una descripción",
+				}),
+			})
+		)
+		.nonempty({
+			message: "Debes seleccionar al menos una asignatura",
+		}),
+
+	rubric: z.array(
+		z.object({
+			name: z.string().min(1, {
+				message: "Debes ingresar una descripción",
+			}),
+			description: z.string().min(1, {
+				message: "Debes ingresar una descripción",
+			}),
+			points: z.number().int().positive({
+				message: "Debes ingresar una cantidad máxima de puntos válida",
+			}),
+			scoringScale: z.array(
+				z.object({
+					min: z.number().int().positive({
+						message: "Debes ingresar una cantidad máxima de puntos válida",
+					}),
+					max: z.number().int().positive({
+						message: "Debes ingresar una cantidad máxima de puntos válida",
+					}),
+				})
+			),
+			scoringScaleDescription: z.array(
+				z.string().min(1, {
+					message: "Debes ingresar una descripción",
+				})
+			),
+		})
+	),
 })
 
-
 export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
-
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -63,28 +107,28 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 	}, [form, open])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		
-        try {
+		try {
 			//await createRubricTemplate({})
 
 			onClose(false)
 
 			toast.success("Rubrica creada correctamente")
 		} catch (error) {
+			console.error(error)
 			toast.error("Error al crear la rubrica")
 		}
 	}
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
+			<DialogContent className="sm:max-w-[1200px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Crear Rubrica</DialogTitle>
 					<DialogDescription>Ingreasa los siguientes atributos de la rubrica</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
-						<div className="grid gap-4 py-4">
+						<div className="flex gap-4">
 							<FormField
 								control={form.control}
 								name="title"
@@ -97,8 +141,65 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
 								)}
-						    />
-                        </div>
+							/>
+							<Combobox
+								className="min-w-48"
+								placeholderText="Buscar rúbrica"
+								options={[
+									{
+										value: "a",
+									},
+									{
+										value: "b",
+									},
+									{
+										value: "c",
+									},
+									{
+										value: "d",
+									},
+								]}
+								itemName="rúbrica"
+								onChange={(selected) => {}}
+							/>
+						</div>
+						<section className="flex flex-col gap-2">
+							<div className="flex h-[100px] w-full gap-2">
+								<article className="flex-1 overflow-auto rounded-md border">
+									<Table className="h-full">
+										<TableHeader>
+											<TableRow>
+												<TableHead className="w-[100px]">Invoice</TableHead>
+												<TableHead>Status</TableHead>
+												<TableHead>Method</TableHead>
+												<TableHead className="text-right">Amount</TableHead>
+											</TableRow>
+										</TableHeader>
+										<TableBody>
+											<TableRow>
+												<TableCell className="font-medium">Unicornios por doquier</TableCell>
+												<TableCell>Unicornios por doquier</TableCell>
+												<TableCell>Unicornios por doquier</TableCell>
+												<TableCell className="text-right">Unicornios por doquier</TableCell>
+											</TableRow>
+										</TableBody>
+									</Table>
+								</article>
+								<Button
+									variant="ghost"
+									className="flex h-full items-center justify-center rounded-md border px-1"
+								>
+									+
+								</Button>
+							</div>
+							<Button
+								variant="ghost"
+								className="flex w-[calc(100%-28px)] items-center justify-center rounded-md border h-5"
+							>
+								+
+							</Button>
+						</section>
+
 						<DialogFooter>
 							<Button type="submit">Crear</Button>
 						</DialogFooter>

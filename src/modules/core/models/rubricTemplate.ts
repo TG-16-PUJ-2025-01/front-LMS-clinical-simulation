@@ -6,7 +6,8 @@ export default interface RubricTemplate {
     rubricTemplateId?: number
     title: string
     creator: User
-    criterias: Criteria[]
+    criteria: Criteria[]
     courses: Course[]
     creationDate: Date
+    archived: boolean
 }
