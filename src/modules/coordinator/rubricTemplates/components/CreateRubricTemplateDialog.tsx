@@ -42,7 +42,7 @@ interface Props {
 
 const formSchema = z.object({
 	title: z.string().nonempty({
-		message: "Debes seleccionar la asignatura asociada",
+		message: "EL título es obligatorio",
 	}),
 	courses: z
 		.array(
@@ -57,34 +57,41 @@ const formSchema = z.object({
 			message: "Debes seleccionar al menos una asignatura",
 		}),
 
-	rubric: z.array(
-		z.object({
-			name: z.string().min(1, {
-				message: "Debes ingresar una descripción",
-			}),
-			description: z.string().min(1, {
-				message: "Debes ingresar una descripción",
-			}),
-			points: z.number().int().positive({
-				message: "Debes ingresar una cantidad máxima de puntos válida",
-			}),
-			scoringScale: z.array(
-				z.object({
-					min: z.number().int().positive({
-						message: "Debes ingresar una cantidad máxima de puntos válida",
-					}),
-					max: z.number().int().positive({
-						message: "Debes ingresar una cantidad máxima de puntos válida",
-					}),
-				})
-			),
-			scoringScaleDescription: z.array(
-				z.string().min(1, {
+	rubric: z.object({
+		columns: z.array(
+			z.string().min(1, {
+				message: "Debes ingresar nombre a la columna",
+			})
+		),
+		criteria: z.array(
+			z.object({
+				name: z.string().min(1, {
 					message: "Debes ingresar una descripción",
-				})
-			),
-		})
-	),
+				}),
+				description: z.string().min(1, {
+					message: "Debes ingresar una descripción",
+				}),
+				points: z.number().int().positive({
+					message: "Debes ingresar una cantidad máxima de puntos válida",
+				}),
+				scoringScale: z.array(
+					z.object({
+						min: z.number().int().positive({
+							message: "Debes ingresar una cantidad máxima de puntos válida",
+						}),
+						max: z.number().int().positive({
+							message: "Debes ingresar una cantidad máxima de puntos válida",
+						}),
+					})
+				),
+				scoringScaleDescription: z.array(
+					z.string().min(1, {
+						message: "Debes ingresar una descripción",
+					})
+				),
+			})
+		),
+	}),
 })
 
 export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
@@ -92,6 +99,36 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			title: "",
+			courses: [],
+			rubric: {
+				columns: ["Aprobado", "No aprobado"],
+				criteria: [
+					{
+						name: "A",
+						description: "",
+						points: 0,
+						scoringScale: [
+							{
+								min: 0,
+								max: 3,
+							},
+						],
+						scoringScaleDescription: [""],
+					},
+					{
+						name: "B",
+						description: "",
+						points: 0,
+						scoringScale: [
+							{
+								min: 3,
+								max: 4,
+							},
+						],
+						scoringScaleDescription: [""],
+					},
+				],
+			},
 		},
 	})
 
@@ -123,22 +160,21 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[1200px]" onSubmit={() => {}}>
 				<DialogHeader>
-					<DialogTitle>Crear Rubrica</DialogTitle>
-					<DialogDescription>Ingreasa los siguientes atributos de la rubrica</DialogDescription>
+					<DialogTitle>Crear Rúbrica</DialogTitle>
+					<DialogDescription>Ingresa los siguientes atributos de la rúbrica</DialogDescription>
 				</DialogHeader>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 					<Form {...form}>
 						<div className="flex gap-4">
 							<FormField
 								control={form.control}
 								name="title"
 								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Titulo</FormLabel>
+									<FormItem className="flex flex-col gap-2">
 										<FormControl>
-											<Input id="id" placeholder="titulo" className="col-span-3 m-0" {...field} />
+											<Input id="id" placeholder="Título" className="col-span-3 m-0" {...field} />
 										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+										<FormMessage className="m-0 -mt-2" />
 									</FormItem>
 								)}
 							/>
@@ -163,55 +199,70 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 								onChange={(selected) => {}}
 							/>
 						</div>
-						<section className="flex flex-col gap-2">
-							<div className="flex h-full w-full gap-2">
-								<article className="flex-1 overflow-auto rounded-md border">
-									<Table className="h-full">
-										<TableHeader>
-											<TableRow>
-												<TableHead className="w-[100px]">Invoice</TableHead>
-												<TableHead>Status</TableHead>
-												<TableHead>Method</TableHead>
-												<TableHead className="text-right">Amount</TableHead>
-											</TableRow>
-										</TableHeader>
-										<TableBody>
-											<TableRow>
-												<TableCell className="font-medium">Unicornios por doquier</TableCell>
-												<TableCell>Unicornios por doquier</TableCell>
-												<TableCell>Unicornios por doquier</TableCell>
-												<TableCell className="text-right">Unicornios por doquier</TableCell>
-											</TableRow>
-											<TableRow>
-												<TableCell className="font-medium">Unicornios por doquier</TableCell>
-												<TableCell>Unicornios por doquier</TableCell>
-												<TableCell>Unicornios por doquier</TableCell>
-												<TableCell className="text-right">Unicornios por doquier</TableCell>
-											</TableRow>
-										</TableBody>
-									</Table>
-								</article>
-								<div className="flex flex-col">
-									<Button
-										type="button"
-										variant="ghost"
-										className="h-full flex-grow rounded-md border px-1"
-									>
-										+
-									</Button>
-								</div>
-							</div>
-							<Button
-								type="button"
-								variant="ghost"
-								className="flex h-5 w-[calc(100%-28px)] items-center justify-center rounded-md border"
-							>
-								+
-							</Button>
-						</section>
+						<FormField
+							control={form.control}
+							name="rubric"
+							render={({ field }) => (
+								<FormItem className="flex flex-col gap-2">
+									<FormControl>
+										<section className="flex flex-col gap-2">
+											<div className="flex h-full w-full gap-2">
+												<article className="flex-1 overflow-auto rounded-md border">
+													<Table className="h-full">
+														<TableHeader>
+															<TableRow>
+																<TableHead className="w-[100px] border">Criterios</TableHead>
+																{field.value.columns.map((column, index) => (
+																	<TableHead key={index} className="border">{column}</TableHead>
+																))}
+															</TableRow>
+														</TableHeader>
+														<TableBody>
+															<TableRow>
+																<TableCell className="font-medium">
+																	Unicornios por doquier
+																</TableCell>
+																<TableCell>Unicornios por doquier</TableCell>
+																<TableCell>Unicornios por doquier</TableCell>
+															</TableRow>
+															<TableRow>
+																<TableCell className="font-medium">
+																	Unicornios por doquier
+																</TableCell>
+																<TableCell>Unicornios por doquier</TableCell>
+																<TableCell>Unicornios por doquier</TableCell>
+															</TableRow>
+														</TableBody>
+													</Table>
+												</article>
+												<div className="flex flex-col">
+													<Button
+														type="button"
+														variant="ghost"
+														className="h-full flex-grow rounded-md border px-1"
+													>
+														+
+													</Button>
+												</div>
+											</div>
+											<Button
+												type="button"
+												variant="ghost"
+												className="flex h-5 w-[calc(100%-28px)] items-center justify-center rounded-md border"
+											>
+												+
+											</Button>
+										</section>
+									</FormControl>
+									<FormMessage className="m-0 -mt-2" />
+								</FormItem>
+							)}
+						/>
 
 						<DialogFooter>
-							<Button type="submit">Crear</Button>
+							<Button type="submit" className="mt-4">
+								Crear
+							</Button>
 						</DialogFooter>
 					</Form>
 				</form>
