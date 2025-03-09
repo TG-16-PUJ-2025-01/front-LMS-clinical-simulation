@@ -16,6 +16,8 @@ import { z } from "zod"
 
 interface Props {
 	timestamp: number
+	onFocus?: () => void
+	onSubmit?: () => void
 }
 
 const FormSchema = z.object({
@@ -24,13 +26,18 @@ const FormSchema = z.object({
 	}),
 })
 
-export function CommentForm({ timestamp }: Props) {
+export function CommentForm({ timestamp, onFocus, onSubmit: onSubmitCallback }: Props) {
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
+		defaultValues: {
+			description: "",
+		},
 	})
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
 		toast.success("Form submitted")
+		onSubmitCallback?.()
+		form.reset()
 	}
 
 	return (
@@ -54,6 +61,7 @@ export function CommentForm({ timestamp }: Props) {
 								<Textarea
 									placeholder="Escribe un comentario..."
 									className="resize-none"
+									onFocus={onFocus}
 									{...field}
 								/>
 							</FormControl>

@@ -45,10 +45,13 @@ export default function SimulationPage() {
 						className="aspect-video w-full rounded-md"
 						controls
 					></video>
-					<CommentForm timestamp={currentTime} />
+					<CommentForm
+						timestamp={currentTime}
+						onFocus={() => videoRef.current?.pause()}
+						onSubmit={() => videoRef.current?.play()}
+					/>
 					<Separator className="my-2" />
 					<h2 className="font-semibold">Comentarios anteriores</h2>
-					
 				</section>
 			</div>
 		</>
