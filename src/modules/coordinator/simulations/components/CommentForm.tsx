@@ -13,9 +13,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
+import { addCommentToVideo } from "../services/commentService"
 
 interface Props {
 	timestamp: number
+	videoId: number
 	onFocus?: () => void
 	onSubmit?: () => void
 }
@@ -31,7 +33,7 @@ const FormSchema = z.object({
 		}),
 })
 
-export function CommentForm({ timestamp, onFocus, onSubmit: onSubmitCallback }: Props) {
+export function CommentForm({ timestamp, onFocus, videoId, onSubmit: onSubmitCallback }: Props) {
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
@@ -39,8 +41,12 @@ export function CommentForm({ timestamp, onFocus, onSubmit: onSubmitCallback }: 
 		},
 	})
 
-	function onSubmit(data: z.infer<typeof FormSchema>) {
-		toast.success("Form submitted")
+	async function onSubmit(data: z.infer<typeof FormSchema>) {
+		toast.success("Comentario publicado correctamente")
+		await addCommentToVideo(videoId, {
+			message: data.description,
+			timestamp
+		})
 		onSubmitCallback?.()
 		form.reset()
 	}

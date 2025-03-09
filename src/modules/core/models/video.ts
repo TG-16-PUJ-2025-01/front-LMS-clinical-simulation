@@ -1,3 +1,5 @@
+import Comment from "./comment"
+
 export default interface Video {
 	videoId: number
 	name: string
@@ -6,4 +8,5 @@ export default interface Video {
 	duration: number // in seconds
 	size: number // in GB
 	available: boolean
+	comments: Comment[]
 }

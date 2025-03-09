@@ -4,25 +4,30 @@ import { API_URL } from "@/modules/core/config/env"
 import { useRef, useEffect, useState } from "react"
 import { CommentForm } from "../components/CommentForm"
 import { Separator } from "@/modules/core/components/ui/separator"
-import Comment from "@/modules/core/models/comment"
 import { formatTimestamp } from "../../../core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
+import Simulation from "@/modules/core/models/simulation"
+import { useParams } from "react-router-dom"
+import { getSimulationById } from "../services/simulationService"
 
 export default function SimulationPage() {
+	const params = useParams()
 	const videoRef = useRef<HTMLVideoElement>(null)
 	const [currentTime, setCurrentTime] = useState(0)
-	const [previousComments] = useState<Comment[]>([
-		{
-			timestamp: 300,
-			message:
-				"Adipisicing tempor dolor Lorem quis do cupidatat culpa incididunt eu laborum nisi cillum tempor duis. Do eu nulla laboris proident aute est aliqua adipisicing reprehenderit aute quis. Veniam voluptate laborum anim cillum ea non do minim fugiat. Tempor labore esse sit ex commodo incididunt sunt sit. Deserunt ipsum magna veniam qui dolor nisi velit consectetur esse.",
-		},
-		{
-			timestamp: 400,
-			message:
-				"Adipisicing tempor dolor Lorem quis do cupidatat culpa incididunt eu laborum nisi cillum tempor duis. Do eu nulla laboris proident aute est aliqua adipisicing reprehenderit aute quis. Veniam voluptate laborum anim cillum ea non do minim fugiat. Tempor labore esse sit ex commodo incididunt sunt sit. Deserunt ipsum magna veniam qui dolor nisi velit consectetur esse.",
-		},
-	])
+	const [simulation, setSimulation] = useState<Simulation>()
+	const [isSync, setIsSync] = useState(false)
+	
+	useEffect(() => {
+		if (isSync) return
+
+		const fetchSimulation = async () => {
+			const response = await getSimulationById(parseInt(params.id ?? "0"))
+			setSimulation(response.data)
+		}
+
+		fetchSimulation()
+		setIsSync(true)
+	}, [isSync])
 
 	useEffect(() => {
 		const videoElement = videoRef.current
@@ -46,7 +51,7 @@ export default function SimulationPage() {
 					navLinks={[
 						{
 							label: "aqui",
-							href: "/coordinador/simulacion/123",
+							href: "/coordinador/simulacion/1",
 						},
 					]}
 				/>
@@ -56,27 +61,31 @@ export default function SimulationPage() {
 				<section>
 					<video
 						ref={videoRef}
-						src={`${API_URL}/streaming/video/test.mp4`}
+						src={`${API_URL}/streaming/video/${simulation?.video.name}`}
 						className="aspect-video w-full rounded-md"
 						controls
 					></video>
 					<CommentForm
 						timestamp={currentTime}
+						videoId={simulation?.video.videoId ?? 0}
 						onFocus={() => videoRef.current?.pause()}
-						onSubmit={() => videoRef.current?.play()}
+						onSubmit={() => {
+							videoRef.current?.play()
+							setIsSync(false)
+						}}
 					/>
 					<Separator className="my-2" />
 					<h2 className="mb-2 font-semibold">Comentarios anteriores</h2>
-					{previousComments.length === 0 ? (
+					{simulation?.video.comments.length === 0 ? (
 						<p className="text-sm text-gray-400">No hay comentarios anteriores</p>
 					) : (
 						<ul>
-							{previousComments.map((comment) => (
-								<li key={comment.timestamp} className="flex items-baseline gap-2 pb-4">
+							{simulation?.video.comments.map((comment) => (
+								<li key={comment.timestamp} className="flex items-baseline gap-2">
 									<Button
 										type="button"
 										variant="link"
-										className="cursor-pointer p-0 text-xs text-gray-400"
+										className="cursor-pointer p-0 text-xs text-gray-400 h-fit pb-2 w-14"
 										onClick={() => {
 											if (videoRef.current) videoRef.current.currentTime = comment.timestamp
 										}}
