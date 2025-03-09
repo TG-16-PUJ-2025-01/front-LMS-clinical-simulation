@@ -17,7 +17,7 @@ export async function getCourses(
 	sort: string,
 	asc: boolean
 ): Promise<ApiResponse<Course[]>> {
-	const { data } = await axiosInstance.get("/course/all", {
+	const { data } = await axios.get(`${API_URL}/course/all`, {
 		params: {
 			page,
 			size,
@@ -26,6 +26,8 @@ export async function getCourses(
 			asc,
 		},
 	})
+
+  console.log(data)
 	return {
 		...data,
 		data: data.data,
@@ -33,7 +35,7 @@ export async function getCourses(
 }
 
 export async function getCourse(id: number): Promise<ApiResponse<Course>> {
-	const { data } = await axiosInstance.get("/course/get", { params: { id } })
+	const { data } = await axios.get(`${API_URL}/course/get`, { params: { id } })
 
 	return {
 		...data,
@@ -42,7 +44,7 @@ export async function getCourse(id: number): Promise<ApiResponse<Course>> {
 }
 
 export async function createCourse(newCourse: CreateCourseDTO): Promise<ApiResponse<Course>> {
-	const { data } = await axiosInstance.post("/course/add", newCourse)
+	const { data } = await axios.post(`${API_URL}/course/add`, newCourse)
 	return {
 		...data,
 		data: data.data,
@@ -53,7 +55,7 @@ export async function updateCourse(
 	id: number,
 	updatedCourse: EditCourseDTO
 ): Promise<ApiResponse<Course>> {
-	const { data } = await axiosInstance.put(`/course/update/${id}`, updatedCourse)
+	const { data } = await axios.put(`${API_URL}/course/update/${id}`, updatedCourse)
 	return {
 		...data,
 		data: data.data,
@@ -61,7 +63,7 @@ export async function updateCourse(
 }
 
 export async function deleteCourse(id: number): Promise<ApiResponse<Course>> {
-	const { data } = await axiosInstance.delete(`/course/delete/${id}`)
+	const { data } = await axios.delete(`${API_URL}/course/delete/${id}`)
 
 	return {
 		...data,
@@ -70,7 +72,7 @@ export async function deleteCourse(id: number): Promise<ApiResponse<Course>> {
 }
 
 export async function getAllCoordinators(): Promise<ApiResponse<User[]>> {
-	const { data } = await axiosInstance.get(`/user/all/coordinator`)
+	const { data } = await axios.get(`${API_URL}/user/all/coordinator`)
 
 	return {
 		...data,

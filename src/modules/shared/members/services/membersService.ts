@@ -4,10 +4,6 @@ import ApiResponse from "@/modules/core/models/apiResponse"
 import User from "@/modules/core/models/user"
 import Class from "@/modules/core/models/class"
 
-const axiosInstance = axios.create({
-	baseURL: API_URL,
-})
-
 export async function getClassMembers(
     page: number,
     size: number,
@@ -16,7 +12,7 @@ export async function getClassMembers(
     asc: boolean,
     classId: number
 ): Promise<ApiResponse<User[]>> {
-    const { data } = await axiosInstance.get(`/class/${classId}/member/all`, {
+    const { data } = await axios.get(`${API_URL}/class/${classId}/member/all`, {
         params: {
             page,
             size,
@@ -32,7 +28,7 @@ export async function getClassMembers(
 }
 
 export async function getAllUsers(): Promise<ApiResponse<User[]>> {
-    const { data } = await axiosInstance.get("/member/all")
+    const { data } = await axios.get(`${API_URL}/member/all`)
 
     return {
         ...data,
@@ -41,7 +37,7 @@ export async function getAllUsers(): Promise<ApiResponse<User[]>> {
 }
 
 export async function getStudentsNotInClass(classId: number, filter: string): Promise<ApiResponse<User[]>> {
-    const { data } = await axiosInstance.get(`/class/${classId}/member/all/outside`, {
+    const { data } = await axios.get(`${API_URL}/class/${classId}/member/all/outside`, {
         params: {
             filter,
         },
@@ -54,7 +50,7 @@ export async function getStudentsNotInClass(classId: number, filter: string): Pr
 }
 
 export async function deleteStudentFromClass(classId: number, studentId: number): Promise<ApiResponse<User>> {
-    const { data } = await axiosInstance.delete(`/class/delete/${classId}/member/${studentId}`)
+    const { data } = await axios.delete(`${API_URL}/class/delete/${classId}/member/${studentId}`)
 
     return {
         ...data,
@@ -63,7 +59,7 @@ export async function deleteStudentFromClass(classId: number, studentId: number)
 }
 
 export async function updateClassMembers(classId: number, selectecMembers: User[]): Promise<Class> {
-    const { data } = await axiosInstance.put(`/class/update/${classId}/members`, selectecMembers)
+    const { data } = await axios.put(`${API_URL}/class/update/${classId}/members`, selectecMembers)
 
     return {
         ...data,

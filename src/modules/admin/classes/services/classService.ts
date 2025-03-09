@@ -5,10 +5,6 @@ import Class from "@/modules/core/models/class"
 import User from "@/modules/core/models/user"
 import CreateClassDTO from "../dtos/createClassDTO"
 
-const axiosInstance = axios.create({
-	baseURL: API_URL,
-})
-
 export async function getClasses(
     page: number,
     size: number,
@@ -16,7 +12,7 @@ export async function getClasses(
     sort: string,
     asc: boolean
 ): Promise<ApiResponse<Class[]>> {
-    const { data } = await axiosInstance.get("/class/all", {
+    const { data } = await axios.get(`${API_URL}/class/all`, {
         params: {
             page,
             size,
@@ -32,7 +28,7 @@ export async function getClasses(
 }
 
 export async function getClass(id: number): Promise<ApiResponse<Class>> {
-    const { data } = await axiosInstance.get("/class/get", { params: { id } })
+    const { data } = await axios.get(`${API_URL}/class/get` , { params: { id } })
 
     return {
         ...data,
@@ -41,7 +37,7 @@ export async function getClass(id: number): Promise<ApiResponse<Class>> {
 }
 
 export async function createClass(newClass: CreateClassDTO): Promise<ApiResponse<Class>> {
-    const { data } = await axiosInstance.post("/class/add", newClass)
+    const { data } = await axios.post(`${API_URL}/class/add`, newClass)
     return {
         ...data,
         data: data.data,
@@ -51,7 +47,7 @@ export async function createClass(newClass: CreateClassDTO): Promise<ApiResponse
 export async function updateClass(id: number, updatedClass: CreateClassDTO): Promise<ApiResponse<Class>> {
     console.log(updatedClass)
     
-    const { data } = await axiosInstance.put( `/class/update/${id}`, updatedClass)
+    const { data } = await axios.put( `${API_URL}/class/update/${id}`, updatedClass)
     return {
         ...data,
         data: data.data
@@ -59,7 +55,7 @@ export async function updateClass(id: number, updatedClass: CreateClassDTO): Pro
 }
 
 export async function deleteClass(id: number, ): Promise<ApiResponse<Class>> {
-    const { data } = await axiosInstance.delete(`/class/delete/${id}`)
+    const { data } = await axios.delete(`${API_URL}/class/delete/${id}`)
 
     return {
         ...data,
@@ -68,7 +64,7 @@ export async function deleteClass(id: number, ): Promise<ApiResponse<Class>> {
 }
 
 export async function getAllProfessors(): Promise<ApiResponse<User[]>> {
-    const { data } = await axiosInstance.get(`/user/all/professor`)
+    const { data } = await axios.get(`${API_URL}/user/all/professor`)
 
     return {
         ...data,

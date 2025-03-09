@@ -1,3 +1,4 @@
+import Practice from "@/modules/core/models/practice"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	Dialog,
@@ -19,104 +20,98 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/modules/core/components/ui/form"
-import { useEffect, useState } from "react"
-import Room from "@/modules/core/models/room"
-import { getRoomsTypes, updateRoom, addRoomType } from "../services/roomService"
-import RoomType from "@/modules/core/models/roomType"
+import { useEffect } from "react"
 import { toast } from "sonner"
-import { ComboboxCreate } from "../../../core/components/Combobox/ComboboxCreate"
+import Type from "@/modules/core/models/practiceType"
+import { updatePractice } from "../services/PracticeService"
+import { Checkbox } from "@/modules/core/components/ui/checkbox"
 
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
-	room: Room
+	practice: Practice
 }
 
 const formSchema = z.object({
 	name: z.string().nonempty({
 		message: "El nombre no puede estar vacío",
 	}),
-	capacity: z.number().int().min(1, {
-		message: "La capacidad debe ser mayor a 0",
+	description: z.string().nonempty({
+		message: "La descripción no puede estar vacía",
 	}),
-	type: z.object({
-		id: z.number().optional(),
-		name: z.string().nonempty({
-			message: "El tipo de la sala no puede estar vacío",
-		}),
+	type: z.string().nonempty({
+		message: "El tipo no puede estar vacío",
+	}),
+	gradeable: z.boolean(),
+	simulationDuration: z.number().int().min(0, {
+		message: "La duración de la simulación debe ser mayor o igual a 0",
 	}),
 })
 
-export default function EditRoomDialog({ open, onClose, room }: Props) {
-	const [roomTypes, setRoomTypes] = useState<RoomType[]>([])
-
+export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: "",
-			capacity: 0,
-			type: {
-				name: "",
-			},
+			description: "",
+			type: "",
+			gradeable: false,
+			simulationDuration: 0,
 		},
 	})
 
-	const handleOnCreateOption = async (option: { key: number; value: string }) => {
-		await addRoomType(option.value)
-		fetchRoomTypes()
-	}
-
-	const fetchRoomTypes = async () => {
-		const res = await getRoomsTypes()
-		setRoomTypes(res.data)
-	}
-
 	useEffect(() => {
-		fetchRoomTypes()
-		if (room) {
+		if (practice) {
 			form.reset({
-				name: room.name,
-				capacity: room.capacity,
-				type: {
-					name: room.type.name,
-					id: room.type.id,
-				},
+				name: practice.name,
+				description: practice.description,
+				type: practice.type,
+				gradeable: practice.gradeable,
+				simulationDuration: practice.simulationDuration,
 			})
 		}
-	}, [form, room])
+	}, [form, practice])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			const updatedRoom: Room = {
-				id: room?.id!,
+			const updatedPractice: Practice = {
+				id: practice.id,
 				name: values.name,
-				capacity: values.capacity,
-				type: {
-					id: values.type.id!,
-					name: values.type.name,
-				},
+				description: values.description,
+				type: values.type as Type,
+				gradeable: values.gradeable,
+				simulationDuration: values.simulationDuration,
+				numberOfGroups: practice.numberOfGroups,
+				maxStudentsGroup: practice.maxStudentsGroup,
 			}
 
-			await updateRoom(updatedRoom)
+			console.log(updatedPractice)
 
-			toast.success("Sala actualizada exitosamente")
+			await updatePractice(practice.id, updatedPractice)
+
+			toast.success("Práctica actualizada exitosamente.")
 
 			onClose(false)
 		} catch (error: any) {
 			if (error.response && error.response.data && error.response.data.message) {
 				toast.error(error.response.data.message)
 			} else {
-				toast.error("Error al actualizar la sala")
+				toast.error("Error al actualizar la práctica")
 			}
 		}
 	}
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
+			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Editar Sala</DialogTitle>
-					<DialogDescription>Puedes editar los siguientes atributos de la sala</DialogDescription>
+					<DialogTitle>Editar práctica</DialogTitle>
+					<DialogDescription>
+						Puedes editar los siguientes atributos de la sala.{" "}
+						<strong>
+							<div>Si desea modificar el tipo, número de grupos o duración de la simulación, <u>debe crear otra practica.</u></div>
+						</strong>
+					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
@@ -136,48 +131,38 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 							/>
 							<FormField
 								control={form.control}
-								name="type.name"
+								name="description"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Tipo de sala</FormLabel>
+										<FormLabel className="m-0 text-right">Descripcion</FormLabel>
 										<FormControl>
-											<ComboboxCreate
-												options={roomTypes.map((roomType) => ({
-													key: roomType.id,
-													value: roomType.name,
-												}))}
-												onCreateOption={handleOnCreateOption}
-												placeholderText={field.value}
-												itemName="tipo de sala"
-												onChange={(selected) => {
-													if (selected) {
-														field.onChange(selected.value)
-														form.setValue("type.id", selected.key)
-													}
-												}}
-												selectedValue={field.value}
+											<Input
+												id="description"
+												placeholder="Descripcion"
+												className="col-span-3 m-0"
+												{...field}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
 								)}
-							/>
+							/>			
 							<FormField
 								control={form.control}
-								name="capacity"
+								name="gradeable"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Capacidad</FormLabel>
-										<FormControl>
-											<Input
-												id="capacity"
-												placeholder="Capacidad"
-												type="number"
-												className="col-span-3 m-0"
-												{...field}
-												onChange={(e) => field.onChange(Number(e.target.value))}
-											/>
-										</FormControl>
+										<FormLabel className="text-right">Evaluación</FormLabel>
+										<div className="col-span-3 flex items-center gap-2">
+											<FormControl>
+												<Checkbox
+													id="gradeable"
+													checked={field.value}
+													onCheckedChange={field.onChange}
+												/>
+											</FormControl>
+											<FormLabel htmlFor="gradeable">¿Práctica Evaluable?</FormLabel>
+										</div>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
 								)}
