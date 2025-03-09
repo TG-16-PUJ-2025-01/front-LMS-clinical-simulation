@@ -59,7 +59,8 @@ export default function PracticesPage() {
 							key={practice.id}
 							title={practice.name}
 							description={practice.description}
-							numberOfGroups={practice.numberOfGroups ?? 0}
+							numberOfGroups={practice.numberOfGroups ?? null}
+							maxStudentsGroup={practice.maxStudentsGroup ?? null}
 							type={practice.type}
 							onEdit={() => handleOpenDialog("edit", practice)}
 							onDelete={() => handleOpenDialog("delete", practice)}

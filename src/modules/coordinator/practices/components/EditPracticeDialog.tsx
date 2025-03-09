@@ -24,13 +24,6 @@ import { useEffect } from "react"
 import { toast } from "sonner"
 import Type from "@/modules/core/models/practiceType"
 import { updatePractice } from "../services/PracticeService"
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/modules/core/components/ui/select"
 import { Checkbox } from "@/modules/core/components/ui/checkbox"
 
 interface Props {
@@ -114,8 +107,10 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 				<DialogHeader>
 					<DialogTitle>Editar práctica</DialogTitle>
 					<DialogDescription>
-						Puedes editar los siguientes atributos de la sala. Si deseas modificar el tipo, debes
-						crea otra practica.
+						Puedes editar los siguientes atributos de la sala.{" "}
+						<strong>
+							<div>Si desea modificar el tipo, número de grupos o duración de la simulación, <u>debe crear otra practica.</u></div>
+						</strong>
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -151,31 +146,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
 								)}
-							/>
-							<FormField
-								control={form.control}
-								name="type"
-								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Tipo</FormLabel>
-										<FormControl>
-											<Select
-												onValueChange={(value) => field.onChange(value)}
-												value={field.value}
-											>
-												<SelectTrigger className="w-[180px]">
-													<SelectValue placeholder="Seleccione un tipo" />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectItem value="GRUPAL">Grupal</SelectItem>
-													<SelectItem value="INDIVIDUAL">Individual</SelectItem>
-												</SelectContent>
-											</Select>
-										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-									</FormItem>
-								)}
-							/>
+							/>			
 							<FormField
 								control={form.control}
 								name="gradeable"
@@ -196,34 +167,9 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 									</FormItem>
 								)}
 							/>
-							<FormField
-								control={form.control}
-								name="simulationDuration"
-								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Duración Simulación</FormLabel>
-										<FormControl>
-											<div className="col-span-3 flex items-center">
-												<Input
-													type="number"
-													value={field.value}
-													onChange={(e) => field.onChange(Number(e.target.value))}
-													step={15}
-													min={0}
-													className="m-0 text-center w-24"
-													onKeyDown={(e) => e.preventDefault()}
-												/>
-												<span className="ml-2">min</span>
-											</div>
-										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-									</FormItem>
-								)}
-							/>
 						</div>
 						<DialogFooter>
 							<Button type="submit">Guardar</Button>
-							<Button type="button" variant="outline" onClick={() => onClose(false)}>Cancelar</Button>
 						</DialogFooter>
 					</Form>
 				</form>
