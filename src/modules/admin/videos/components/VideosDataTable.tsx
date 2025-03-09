@@ -322,7 +322,8 @@ export function VideosDataTable() {
 				</div>
 				<div className="flex items-center justify-between space-x-2 pt-4">
 					<span className="text-sm text-gray-600">
-						Página {pagination.pageIndex + 1} de {paginationInfo.totalPages}
+						Página {paginationInfo.totalPages === 0 ? 0 : pagination.pageIndex + 1} de{" "}
+						{paginationInfo.totalPages}
 					</span>
 					<div className="space-x-2">
 						<Button
