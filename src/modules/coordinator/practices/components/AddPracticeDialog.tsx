@@ -29,6 +29,9 @@ import {
 } from "@/modules/core/components/ui/select"
 import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import { Button } from "@/modules/core/components/ui/button"
+import Type from "@/modules/core/models/practiceType"
+import { createPractice } from "../services/PracticeService"
+import PracticeDto from "../dto/PracticeDto"
 
 interface Props {
 	open: boolean
@@ -40,8 +43,15 @@ const formSchema = z.object({
 	description: z.string().nonempty({ message: "La descripción no puede estar vacía" }),
 	type: z.string().nonempty({ message: "El tipo no puede estar vacío" }),
 	gradeable: z.boolean(),
-	numberOfGroups: z.number().int().min(1, { message: "Debe ser mayor a 0" }).optional(),
-	maxStudentsGroup: z.number().int().min(1, { message: "Debe ser mayor a 0" }).optional(),
+	simulationDuration: z.number().int().min(0, {
+		message: "La duración de la simulación debe ser mayor o igual a 0",
+	}),
+	numberOfGroups: z
+		.union([z.number().int().min(1, { message: "El número de grupos debe ser mayor a 0" }), z.null()])
+		.optional(),
+	maxStudentsGroup: z
+		.union([z.number().int().min(1, { message: "El número máximo de estudiantes por grupo debe ser mayor a 0" }), z.null()])
+		.optional(),
 })
 
 export default function AddPracticeDialog({ open, onClose }: Props) {
@@ -54,6 +64,7 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 			description: "",
 			type: "",
 			gradeable: false,
+			simulationDuration: 0,
 			numberOfGroups: 0,
 			maxStudentsGroup: 0,
 		},
@@ -67,19 +78,25 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			// const newPractice: Practice = {
-			// 	id: practice.id,
-			// 	name: values.name,
-			// 	description: values.description,
-			// 	type: values.type as Type,
-			// 	gradeable: values.gradeable,
-			// 	numberOfGroups: isGroupPractice ? (values.numberOfGroups ?? 0) : 0,
-			// 	maxStudentsGroup: isGroupPractice ? (values.maxStudentsGroup ?? 0) : 0,
-			// }
+			const newPractice: PracticeDto = {
+				name: values.name,
+				description: values.description,
+				type: values.type as Type,
+				gradeable: values.gradeable,
+				simulationDuration: values.simulationDuration,
+				...(isGroupPractice && {
+					numberOfGroups: values.numberOfGroups ?? 0,
+					maxStudentsGroup: values.maxStudentsGroup ?? 0,
+				}),
+			}
 
-			// await updatePractice(practice.id, updatedPractice)
-			// toast.success("Práctica creada exitosamente.")
-			// onClose(false)
+			console.log(newPractice)
+
+			await createPractice(1, newPractice)
+
+			toast.success("Práctica creada exitosamente.")
+
+			onClose(false)
 		} catch (error: any) {
 			toast.error(error.response?.data?.message || "Error al crear la práctica")
 		}
@@ -138,7 +155,7 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 											<Select
 												onValueChange={(value) => {
 													field.onChange(value)
-													setIsGroupPractice(value === "GRUPAL");
+													setIsGroupPractice(value === "GRUPAL")
 												}}
 												value={field.value}
 											>
@@ -175,6 +192,30 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 									</FormItem>
 								)}
 							/>
+							<FormField
+								control={form.control}
+								name="simulationDuration"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Duración Simulación</FormLabel>
+										<FormControl>
+											<div className="col-span-3 flex items-center">
+												<Input
+													type="number"
+													value={field.value}
+													onChange={(e) => field.onChange(Number(e.target.value))}
+													step={15}
+													min={0}
+													className="m-0 w-24 text-center"
+													onKeyDown={(e) => e.preventDefault()}
+												/>
+												<span className="ml-2">min</span>
+											</div>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
 							{isGroupPractice && (
 								<>
 									<FormField
@@ -188,7 +229,8 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 														type="number"
 														id="numberOfGroups"
 														className="col-span-3 m-0"
-														{...field}
+														value={field.value ?? ""}
+														onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
 													/>
 												</FormControl>
 												<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
@@ -208,7 +250,8 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 														type="number"
 														id="maxStudentsGroup"
 														className="col-span-3 m-0"
-														{...field}
+														value={field.value ?? ""}
+														onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
 													/>
 												</FormControl>
 												<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

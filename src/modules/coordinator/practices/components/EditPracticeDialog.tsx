@@ -20,7 +20,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/modules/core/components/ui/form"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { toast } from "sonner"
 import Type from "@/modules/core/models/practiceType"
 import { updatePractice } from "../services/PracticeService"
@@ -50,11 +50,8 @@ const formSchema = z.object({
 		message: "El tipo no puede estar vacío",
 	}),
 	gradeable: z.boolean(),
-	numberOfGroups: z.number().int().min(1, {
-		message: "El número de grupos debe ser mayor a 0",
-	}),
-	maxStudentsGroup: z.number().int().min(1, {
-		message: "El número máximo de estudiantes por grupo debe ser mayor a 0",
+	simulationDuration: z.number().int().min(0, {
+		message: "La duración de la simulación debe ser mayor o igual a 0",
 	}),
 })
 
@@ -66,8 +63,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 			description: "",
 			type: "",
 			gradeable: false,
-			numberOfGroups: 0,
-			maxStudentsGroup: 0,
+			simulationDuration: 0,
 		},
 	})
 
@@ -78,8 +74,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 				description: practice.description,
 				type: practice.type,
 				gradeable: practice.gradeable,
-				numberOfGroups: practice.numberOfGroups ?? 0,
-				maxStudentsGroup: practice.maxStudentsGroup ?? 0,
+				simulationDuration: practice.simulationDuration,
 			})
 		}
 	}, [form, practice])
@@ -92,9 +87,12 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 				description: values.description,
 				type: values.type as Type,
 				gradeable: values.gradeable,
-				numberOfGroups: values.numberOfGroups,
-				maxStudentsGroup: values.maxStudentsGroup,
+				simulationDuration: values.simulationDuration,
+				numberOfGroups: practice.numberOfGroups,
+				maxStudentsGroup: practice.maxStudentsGroup,
 			}
+
+			console.log(updatedPractice)
 
 			await updatePractice(practice.id, updatedPractice)
 
@@ -161,15 +159,12 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Tipo</FormLabel>
 										<FormControl>
-											<Select>
+											<Select
+												onValueChange={(value) => field.onChange(value)}
+												value={field.value}
+											>
 												<SelectTrigger className="w-[180px]">
-													<SelectValue
-														placeholder={
-															field.value
-																? field.value.charAt(0) + field.value.slice(1).toLowerCase()
-																: ""
-														}
-													/>
+													<SelectValue placeholder="Seleccione un tipo" />
 												</SelectTrigger>
 												<SelectContent>
 													<SelectItem value="GRUPAL">Grupal</SelectItem>
@@ -201,9 +196,34 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 									</FormItem>
 								)}
 							/>
+							<FormField
+								control={form.control}
+								name="simulationDuration"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Duración Simulación</FormLabel>
+										<FormControl>
+											<div className="col-span-3 flex items-center">
+												<Input
+													type="number"
+													value={field.value}
+													onChange={(e) => field.onChange(Number(e.target.value))}
+													step={15}
+													min={0}
+													className="m-0 text-center w-24"
+													onKeyDown={(e) => e.preventDefault()}
+												/>
+												<span className="ml-2">min</span>
+											</div>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
 						</div>
-                        <DialogFooter>
+						<DialogFooter>
 							<Button type="submit">Guardar</Button>
+							<Button type="button" variant="outline" onClick={() => onClose(false)}>Cancelar</Button>
 						</DialogFooter>
 					</Form>
 				</form>

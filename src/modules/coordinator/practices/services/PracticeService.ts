@@ -2,6 +2,7 @@ import axios from "axios"
 import Practice from "@/modules/core/models/practice"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import { API_URL } from "@/modules/core/config/env"
+import PracticeDto from "../dto/PracticeDto"
 
 export async function getAllPractices(
     page: number,
@@ -43,7 +44,7 @@ export async function deletePractice(id: number): Promise<ApiResponse<null>> {
     return data
 }
 
-export async function createPractice(classId: number, practice: Practice): Promise<ApiResponse<Practice>> {
+export async function createPractice(classId: number, practice: PracticeDto): Promise<ApiResponse<Practice>> {
     const { data } = await axios.post(`${API_URL}/practice/add/${classId}`, practice)
     return data
 }
