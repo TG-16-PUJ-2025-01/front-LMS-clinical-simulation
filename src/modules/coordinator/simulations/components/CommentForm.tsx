@@ -21,9 +21,14 @@ interface Props {
 }
 
 const FormSchema = z.object({
-	description: z.string().max(500, {
-		message: "Un comentario no puede tener más de 500 caracteres",
-	}),
+	description: z
+		.string()
+		.min(1, {
+			message: "Un comentario no puede estar vacío",
+		})
+		.max(500, {
+			message: "Un comentario no puede tener más de 500 caracteres",
+		}),
 })
 
 export function CommentForm({ timestamp, onFocus, onSubmit: onSubmitCallback }: Props) {
@@ -51,7 +56,7 @@ export function CommentForm({ timestamp, onFocus, onSubmit: onSubmitCallback }: 
 							<div className="flex items-center justify-between">
 								<FormLabel className="flex flex-col gap-2">
 									<p>Nuevo Comentario</p>
-									<p className="text-sm text-gray-400">
+									<p className="text-xs text-gray-400">
 										Comentario en el instante: {formatTimestamp(timestamp)}
 									</p>
 								</FormLabel>
