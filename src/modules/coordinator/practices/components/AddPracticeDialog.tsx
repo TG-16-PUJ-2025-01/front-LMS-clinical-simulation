@@ -31,11 +31,13 @@ import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import { Button } from "@/modules/core/components/ui/button"
 import Type from "@/modules/core/models/practiceType"
 import { createPractice } from "../services/PracticeService"
-import PracticeDto from "../dto/PracticeDto"
+import PracticeDto from "../dto/practiceDto"
+import Practice from "@/modules/core/models/practice"
 
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
+	onPracticeCreated: (practice: Practice) => void
 }
 
 const formSchema = z.object({
@@ -54,8 +56,9 @@ const formSchema = z.object({
 		.optional(),
 })
 
-export default function AddPracticeDialog({ open, onClose }: Props) {
+export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: Props) {
 	const [isGroupPractice, setIsGroupPractice] = useState<boolean>(true)
+	const [, setPractice] = useState<Practice | null>(null)
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -90,11 +93,12 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 				}),
 			}
 
-			console.log(newPractice)
-
-			await createPractice(1, newPractice)
+			const response = await createPractice(1, newPractice)
+			setPractice(response.data)
 
 			toast.success("Práctica creada exitosamente.")
+
+			onPracticeCreated(response.data)
 
 			onClose(false)
 		} catch (error: any) {

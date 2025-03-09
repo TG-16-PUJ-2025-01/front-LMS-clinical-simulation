@@ -1,5 +1,4 @@
 import { MoreHorizontal, Pencil, Trash2, Users, User } from "lucide-react"
-
 import { cn } from "@/modules/core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
 import {
@@ -30,6 +29,7 @@ type CardProps = React.ComponentProps<typeof Card> & {
 	numberOfGroups: number | null
 	maxStudentsGroup: number | null
 	type: "GRUPAL" | "INDIVIDUAL"
+	onClick?: () => void // Agregado para permitir la navegación
 	onEdit: () => void
 	onDelete: () => void
 }
@@ -41,12 +41,14 @@ export function CardPractice({
 	numberOfGroups,
 	maxStudentsGroup,
 	type,
+	onClick, // Se recibe la función de navegación
 	onEdit,
 	onDelete,
 }: CardProps) {
 	return (
 		<TooltipProvider>
 			<Card
+				onClick={onClick} // Se agrega el evento de clic
 				className={cn(
 					"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden transition-transform hover:scale-105",
 					className
@@ -59,7 +61,7 @@ export function CardPractice({
 							<Button
 								variant="ghost"
 								className="h-8 w-8 p-0 text-white"
-								onClick={(e) => e.stopPropagation()}
+								onClick={(e) => e.stopPropagation()} // Previene la navegación al abrir el menú
 							>
 								<MoreHorizontal />
 							</Button>
@@ -67,10 +69,10 @@ export function CardPractice({
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={onEdit}>
+							<DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(); }}>
 								<Pencil className="mr-2 h-4 w-4" /> Editar
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={onDelete}>
+							<DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(); }}>
 								<Trash2 className="mr-2 h-4 w-4" /> Borrar
 							</DropdownMenuItem>
 						</DropdownMenuContent>

@@ -8,8 +8,10 @@ import { Button } from "@/modules/core/components/ui/button"
 import DeletePracticeDialog from "../components/DeletePracticeDialog"
 import EditPracticeDialog from "../components/EditPracticeDialog"
 import AddPracticeDialog from "../components/AddPracticeDialog"
+import { useNavigate } from "react-router-dom"
 
 export default function PracticesPage() {
+	const navigate = useNavigate()
 	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "add" | null>(null)
 	const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
 
@@ -34,6 +36,11 @@ export default function PracticesPage() {
 		setOpenDialog(null)
 		setSelectedPractice(null)
 		fetchPractices()
+	}
+
+	const handlePracticeNavigation = (practice: Practice) => {
+		setSelectedPractice(practice)
+		navigate(`/coordinador/practicas/${practice.id}`)
 	}
 
 	return (
@@ -62,6 +69,7 @@ export default function PracticesPage() {
 							numberOfGroups={practice.numberOfGroups ?? null}
 							maxStudentsGroup={practice.maxStudentsGroup ?? null}
 							type={practice.type}
+							onClick={() => handlePracticeNavigation(practice)}
 							onEdit={() => handleOpenDialog("edit", practice)}
 							onDelete={() => handleOpenDialog("delete", practice)}
 						/>
@@ -78,7 +86,7 @@ export default function PracticesPage() {
 				onClose={handleCloseDialog}
 				practice={selectedPractice!}
 			/>
-			<AddPracticeDialog open={openDialog === "add"} onClose={handleCloseDialog} />
+			<AddPracticeDialog open={openDialog === "add"} onClose={handleCloseDialog} onPracticeCreated={handlePracticeNavigation} />
 		</>
 	)
 }

@@ -2,7 +2,7 @@ import axios from "axios"
 import Practice from "@/modules/core/models/practice"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import { API_URL } from "@/modules/core/config/env"
-import PracticeDto from "../dto/PracticeDto"
+import PracticeDto from "../dto/practiceDto"
 
 export async function getAllPractices(
     page: number,
