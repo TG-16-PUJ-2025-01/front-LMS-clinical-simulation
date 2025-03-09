@@ -6,6 +6,7 @@ import { CommentForm } from "../components/CommentForm"
 import { Separator } from "@/modules/core/components/ui/separator"
 import Comment from "@/modules/core/models/comment"
 import { formatTimestamp } from "../../../core/lib/utils"
+import { Button } from "@/modules/core/components/ui/button"
 
 export default function SimulationPage() {
 	const videoRef = useRef<HTMLVideoElement>(null)
@@ -72,9 +73,16 @@ export default function SimulationPage() {
 						<ul>
 							{previousComments.map((comment) => (
 								<li key={comment.timestamp} className="flex items-baseline gap-2 pb-4">
-									<span className="text-xs text-gray-400">
+									<Button
+										type="button"
+										variant="link"
+										className="cursor-pointer p-0 text-xs text-gray-400"
+										onClick={() => {
+											if (videoRef.current) videoRef.current.currentTime = comment.timestamp
+										}}
+									>
 										{formatTimestamp(comment.timestamp)}
-									</span>
+									</Button>
 									<div className="flex flex-col self-stretch">
 										<div className="h-full flex-grow border-l border-gray-400"></div>
 									</div>
