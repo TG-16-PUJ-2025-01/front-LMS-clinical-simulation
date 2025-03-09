@@ -18,7 +18,7 @@ export default function SimulationPage() {
 				"Adipisicing tempor dolor Lorem quis do cupidatat culpa incididunt eu laborum nisi cillum tempor duis. Do eu nulla laboris proident aute est aliqua adipisicing reprehenderit aute quis. Veniam voluptate laborum anim cillum ea non do minim fugiat. Tempor labore esse sit ex commodo incididunt sunt sit. Deserunt ipsum magna veniam qui dolor nisi velit consectetur esse.",
 		},
 		{
-			timestamp: 300,
+			timestamp: 400,
 			message:
 				"Adipisicing tempor dolor Lorem quis do cupidatat culpa incididunt eu laborum nisi cillum tempor duis. Do eu nulla laboris proident aute est aliqua adipisicing reprehenderit aute quis. Veniam voluptate laborum anim cillum ea non do minim fugiat. Tempor labore esse sit ex commodo incididunt sunt sit. Deserunt ipsum magna veniam qui dolor nisi velit consectetur esse.",
 		},
