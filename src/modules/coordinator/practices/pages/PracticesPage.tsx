@@ -2,25 +2,32 @@ import { useEffect, useState } from "react"
 import { CardPractice } from "../components/CardPractice"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
-import { getAllPractices } from "../services/PracticeService"
+import { getPracticeByClassId } from "../services/PracticeService"
 import Practice from "@/modules/core/models/practice"
 import { Button } from "@/modules/core/components/ui/button"
 import DeletePracticeDialog from "../components/DeletePracticeDialog"
 import EditPracticeDialog from "../components/EditPracticeDialog"
 import AddPracticeDialog from "../components/AddPracticeDialog"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "sonner"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
+	const { id } = useParams();
 	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "add" | null>(null)
 	const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
 
 	const [data, setData] = useState<Practice[]>([])
 
 	const fetchPractices = async () => {
-		const res = await getAllPractices(0, 10, "", "name", true)
-		setData(res.data)
-	}
+        if (!id) return;
+        try {
+            const res = await getPracticeByClassId(Number(id));
+            setData(res.data);
+        } catch (error) {
+            toast.error("No se encuentra la clase o no hay practicas asociadas a esta clase");
+        }
+    };
 
 	useEffect(() => {
 		if (openDialog) return
@@ -40,7 +47,7 @@ export default function PracticesPage() {
 
 	const handlePracticeNavigation = (practice: Practice) => {
 		setSelectedPractice(practice)
-		navigate(`/coordinador/practicas/${practice.id}`)
+		navigate(`/coordinador/practica/${practice.id}`)
 	}
 
 	return (

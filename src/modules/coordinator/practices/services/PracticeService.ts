@@ -29,8 +29,8 @@ export async function getPracticeById(id: number): Promise<ApiResponse<Practice>
     return data
 }
 
-export async function getPracticeByClassId(id: number): Promise<ApiResponse<Practice>> {
-    const { data } = await axios.get(`${API_URL}/practice/class/${id}`)
+export async function getPracticeByClassId(classId: number): Promise<ApiResponse<Practice[]>> {
+    const { data } = await axios.get(`${API_URL}/practice/class/${classId}`)
     return data
 }
 

@@ -22,7 +22,6 @@ import {
 } from "@/modules/core/components/ui/form"
 import { useEffect } from "react"
 import { toast } from "sonner"
-import Type from "@/modules/core/models/practiceType"
 import { updatePractice } from "../services/PracticeService"
 import { Checkbox } from "@/modules/core/components/ui/checkbox"
 
@@ -39,13 +38,7 @@ const formSchema = z.object({
 	description: z.string().nonempty({
 		message: "La descripción no puede estar vacía",
 	}),
-	type: z.string().nonempty({
-		message: "El tipo no puede estar vacío",
-	}),
 	gradeable: z.boolean(),
-	simulationDuration: z.number().int().min(0, {
-		message: "La duración de la simulación debe ser mayor o igual a 0",
-	}),
 })
 
 export default function EditPracticeDialog({ open, onClose, practice }: Props) {
@@ -54,9 +47,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 		defaultValues: {
 			name: "",
 			description: "",
-			type: "",
 			gradeable: false,
-			simulationDuration: 0,
 		},
 	})
 
@@ -65,9 +56,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 			form.reset({
 				name: practice.name,
 				description: practice.description,
-				type: practice.type,
 				gradeable: practice.gradeable,
-				simulationDuration: practice.simulationDuration,
 			})
 		}
 	}, [form, practice])
@@ -78,9 +67,9 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 				id: practice.id,
 				name: values.name,
 				description: values.description,
-				type: values.type as Type,
+				type: practice.type,
 				gradeable: values.gradeable,
-				simulationDuration: values.simulationDuration,
+				simulationDuration: practice.simulationDuration,
 				numberOfGroups: practice.numberOfGroups,
 				maxStudentsGroup: practice.maxStudentsGroup,
 			}
