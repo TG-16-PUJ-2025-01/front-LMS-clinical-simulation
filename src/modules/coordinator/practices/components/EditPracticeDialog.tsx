@@ -39,9 +39,17 @@ const formSchema = z.object({
 		message: "La descripción no puede estar vacía",
 	}),
 	gradeable: z.boolean(),
+	simulationDuration: z.number().int().min(1, {
+		message: "La duración de la simulación debe ser mayor o igual a 15",
+	}),
+	numberOfGroups: z.number().int().optional(),
+	maxStudentsGroup: z.number().int().optional(),
+	type: z.string().nonempty({ message: "El tipo no puede estar vacío" }),
 })
 
 export default function EditPracticeDialog({ open, onClose, practice }: Props) {
+	if (!practice) return null; // Add this line to handle null practice
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -57,6 +65,10 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 				name: practice.name,
 				description: practice.description,
 				gradeable: practice.gradeable,
+				simulationDuration: practice.simulationDuration,
+				numberOfGroups: practice.numberOfGroups ?? undefined,
+				maxStudentsGroup: practice.maxStudentsGroup ?? undefined,
+				type: practice.type.charAt(0) + practice.type.slice(1).toLowerCase(),
 			})
 		}
 	}, [form, practice])
@@ -135,7 +147,20 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
 								)}
-							/>			
+							/>
+							<FormField
+								control={form.control}
+								name="type"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Tipo</FormLabel>
+										<FormControl>
+											<Input id="type" className="col-span-3 m-0" {...field} disabled />
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
 							<FormField
 								control={form.control}
 								name="gradeable"
@@ -156,6 +181,71 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 									</FormItem>
 								)}
 							/>
+							<FormField
+								control={form.control}
+								name="simulationDuration"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Duración Simulación</FormLabel>
+										<FormControl>
+											<div className="col-span-3 flex items-center">
+												<Input
+													type="number"
+													value={field.value}
+													className="m-0 w-24 text-center"
+													disabled
+												/>
+												<span className="ml-2">min</span>
+											</div>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							{practice.type === "GRUPAL" && (
+								<>
+									<FormField
+										control={form.control}
+										name="numberOfGroups"
+										render={({ field }) => (
+											<FormItem className="grid grid-cols-4 items-center gap-4">
+												<FormLabel className="m-0 text-right">Número de grupos</FormLabel>
+												<FormControl>
+													<Input
+														type="number"
+														id="numberOfGroups"
+														className="col-span-3 m-0"
+														value={field.value ?? ""}
+														disabled
+													/>
+												</FormControl>
+												<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="maxStudentsGroup"
+										render={({ field }) => (
+											<FormItem className="grid grid-cols-4 items-center gap-4">
+												<FormLabel className="m-0 text-right">
+													Máximo estudiantes por grupo
+												</FormLabel>
+												<FormControl>
+													<Input
+														type="number"
+														id="maxStudentsGroup"
+														className="col-span-3 m-0"
+														value={field.value ?? ""}
+														disabled
+													/>
+												</FormControl>
+												<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+											</FormItem>
+										)}
+									/>
+								</>
+							)}
 						</div>
 						<DialogFooter>
 							<Button type="submit">Guardar</Button>

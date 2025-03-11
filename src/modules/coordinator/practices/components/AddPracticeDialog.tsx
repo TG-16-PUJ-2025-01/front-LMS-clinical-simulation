@@ -257,6 +257,7 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 														id="numberOfGroups"
 														className="col-span-3 m-0"
 														value={field.value ?? ""}
+														min={0}
 														onChange={(e) =>
 															field.onChange(e.target.value ? Number(e.target.value) : null)
 														}
@@ -280,6 +281,7 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 														id="maxStudentsGroup"
 														className="col-span-3 m-0"
 														value={field.value ?? ""}
+														min={0}
 														onChange={(e) =>
 															field.onChange(e.target.value ? Number(e.target.value) : null)
 														}
