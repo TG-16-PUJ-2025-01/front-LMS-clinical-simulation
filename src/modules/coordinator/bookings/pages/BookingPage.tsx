@@ -6,6 +6,7 @@ import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { Button } from "@/modules/core/components/ui/button"
 import { getPracticeById } from "../../practices/services/PracticeService"
 import BookingDialog from "../components/bookingDialog"
+import { SimulationDataTable } from "../components/simulationDataTable"
 
 
 export default function PracticeDetailsPage() {
@@ -35,6 +36,7 @@ export default function PracticeDetailsPage() {
       <div className="mb-4 flex justify-end">
         <Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
       </div>
+      <SimulationDataTable />
 
       {/* BookingDialog controlado externamente */}
       <BookingDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
