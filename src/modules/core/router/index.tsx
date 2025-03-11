@@ -36,8 +36,8 @@ export default function Router() {
 				{/* Coordinator Routes */}
 				<Route element={<CoordinatorRoute />}>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
-					<Route path="/coordinador/practicas/:id" element={<CoordinatorBookingPage />}></Route>
-					<Route path="/coordinador/practicas" element={<CoordinatorPracticesPage />}></Route>
+					<Route path="/coordinador/practica/:id" element={<CoordinatorBookingPage />}></Route>
+					<Route path="/coordinador/clases/:id/practicas" element={<CoordinatorPracticesPage />}></Route>
 				</Route>
 
 				{/* Admin Routes */}
