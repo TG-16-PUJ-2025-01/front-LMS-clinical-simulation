@@ -6,7 +6,6 @@ import {
   DialogTitle,
 } from "@/modules/core/components/ui/dialog";
 import { Button } from "@/modules/core/components/ui/button";
-import { Calendar } from "@/modules/core/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/modules/core/components/ui/popover";
 import { Command, CommandInput, CommandList, CommandItem } from "@/modules/core/components/ui/command";
 import { Check, ChevronsUpDown, ChevronLeft, ChevronRight } from "lucide-react";
