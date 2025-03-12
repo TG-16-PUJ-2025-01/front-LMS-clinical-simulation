@@ -1,0 +1,304 @@
+import {
+	ColumnDef,
+	SortingState,
+	VisibilityState,
+	flexRender,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
+} from "@tanstack/react-table"
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import { getSimulationsByPracticeId } from "../services/bookingService"
+import Simulation from "@/modules/core/models/simulation"
+import { Button } from "@/modules/core/components/ui/button"
+import { Input } from "@/modules/core/components/ui/input"
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/modules/core/components/ui/table"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
+import BookingDialog from "./bookingDialog"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/modules/core/components/ui/dropdown-menu"
+import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
+import { format } from 'date-fns'
+
+export function SimulationDataTable() {
+	const [sorting, setSorting] = useState<SortingState>([])
+	const [filter, setFilter] = useState<string>("")
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+	const [rowSelection, setRowSelection] = useState({})
+	const { id } = useParams()
+
+	const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+	const [data, setData] = useState<Simulation[]>([])
+
+	const [pagination, setPagination] = useState({
+		pageIndex: 0, //initial page index
+		pageSize: 10, //default page size
+	})
+
+	const [paginationInfo, setPaginationInfo] = useState({
+		total: 0, //total number of records
+		totalPages: 0, //total number of pages
+	})
+
+	useEffect(() => {
+
+		const fetchSimulations = async () => {
+			const res = await getSimulationsByPracticeId(
+				Number(id),
+				pagination.pageIndex,
+				pagination.pageSize
+			)
+			setData(res.data)
+			setPaginationInfo({
+				total: res.metadata.total,
+				totalPages: res.metadata.totalPages,
+			})
+		}
+
+		fetchSimulations()
+	}, [pagination, filter, sorting])
+
+	const columns: ColumnDef<Simulation>[] = [
+		{
+			accessorKey: "startDateTime",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Hora de Inicio
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const date = new Date(row.getValue("startDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+			},
+		},
+		{
+			accessorKey: "endDateTime",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Hora de Finalización
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const date = new Date(row.getValue("endDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+			},
+		},
+		{
+			accessorKey: "grade",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				return <div className="text-center capitalize">{row.getValue("grade")}</div>
+			},
+		},
+		{
+			accessorKey: "gradeDateTime",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Hora de Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const date = new Date(row.getValue("gradeDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+			},
+		},
+		{
+			accessorKey: "gradeStatus",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Estado de Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
+				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
+			},
+		},
+		{
+			id: "actions",
+			enableHiding: false,
+			cell: ({ row }) => {
+				const practice = row.original
+
+				return (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" className="ml-auto flex h-8 w-8 p-0">
+								<MoreHorizontal />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem>
+								<Users /> Ver Miembros
+							</DropdownMenuItem>
+							<DropdownMenuItem>
+								<Pencil /> Calificar
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)
+			},
+		},
+	]
+
+	const table = useReactTable({
+		data,
+		columns,
+		onSortingChange: setSorting,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		onColumnVisibilityChange: setColumnVisibility,
+		onRowSelectionChange: setRowSelection,
+		manualPagination: true,
+		onPaginationChange: setPagination,
+		rowCount: paginationInfo.total,
+		pageCount: paginationInfo.totalPages,
+		state: {
+			sorting,
+			columnVisibility,
+			rowSelection,
+			pagination,
+		},
+	})
+
+	return (
+		<>
+			<div className="w-full">
+				<div className="flex items-center justify-between">
+					<div className="relative w-1/2 max-w-sm">
+						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
+						<Input
+							placeholder="Buscar..."
+							value={filter}
+							onChange={(event) => {
+								setFilter(event.target.value)
+								setPagination({ ...pagination, pageIndex: 0 })
+							}}
+							className="w-full pl-8"
+						/>
+					</div>
+					<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
+				</div>
+				<div className="mt-4 rounded-md border">
+					<Table>
+						<TableHeader>
+							{table.getHeaderGroups().map((headerGroup) => (
+								<TableRow key={headerGroup.id}>
+									{headerGroup.headers.map((header) => {
+										return (
+											<TableHead key={header.id}>
+												{header.isPlaceholder
+													? null
+													: flexRender(header.column.columnDef.header, header.getContext())}
+											</TableHead>
+										)
+									})}
+								</TableRow>
+							))}
+						</TableHeader>
+						<TableBody>
+							{table.getRowModel().rows?.length ? (
+								table.getRowModel().rows.map((row) => (
+									<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell key={cell.id}>
+												{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											</TableCell>
+										))}
+									</TableRow>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={columns.length} className="h-24 text-center">
+										Sin resultados.
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
+				</div>
+				<div className="flex items-center justify-end space-x-2 pt-4">
+					<div className="space-x-2">
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => table.previousPage()}
+							disabled={!table.getCanPreviousPage()}
+						>
+							Anterior
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => table.nextPage()}
+							disabled={!table.getCanNextPage()}
+						>
+							Siguiente
+						</Button>
+					</div>
+				</div>
+			</div>
+			<BookingDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+		</>
+	)
+}

@@ -41,27 +41,26 @@ export function CardPractice({
 	numberOfGroups,
 	maxStudentsGroup,
 	type,
-	onClick, // Se recibe la función de navegación
+	onClick,
 	onEdit,
 	onDelete,
 }: CardProps) {
 	return (
 		<TooltipProvider>
 			<Card
-				onClick={onClick} // Se agrega el evento de clic
+				onClick={onClick}
 				className={cn(
 					"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden transition-transform hover:scale-105",
 					className
 				)}
 			>
-				{/* DropdownMenu en la esquina superior derecha */}
 				<div className="absolute top-2 right-2 z-10">
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button
 								variant="ghost"
 								className="h-8 w-8 p-0 text-white"
-								onClick={(e) => e.stopPropagation()} // Previene la navegación al abrir el menú
+								onClick={(e) => e.stopPropagation()}
 							>
 								<MoreHorizontal />
 							</Button>
@@ -69,10 +68,20 @@ export function CardPractice({
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(); }}>
+							<DropdownMenuItem
+								onClick={(e) => {
+									e.stopPropagation()
+									onEdit()
+								}}
+							>
 								<Pencil className="mr-2 h-4 w-4" /> Editar
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(); }}>
+							<DropdownMenuItem
+								onClick={(e) => {
+									e.stopPropagation()
+									onDelete()
+								}}
+							>
 								<Trash2 className="mr-2 h-4 w-4" /> Borrar
 							</DropdownMenuItem>
 						</DropdownMenuContent>
@@ -84,7 +93,7 @@ export function CardPractice({
 					<div className="flex flex-1 flex-col gap-2">
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<div className="flex items-center text-2xl cursor-help">
+								<div className="flex cursor-help items-center text-2xl">
 									<CardTitle>{title}</CardTitle>
 									{type === "GRUPAL" ? (
 										<Users className="ml-2 h-5 w-5" />

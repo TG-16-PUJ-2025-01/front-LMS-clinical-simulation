@@ -33,6 +33,7 @@ import Type from "@/modules/core/models/practiceType"
 import { createPractice } from "../services/PracticeService"
 import PracticeDto from "../dto/practiceDto"
 import Practice from "@/modules/core/models/practice"
+import { useParams } from "react-router-dom"
 
 interface Props {
 	open: boolean
@@ -40,25 +41,47 @@ interface Props {
 	onPracticeCreated: (practice: Practice) => void
 }
 
-const formSchema = z.object({
-	name: z.string().nonempty({ message: "El nombre no puede estar vacío" }),
-	description: z.string().nonempty({ message: "La descripción no puede estar vacía" }),
-	type: z.string().nonempty({ message: "El tipo no puede estar vacío" }),
-	gradeable: z.boolean(),
-	simulationDuration: z.number().int().min(0, {
-		message: "La duración de la simulación debe ser mayor o igual a 0",
-	}),
-	numberOfGroups: z
-		.union([z.number().int().min(1, { message: "El número de grupos debe ser mayor a 0" }), z.null()])
-		.optional(),
-	maxStudentsGroup: z
-		.union([z.number().int().min(1, { message: "El número máximo de estudiantes por grupo debe ser mayor a 0" }), z.null()])
-		.optional(),
-})
+const formSchema = z
+	.object({
+		name: z.string().nonempty({ message: "El nombre no puede estar vacío" }),
+		description: z.string().nonempty({ message: "La descripción no puede estar vacía" }),
+		type: z.string().nonempty({ message: "El tipo no puede estar vacío" }),
+		gradeable: z.boolean(),
+		simulationDuration: z.number().int().min(1, {
+			message: "La duración de la simulación debe ser mayor o igual a 15",
+		}),
+		numberOfGroups: z.number().int().optional(),
+		maxStudentsGroup: z.number().int().optional(),
+	})
+	.refine(
+		(data) => {
+			if (data.type === "GRUPAL") {
+				return data.numberOfGroups
+			}
+			return true
+		},
+		{
+			message: "Debe ingresar el número de grupos y el máximo de estudiantes por grupo",
+			path: ["numberOfGroups"],
+		}
+	)
+	.refine(
+		(data) => {
+			if (data.type === "GRUPAL") {
+				return data.maxStudentsGroup
+			}
+			return true
+		},
+		{
+			message: "No debe ingresar el número de grupos ni el máximo de estudiantes por grupo",
+			path: ["maxStudentsGroup"],
+		}
+	)
 
 export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: Props) {
 	const [isGroupPractice, setIsGroupPractice] = useState<boolean>(true)
 	const [, setPractice] = useState<Practice | null>(null)
+	const { id } = useParams()
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -88,12 +111,12 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 				gradeable: values.gradeable,
 				simulationDuration: values.simulationDuration,
 				...(isGroupPractice && {
-					numberOfGroups: values.numberOfGroups ?? 0,
-					maxStudentsGroup: values.maxStudentsGroup ?? 0,
+					numberOfGroups: values.numberOfGroups ?? null,
+					maxStudentsGroup: values.maxStudentsGroup ?? null,
 				}),
 			}
 
-			const response = await createPractice(1, newPractice)
+			const response = await createPractice(Number(id), newPractice)
 			setPractice(response.data)
 
 			toast.success("Práctica creada exitosamente.")
@@ -234,7 +257,10 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 														id="numberOfGroups"
 														className="col-span-3 m-0"
 														value={field.value ?? ""}
-														onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
+														min={0}
+														onChange={(e) =>
+															field.onChange(e.target.value ? Number(e.target.value) : null)
+														}
 													/>
 												</FormControl>
 												<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
@@ -255,7 +281,10 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 														id="maxStudentsGroup"
 														className="col-span-3 m-0"
 														value={field.value ?? ""}
-														onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
+														min={0}
+														onChange={(e) =>
+															field.onChange(e.target.value ? Number(e.target.value) : null)
+														}
 													/>
 												</FormControl>
 												<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

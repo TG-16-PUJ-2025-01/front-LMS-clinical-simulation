@@ -3,15 +3,13 @@ import { useParams } from "react-router-dom"
 import Practice from "@/modules/core/models/practice"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
-import { Button } from "@/modules/core/components/ui/button"
 import { getPracticeById } from "../../practices/services/PracticeService"
-import BookingDialog from "../components/bookingDialog"
+import { SimulationDataTable } from "../components/simulationDataTable"
 
 
 export default function PracticeDetailsPage() {
   const { id } = useParams()
   const [practice, setPractice] = useState<Practice | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchPractice = async () => {
@@ -32,12 +30,7 @@ export default function PracticeDetailsPage() {
         <NavBar />
       </LayoutSlot>
       <LayoutSlot name="title">{practice.name}</LayoutSlot>
-      <div className="mb-4 flex justify-end">
-        <Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
-      </div>
-
-      {/* BookingDialog controlado externamente */}
-      <BookingDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+      <SimulationDataTable />
     </>
   )
 }
