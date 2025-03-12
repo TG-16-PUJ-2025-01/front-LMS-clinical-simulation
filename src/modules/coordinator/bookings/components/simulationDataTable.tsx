@@ -1,12 +1,30 @@
-import { ColumnDef, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
+import {
+	ColumnDef,
+	SortingState,
+	VisibilityState,
+	flexRender,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
+} from "@tanstack/react-table"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { getSimulationsByPracticeId } from "../services/bookingService"
 import Simulation from "@/modules/core/models/simulation"
 import { Button } from "@/modules/core/components/ui/button"
 import { Input } from "@/modules/core/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/modules/core/components/ui/table"
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/modules/core/components/ui/table"
 import { Search } from "lucide-react"
+import BookingDialog from "./bookingDialog"
 
 export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -17,7 +35,8 @@ export function SimulationDataTable() {
 	const { id } = useParams()
 
 	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
-    const [selectedSimulation, setSelectedSimulation] = useState<Simulation | null>(null)
+	const [selectedSimulation, setSelectedSimulation] = useState<Simulation | null>(null)
+	const [isDialogOpen, setIsDialogOpen] = useState(false)
 
 	const [data, setData] = useState<Simulation[]>([])
 
@@ -36,10 +55,10 @@ export function SimulationDataTable() {
 
 		const fetchClasses = async () => {
 			const res = await getSimulationsByPracticeId(
-                Number(id),
+				Number(id),
 				pagination.pageIndex,
-				pagination.pageSize,
-				)
+				pagination.pageSize
+			)
 			setData(res.data)
 			setPaginationInfo({
 				total: res.metadata.total,
@@ -50,33 +69,33 @@ export function SimulationDataTable() {
 		fetchClasses()
 	}, [pagination, filter, sorting, openDialog])
 
-    const columns: ColumnDef<Simulation>[] = [
-        {
-            accessorKey: "startDateTime",
-            header: "Start Date Time",
-            cell: ({ row }) => <div>{row.getValue("startDateTime")}</div>,
-        },
-        {
-            accessorKey: "endDateTime",
-            header: "End Date Time",
-            cell: ({ row }) => <div>{row.getValue("endDateTime")}</div>,
-        },
-        {
-            accessorKey: "grade",
-            header: "Grade",
-            cell: ({ row }) => <div>{row.getValue("grade")}</div>,
-        },
-        {
-            accessorKey: "gradeStatus",
-            header: "Grade Status",
-            cell: ({ row }) => <div>{row.getValue("gradeStatus")}</div>,
-        },
-        {
-            accessorKey: "gradeDateTime",
-            header: "Grade Date Time",
-            cell: ({ row }) => <div>{row.getValue("gradeDateTime")}</div>,
-        },
-    ]
+	const columns: ColumnDef<Simulation>[] = [
+		{
+			accessorKey: "startDateTime",
+			header: "Start Date Time",
+			cell: ({ row }) => <div>{row.getValue("startDateTime")}</div>,
+		},
+		{
+			accessorKey: "endDateTime",
+			header: "End Date Time",
+			cell: ({ row }) => <div>{row.getValue("endDateTime")}</div>,
+		},
+		{
+			accessorKey: "grade",
+			header: "Grade",
+			cell: ({ row }) => <div>{row.getValue("grade")}</div>,
+		},
+		{
+			accessorKey: "gradeStatus",
+			header: "Grade Status",
+			cell: ({ row }) => <div>{row.getValue("gradeStatus")}</div>,
+		},
+		{
+			accessorKey: "gradeDateTime",
+			header: "Grade Date Time",
+			cell: ({ row }) => <div>{row.getValue("gradeDateTime")}</div>,
+		},
+	]
 
 	const table = useReactTable({
 		data,
@@ -116,8 +135,9 @@ export function SimulationDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
+					<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
 				</div>
-				<div className="rounded-md border mt-4">
+				<div className="mt-4 rounded-md border">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -176,6 +196,7 @@ export function SimulationDataTable() {
 					</div>
 				</div>
 			</div>
+			<BookingDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
 		</>
 	)
 }
