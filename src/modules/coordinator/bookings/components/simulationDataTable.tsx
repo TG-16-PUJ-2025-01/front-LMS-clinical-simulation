@@ -10,7 +10,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table"
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { getSimulationsByPracticeId } from "../services/bookingService"
 import Simulation from "@/modules/core/models/simulation"
 import { Button } from "@/modules/core/components/ui/button"
@@ -23,19 +23,26 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { Search } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
 import BookingDialog from "./bookingDialog"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/modules/core/components/ui/dropdown-menu"
+import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
+import { format } from 'date-fns'
 
 export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
-	const navigate = useNavigate()
 	const { id } = useParams()
 
-	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
-	const [selectedSimulation, setSelectedSimulation] = useState<Simulation | null>(null)
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 
 	const [data, setData] = useState<Simulation[]>([])
@@ -51,9 +58,8 @@ export function SimulationDataTable() {
 	})
 
 	useEffect(() => {
-		if (openDialog) return
 
-		const fetchClasses = async () => {
+		const fetchSimulations = async () => {
 			const res = await getSimulationsByPracticeId(
 				Number(id),
 				pagination.pageIndex,
@@ -66,34 +72,130 @@ export function SimulationDataTable() {
 			})
 		}
 
-		fetchClasses()
-	}, [pagination, filter, sorting, openDialog])
+		fetchSimulations()
+	}, [pagination, filter, sorting])
 
 	const columns: ColumnDef<Simulation>[] = [
 		{
 			accessorKey: "startDateTime",
-			header: "Start Date Time",
-			cell: ({ row }) => <div>{row.getValue("startDateTime")}</div>,
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Hora de Inicio
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const date = new Date(row.getValue("startDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+			},
 		},
 		{
 			accessorKey: "endDateTime",
-			header: "End Date Time",
-			cell: ({ row }) => <div>{row.getValue("endDateTime")}</div>,
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Hora de Finalización
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const date = new Date(row.getValue("endDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+			},
 		},
 		{
 			accessorKey: "grade",
-			header: "Grade",
-			cell: ({ row }) => <div>{row.getValue("grade")}</div>,
-		},
-		{
-			accessorKey: "gradeStatus",
-			header: "Grade Status",
-			cell: ({ row }) => <div>{row.getValue("gradeStatus")}</div>,
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				return <div className="text-center capitalize">{row.getValue("grade")}</div>
+			},
 		},
 		{
 			accessorKey: "gradeDateTime",
-			header: "Grade Date Time",
-			cell: ({ row }) => <div>{row.getValue("gradeDateTime")}</div>,
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Hora de Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const date = new Date(row.getValue("gradeDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+			},
+		},
+		{
+			accessorKey: "gradeStatus",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Estado de Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
+				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
+			},
+		},
+		{
+			id: "actions",
+			enableHiding: false,
+			cell: ({ row }) => {
+				const practice = row.original
+
+				return (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" className="ml-auto flex h-8 w-8 p-0">
+								<MoreHorizontal />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem>
+								<Users /> Ver Miembros
+							</DropdownMenuItem>
+							<DropdownMenuItem>
+								<Pencil /> Calificar
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)
+			},
 		},
 	]
 
