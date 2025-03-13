@@ -7,10 +7,30 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar } from "@/modules/core/components/ui/calendar";
 
+// 📌 Definición de tipos
+interface Room {
+  id: string;
+  name: string;
+}
+
+interface Reservation {
+  date: string;
+  startTime: string;
+  endTime: string;
+  room: string;
+}
+
+interface BookingFormProps {
+  rooms: Room[];
+  reservations: Reservation[];
+  onAddReservation: (reservation: Reservation) => void;
+}
+
+// 📌 Generar opciones de horario (cada 15 minutos)
 const generateTimeOptions = () => {
-  let times = [];
+  const times: string[] = [];
   for (let hour = 0; hour < 24; hour++) {
-    for (let minute of ["00", "15", "30", "45"]) {
+    for (const minute of ["00", "15", "30", "45"]) {
       times.push(`${hour.toString().padStart(2, "0")}:${minute}`);
     }
   }
@@ -19,23 +39,21 @@ const generateTimeOptions = () => {
 
 const timeOptions = generateTimeOptions();
 
-export default function BookingForm({ rooms, reservations, onAddReservation }) {
-  const [selectedRoom, setSelectedRoom] = useState(rooms[0]);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [userName, setUserName] = useState("");
+// 📌 Componente Principal
+export default function CreateSimulationsForm({ rooms, reservations, onAddReservation }: BookingFormProps) {
+  const [selectedRoom, setSelectedRoom] = useState<Room>(rooms[0]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
 
   const addReservation = () => {
-    if (!userName || !selectedDate || !startTime || !endTime) return;
+    if (!selectedDate || !startTime || !endTime) return;
     onAddReservation({
-      userName,
       date: format(selectedDate, "yyyy-MM-dd"),
       startTime,
       endTime,
       room: selectedRoom.name,
     });
-    setUserName("");
     setStartTime("");
     setEndTime("");
   };
@@ -74,14 +92,14 @@ export default function BookingForm({ rooms, reservations, onAddReservation }) {
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
-            {startTime ? startTime : "Selecciona hora de inicio"}
+            {startTime || "Selecciona hora de inicio"}
             <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">
           <Command>
             <CommandInput placeholder="Buscar hora..." />
-            <CommandList className="max-h-48 overflow-auto"> 
+            <CommandList className="max-h-48 overflow-auto">
               {timeOptions.map(time => (
                 <CommandItem key={time} value={time} onSelect={() => setStartTime(time)}>
                   <Check className={`mr-2 h-4 w-4 ${startTime === time ? "opacity-100" : "opacity-0"}`} />
@@ -97,14 +115,14 @@ export default function BookingForm({ rooms, reservations, onAddReservation }) {
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
-            {endTime ? endTime : "Selecciona hora de finalización"}
+            {endTime || "Selecciona hora de finalización"}
             <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">
           <Command>
             <CommandInput placeholder="Buscar hora..." />
-            <CommandList className="max-h-48 overflow-auto"> 
+            <CommandList className="max-h-48 overflow-auto">
               {timeOptions.map(time => (
                 <CommandItem key={time} value={time} onSelect={() => setEndTime(time)}>
                   <Check className={`mr-2 h-4 w-4 ${endTime === time ? "opacity-100" : "opacity-0"}`} />
@@ -128,7 +146,7 @@ export default function BookingForm({ rooms, reservations, onAddReservation }) {
           <Command>
             <CommandInput placeholder="Buscar sala..." />
             <CommandList>
-              {rooms.map(room => (
+              {rooms.map((room: Room) => (
                 <CommandItem key={room.id} value={room.name} onSelect={() => setSelectedRoom(room)}>
                   <Check className={`mr-2 h-4 w-4 ${selectedRoom.id === room.id ? "opacity-100" : "opacity-0"}`} />
                   {room.name}
@@ -140,13 +158,15 @@ export default function BookingForm({ rooms, reservations, onAddReservation }) {
       </Popover>
 
       {/* Botón de añadir */}
-      <Button onClick={addReservation} className="w-full opacity-80 azul-javeriana">Añadir reserva al carrito</Button>
+      <Button onClick={addReservation} variant="secondary" className="w-full azul-javeriana">
+        Añadir reserva al carrito
+      </Button>
 
       {/* Lista de reservas */}
       <div className="border p-2 rounded h-32 overflow-auto">
-        {reservations.length > 0 ? reservations.map((res, index) => (
+        {reservations.length > 0 ? reservations.map((res: Reservation, index: number) => (
           <div key={index} className="border-b p-1 flex justify-between items-center">
-            <p>{res.userName} - {res.date} ({res.startTime} - {res.endTime})</p>
+            <p>{res.date} ({res.startTime} - {res.endTime})</p>
             <Button variant="ghost" size="sm">
               <Trash2 className="h-4 w-4 text-red-500" />
             </Button>
@@ -155,7 +175,9 @@ export default function BookingForm({ rooms, reservations, onAddReservation }) {
       </div>
 
       {/* Botón de guardar todas */}
-      <Button onClick={saveReservations} className="w-full azul-javeriana-600 text-white">Finalizar reserva</Button>
+      <Button onClick={saveReservations} className="w-full to-blue-javeriana text-white">
+        Finalizar reserva
+      </Button>
     </div>
   );
 }
