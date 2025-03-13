@@ -16,13 +16,11 @@ import {
 	FormControl,
 	FormField,
 	FormItem,
-	FormLabel,
 	FormMessage,
 } from "@/modules/core/components/ui/form"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
-import {} from "../services/rubricTemplateService"
 import { getCourses } from "../../../admin/courses/services/courseService"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import {
@@ -33,6 +31,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
+import { ContextMenu, ContextMenuCheckboxItem, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuRadioGroup, ContextMenuRadioItem, ContextMenuSeparator, ContextMenuShortcut, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger } from "@/modules/core/components/ui/context-menu"
 
 interface Props {
 	open: boolean
@@ -65,6 +64,7 @@ const formSchema = z.object({
 		),
 		criteria: z.array(
 			z.object({
+				id: z.number().optional(),
 				name: z.string().min(1, {
 					message: "Debes ingresar una descripción",
 				}),
@@ -95,6 +95,8 @@ const formSchema = z.object({
 })
 
 export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
+	const [id, setId] = useState<number>(3)
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -104,6 +106,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 				columns: ["Aprobado", "No aprobado"],
 				criteria: [
 					{
+						id: 1,
 						name: "A",
 						description: "",
 						points: 0,
@@ -112,20 +115,29 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 								min: 0,
 								max: 3,
 							},
+							{
+								min: 3,
+								max: 5,
+							},
 						],
-						scoringScaleDescription: [""],
+						scoringScaleDescription: ["", ""],
 					},
 					{
+						id: 2,
 						name: "B",
 						description: "",
 						points: 0,
 						scoringScale: [
 							{
+								min: 0,
+								max: 3,
+							},
+							{
 								min: 3,
-								max: 4,
+								max: 5,
 							},
 						],
-						scoringScaleDescription: [""],
+						scoringScaleDescription: ["", ""],
 					},
 				],
 			},
@@ -196,7 +208,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 									},
 								]}
 								itemName="rúbrica"
-								onChange={(selected) => {}}
+								onChange={() => {}}
 							/>
 						</div>
 						<FormField
@@ -213,25 +225,80 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 															<TableRow>
 																<TableHead className="w-[100px] border">Criterios</TableHead>
 																{field.value.columns.map((column, index) => (
-																	<TableHead key={index} className="border">{column}</TableHead>
+																	<TableHead key={index} className="border">
+																		{column}
+																	</TableHead>
 																))}
 															</TableRow>
 														</TableHeader>
 														<TableBody>
-															<TableRow>
-																<TableCell className="font-medium">
-																	Unicornios por doquier
-																</TableCell>
-																<TableCell>Unicornios por doquier</TableCell>
-																<TableCell>Unicornios por doquier</TableCell>
-															</TableRow>
-															<TableRow>
-																<TableCell className="font-medium">
-																	Unicornios por doquier
-																</TableCell>
-																<TableCell>Unicornios por doquier</TableCell>
-																<TableCell>Unicornios por doquier</TableCell>
-															</TableRow>
+															{field.value.criteria.map((criteria) => (
+																<TableRow key={criteria.id}>
+																	<TableCell className="border font-medium">
+																		{criteria.name}
+																	</TableCell>
+																	{criteria.scoringScale.map((scale, index) => (
+																		<TableCell key={`${criteria.id}-${field.value.columns[index]}`} className="border p-0">
+																			<ContextMenu>
+																				<ContextMenuTrigger className="p-2 h-full w-full flex grow">
+																					Right click here
+																					<span className="text-blue-javeriana text-sm font-bold italic">
+																						{scale.min} - {scale.max} puntos
+																					</span>
+																				</ContextMenuTrigger>
+																				<ContextMenuContent className="w-64">
+																					<ContextMenuItem inset>
+																						Back
+																						<ContextMenuShortcut>⌘[</ContextMenuShortcut>
+																					</ContextMenuItem>
+																					<ContextMenuItem inset disabled>
+																						Forward
+																						<ContextMenuShortcut>⌘]</ContextMenuShortcut>
+																					</ContextMenuItem>
+																					<ContextMenuItem inset>
+																						Reload
+																						<ContextMenuShortcut>⌘R</ContextMenuShortcut>
+																					</ContextMenuItem>
+																					<ContextMenuSub>
+																						<ContextMenuSubTrigger inset>
+																							More Tools
+																						</ContextMenuSubTrigger>
+																						<ContextMenuSubContent className="w-48">
+																							<ContextMenuItem>
+																								Save Page As...
+																								<ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
+																							</ContextMenuItem>
+																							<ContextMenuItem>Create Shortcut...</ContextMenuItem>
+																							<ContextMenuItem>Name Window...</ContextMenuItem>
+																							<ContextMenuSeparator />
+																							<ContextMenuItem>Developer Tools</ContextMenuItem>
+																						</ContextMenuSubContent>
+																					</ContextMenuSub>
+																					<ContextMenuSeparator />
+																					<ContextMenuCheckboxItem checked>
+																						Show Bookmarks Bar
+																						<ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
+																					</ContextMenuCheckboxItem>
+																					<ContextMenuCheckboxItem>
+																						Show Full URLs
+																					</ContextMenuCheckboxItem>
+																					<ContextMenuSeparator />
+																					<ContextMenuRadioGroup value="pedro">
+																						<ContextMenuLabel inset>People</ContextMenuLabel>
+																						<ContextMenuSeparator />
+																						<ContextMenuRadioItem value="pedro">
+																							Pedro Duarte
+																						</ContextMenuRadioItem>
+																						<ContextMenuRadioItem value="colm">
+																							Colm Tuite
+																						</ContextMenuRadioItem>
+																					</ContextMenuRadioGroup>
+																				</ContextMenuContent>
+																			</ContextMenu>
+																		</TableCell>
+																	))}
+																</TableRow>
+															))}
 														</TableBody>
 													</Table>
 												</article>
@@ -240,6 +307,28 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 														type="button"
 														variant="ghost"
 														className="h-full flex-grow rounded-md border px-1"
+														onClick={() => {
+															const currentRubric = form.getValues("rubric")
+
+															// Add new column
+															const newColumns = [...currentRubric.columns, "Columna " + (currentRubric.columns.length + 1)]
+
+															// Update each criteria's scoring scale and descriptions
+															const updatedCriteria = currentRubric.criteria.map((criteria) => ({
+																...criteria,
+																scoringScale: [...criteria.scoringScale, { min: 0, max: 5 }],
+																scoringScaleDescription: [...criteria.scoringScaleDescription, ""],
+															}))
+
+															form.setValue(
+																"rubric",
+																{
+																	columns: newColumns,
+																	criteria: updatedCriteria,
+																},
+																{ shouldDirty: true }
+															)
+														}}
 													>
 														+
 													</Button>
@@ -249,6 +338,30 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 												type="button"
 												variant="ghost"
 												className="flex h-5 w-[calc(100%-28px)] items-center justify-center rounded-md border"
+												onClick={() => {
+													const currentRubric = form.getValues("rubric")
+													const columnsCount = currentRubric.columns.length
+
+													const newCriteria = {
+														id: id,
+														name: String.fromCharCode(65 + currentRubric.criteria.length), // Generates next letter (A, B, C...)
+														description: "",
+														points: 0,
+														scoringScale: Array(columnsCount).fill({ min: 0, max: 5 }),
+														scoringScaleDescription: Array(columnsCount).fill(""),
+													}
+
+													form.setValue(
+														"rubric",
+														{
+															...currentRubric,
+															criteria: [...currentRubric.criteria, newCriteria],
+														},
+														{ shouldDirty: true }
+													)
+
+													setId((prev) => (prev + 1))
+												}}
 											>
 												+
 											</Button>
