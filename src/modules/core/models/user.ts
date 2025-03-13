@@ -1,7 +1,7 @@
 import Role from "./role"
 
 export default interface User {
-  	id: number
+	id: number
 	email: string
 	name: string
 	lastName: string

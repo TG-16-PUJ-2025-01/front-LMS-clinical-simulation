@@ -18,6 +18,15 @@ export function formatDuration(seconds: number) {
 	return min ? `${hours}h ${min}min` : `${hours}h`
 }
 
+export function formatTimestamp(timestamp: number) {
+	const seconds = timestamp % 60
+	const totalMinutes = Math.floor(timestamp / 60)
+	const minutes = totalMinutes % 60
+	const hours = Math.floor(totalMinutes / 60)
+
+	return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+}
+
 export function formatSize(megaBytes: number) {
 	if (megaBytes < 1024) return `${megaBytes}MB` // Less than a gigabyte
 
@@ -27,6 +36,6 @@ export function formatSize(megaBytes: number) {
 }
 
 export const validatePassword = (password: string): boolean => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return passwordRegex.test(password);
-  };
+	const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+	return passwordRegex.test(password)
+}

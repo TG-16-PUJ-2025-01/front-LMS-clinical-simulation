@@ -210,7 +210,7 @@ export function CoursesDataTable() {
 					</div>
 					<Button onClick={() => handleOpenDialog("create")}>Nueva asignatura</Button>
 				</div>
-				<div className="rounded-md border mt-4">
+				<div className="mt-4 rounded-md border">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -248,7 +248,11 @@ export function CoursesDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 pt-4">
+				<div className="flex items-center justify-between space-x-2 pt-4">
+					<span className="text-sm text-gray-600">
+						Página {paginationInfo.totalPages === 0 ? 0 : pagination.pageIndex + 1} de{" "}
+						{paginationInfo.totalPages}
+					</span>
 					<div className="space-x-2">
 						<Button
 							variant="outline"

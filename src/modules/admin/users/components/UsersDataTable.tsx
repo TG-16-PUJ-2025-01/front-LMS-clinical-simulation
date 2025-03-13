@@ -87,7 +87,7 @@ export function UsersDataTable() {
             totalPages: res.metadata.totalPages,
           });
         }
-      } catch (error: unknown) {
+      } catch (error) {
         console.error("Error fetching users:", error);
         setError(error.response?.data?.message || "Error al cargar los usuarios");
         setData([]);
@@ -309,7 +309,11 @@ export function UsersDataTable() {
             </TableBody>
             </Table>
         </div>
-        <div className="flex items-center justify-end space-x-2 pt-4">
+        <div className="flex items-center justify-between space-x-2 pt-4">
+					<span className="text-sm text-gray-600">
+						Página {paginationInfo.totalPages === 0 ? 0 : pagination.pageIndex + 1} de{" "}
+						{paginationInfo.totalPages}
+					</span>
           <div className="space-x-2">
             <Button
               variant="outline"
