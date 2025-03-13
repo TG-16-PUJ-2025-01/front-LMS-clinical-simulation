@@ -24,7 +24,7 @@ import {
 	TableRow,
 } from "@/modules/core/components/ui/table"
 import { ArrowUpDown, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
-import BookingDialog from "./bookingDialog"
+
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -35,6 +35,7 @@ import {
 } from "@/modules/core/components/ui/dropdown-menu"
 import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
 import { format } from 'date-fns'
+import CreateSimulationsDialog from "./CreateSimulationsDialog"
 
 export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -298,7 +299,7 @@ export function SimulationDataTable() {
 					</div>
 				</div>
 			</div>
-			<BookingDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
 		</>
 	)
 }

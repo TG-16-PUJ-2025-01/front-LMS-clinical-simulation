@@ -14,6 +14,28 @@ export async function getSimulationsByPracticeId(
 			size,
 		},
 	})
-    
+
 	return data
+}
+
+
+interface SimulationRequest {
+	practiceId: number;
+	roomId: number;
+	startDateTime: string;
+	endDateTime: string;
+}
+
+interface CreateSimulationRequest {
+	simulations: SimulationRequest[];
+}
+
+export async function createSimulations(simulations: CreateSimulationRequest) {
+	try {
+		const response = await axios.post(`${API_URL}`, simulations);
+		return response.data;
+	} catch (error) {
+		console.error("Error al crear las simulaciones:", error);
+		throw error;
+	}
 }

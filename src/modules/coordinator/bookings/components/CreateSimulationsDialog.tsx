@@ -15,27 +15,47 @@ import { Command, CommandInput, CommandList, CommandItem } from "@/modules/core/
 import { Button } from "@/modules/core/components/ui/button";
 import { ChevronsUpDown, Check } from "lucide-react";
 
-import BookingForm from "./BookingForm";
+import CreateSimulationsForm from "./CreateSimulationsForm";
 
-const rooms = [
+// 📌 Definir el tipo para una reserva
+interface Reservation {
+  room: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+
+// 📌 Definir el tipo de las props del componente
+interface BookingDialogProps {
+  open: boolean;
+  onClose: (open: boolean) => void;
+}
+
+// 📌 Definir el tipo para las salas
+interface Room {
+  id: string;
+  name: string;
+}
+
+const rooms: Room[] = [
   { id: "1", name: "Sala A" },
   { id: "2", name: "Sala B" },
 ];
 
-export default function BookingDialog({ open, onClose }) {
-  const [reservations, setReservations] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState(rooms[0]);
+export default function CreateSimulationsDialog({ open, onClose }: BookingDialogProps) {
+  // 📌 Tipar correctamente el estado de las reservas
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<Room>(rooms[0]);
 
-  // Filtrar reservas según la sala seleccionada
+  // 📌 Filtrar reservas según la sala seleccionada
   const filteredReservations = reservations.filter(res => res.room === selectedRoom.name);
 
+  // 📌 Configuración del calendario
   const calendarApp = useNextCalendarApp({
     views: [createViewWeek()],
-    theme: "shadcn",
-    calendars: { room: { label: "Sala", colorName: "blue" } },
+    theme: "shadcn blue", 
     events: filteredReservations.map((res, index) => ({
-      id: index,
-      title: `Reserva - ${res.userName}`,
+      id: index.toString(),
       start: `${res.date}T${res.startTime}:00`,
       end: `${res.date}T${res.endTime}:00`,
       calendarId: "room",
@@ -43,8 +63,9 @@ export default function BookingDialog({ open, onClose }) {
     locale: 'es-ES'
   });
 
-  const addReservation = (newReservation) => {
-    setReservations([...reservations, newReservation]);
+  // 📌 Tipar correctamente la función que agrega una reserva
+  const addReservation = (newReservation: Reservation) => {
+    setReservations(prev => [...prev, newReservation]);
   };
 
   return (
@@ -89,7 +110,7 @@ export default function BookingDialog({ open, onClose }) {
         </div>
 
         {/* Formulario */}
-        <BookingForm rooms={rooms} reservations={reservations} onAddReservation={addReservation} />
+        <CreateSimulationsForm rooms={rooms} reservations={reservations} onAddReservation={addReservation} />
       </DialogContent>
     </Dialog>
   );
