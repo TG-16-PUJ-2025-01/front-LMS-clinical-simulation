@@ -13,21 +13,21 @@ import { toast } from "sonner"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
-	const { id } = useParams();
+	const { id } = useParams()
 	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "add" | null>(null)
 	const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
 
 	const [data, setData] = useState<Practice[]>([])
 
 	const fetchPractices = async () => {
-        if (!id) return;
-        try {
-            const res = await getPracticeByClassId(Number(id));
-            setData(res.data);
-        } catch (error) {
-            toast.error("No se encuentra la clase o no hay practicas asociadas a esta clase");
-        }
-    };
+		if (!id) return
+		try {
+			const res = await getPracticeByClassId(Number(id))
+			setData(res.data)
+		} catch (error) {
+			toast.error("No se encuentra la clase o no hay practicas asociadas a esta clase")
+		}
+	}
 
 	useEffect(() => {
 		if (openDialog) return
@@ -56,8 +56,8 @@ export default function PracticesPage() {
 				<NavBar
 					navLinks={[
 						{
-							label: "aqui",
-							href: "coordinador/practicas",
+							label: "Calendario",
+							href: "/calendario",
 						},
 					]}
 				/>
@@ -93,7 +93,11 @@ export default function PracticesPage() {
 				onClose={handleCloseDialog}
 				practice={selectedPractice!}
 			/>
-			<AddPracticeDialog open={openDialog === "add"} onClose={handleCloseDialog} onPracticeCreated={handlePracticeNavigation} />
+			<AddPracticeDialog
+				open={openDialog === "add"}
+				onClose={handleCloseDialog}
+				onPracticeCreated={handlePracticeNavigation}
+			/>
 		</>
 	)
 }
