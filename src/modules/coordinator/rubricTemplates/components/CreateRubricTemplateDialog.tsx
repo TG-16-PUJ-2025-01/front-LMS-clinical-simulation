@@ -236,9 +236,26 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																<TableHead className="w-[100px] border py-1 align-top">
 																	Criterios
 																</TableHead>
-																{field.value.columns.map((column) => (
+																{field.value.columns.map((column, index) => (
 																	<TableHead key={column.id} className="border py-1">
-																		<p>{column.title}</p>
+																		<FormField
+																			control={form.control}
+																			name={`rubric.columns.${index}.title`}
+																			render={({ field }) => (
+																				<FormItem className="flex flex-col gap-2">
+																					<FormControl>
+																						<Textarea
+																							className="h-full min-h-min w-full resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																							style={{
+																								maxWidth: `calc((100vw - 176px) / ${numCols})`,
+																							}}
+																							{...field}
+																						/>
+																					</FormControl>
+																					<FormMessage className="m-0 -mt-2" />
+																				</FormItem>
+																			)}
+																		/>
 																		<span className="text-blue-javeriana text-xs font-bold italic">
 																			{column.scoringScale.min} - {column.scoringScale.max} puntos
 																		</span>
@@ -249,15 +266,15 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 														<TableBody>
 															{field.value.criteria.map((criteria, index) => (
 																<TableRow key={criteria.id}>
-																	<TableCell className="border font-medium">
+																	<TableCell className="border font-medium w-[100px]">
 																		<FormField
 																			control={form.control}
 																			name={`rubric.criteria.${index}.name`}
 																			render={({ field }) => (
-																				<FormItem className="flex flex-col gap-2">
+																				<FormItem className="flex flex-col gap-2 w-[100px]">
 																					<FormControl>
 																						<Textarea
-																							className="h-full max-w-[100px] resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																							className="h-full min-h-min max-w-[100px] resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
 																							{...field}
 																						/>
 																					</FormControl>
@@ -265,6 +282,9 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																				</FormItem>
 																			)}
 																		/>
+																		<p className="text-blue-javeriana text-xs font-bold italic w-[100px]">
+																			50%
+																		</p>
 																	</TableCell>
 																	{criteria.scoringDescription.map((_, index2) => (
 																		<TableCell
