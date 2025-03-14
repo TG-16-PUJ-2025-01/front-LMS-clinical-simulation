@@ -5,8 +5,11 @@ import axios from "axios"
 export interface Event {
 	id: number
 	title: string
+	description: string
+	location: string
 	start: string
 	end: string
+	calendarId: string
 }
 
 export async function getEvents(): Promise<ApiResponse<Event[]>> {
