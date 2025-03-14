@@ -8,7 +8,7 @@ import {
 	createViewMonthAgenda,
 	viewWeek,
 } from "@schedule-x/calendar"
-import { getEvents, Event } from "../service/calendarService"
+import { getEvents } from "../service/calendarService"
 import { toast } from "sonner"
 
 export default function CalendarComponent() {
@@ -43,22 +43,7 @@ export default function CalendarComponent() {
 	const loadEvents = async () => {
 		try {
 			const res = await getEvents()
-			const fetchedEvents: Event[] = res.data
-
-			if (Array.isArray(fetchedEvents)) {
-				const existingEvents = eventsServicePlugin.getAll().map((e) => e.id)
-
-				fetchedEvents.forEach((event) => {
-					if (!existingEvents.includes(event.id)) {
-						eventsServicePlugin.add({
-							id: event.id,
-							title: event.title,
-							start: event.start,
-							end: event.end,
-						})
-					}
-				})
-			}
+			eventsServicePlugin.set(res.data)
 		} catch (error) {
 			toast.error("Error trying to find events")
 		}

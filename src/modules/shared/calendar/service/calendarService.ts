@@ -9,7 +9,7 @@ export interface Event {
 	end: string
 }
 
-export async function getEvents(): Promise<ApiResponse<[]>> {
+export async function getEvents(): Promise<ApiResponse<Event[]>> {
 	const { data } = await axios.get(`${API_URL}/calendar`)
 	console.log("Data inside the getEvents function ", data)
 	return data
