@@ -41,6 +41,7 @@ import {
 	ContextMenuSubTrigger,
 	ContextMenuTrigger,
 } from "@/modules/core/components/ui/context-menu"
+import { Textarea } from "@/modules/core/components/ui/textarea"
 
 interface Props {
 	open: boolean
@@ -50,7 +51,7 @@ interface Props {
 
 const formSchema = z.object({
 	title: z.string().nonempty({
-		message: "EL título es obligatorio",
+		message: "El título es obligatorio",
 	}),
 	courses: z
 		.array(
@@ -107,6 +108,7 @@ const formSchema = z.object({
 export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 	const [colId, setColId] = useState<number>(3)
 	const [criteriaId, setCriteriaId] = useState<number>(3)
+	const [numCols, setNumCols] = useState<number>(2)
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -223,12 +225,12 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 							control={form.control}
 							name="rubric"
 							render={({ field }) => (
-								<FormItem className="flex flex-col gap-2">
+								<FormItem className="flex max-w-full flex-col gap-2">
 									<FormControl>
-										<section className="flex flex-col gap-2">
+										<section className="flex max-w-[calc(100vw-48px)] flex-col gap-2">
 											<div className="flex h-full w-full gap-2">
 												<article className="flex-1 overflow-auto rounded-md border">
-													<Table className="h-full">
+													<Table className="h-full w-full">
 														<TableHeader>
 															<TableRow>
 																<TableHead className="w-[100px] border py-1 align-top">
@@ -254,8 +256,8 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																			render={({ field }) => (
 																				<FormItem className="flex flex-col gap-2">
 																					<FormControl>
-																						<Input
-																							className="border-0 p-0 shadow-none focus-visible:ring-0 text-wrap"
+																						<Textarea
+																							className="h-full max-w-[100px] resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
 																							{...field}
 																						/>
 																					</FormControl>
@@ -264,17 +266,32 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																			)}
 																		/>
 																	</TableCell>
-																	{criteria.scoringDescription.map((description, index) => (
+																	{criteria.scoringDescription.map((_, index2) => (
 																		<TableCell
-																			key={`${criteria.id}-${field.value.columns[index].id}`}
+																			key={`${criteria.id}-${field.value.columns[index2].id}`}
 																			className="border p-0"
+																			style={{ width: `calc((100vw - 176px) / ${numCols})` }}
 																		>
 																			<ContextMenu>
 																				<ContextMenuTrigger className="flex h-full w-full grow p-2">
-																					{description}
-																					{/* <span className="text-blue-javeriana text-sm font-bold italic">
-																						{scale.min} - {scale.max} puntos
-																					</span> */}
+																					<FormField
+																						control={form.control}
+																						name={`rubric.criteria.${index}.scoringDescription.${index2}`}
+																						render={({ field }) => (
+																							<FormItem className="flex w-full flex-col gap-2">
+																								<FormControl>
+																									<Textarea
+																										className="min-h-fit h-full w-full resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																										style={{
+																											maxWidth: `calc((100vw - 176px) / ${numCols})`,
+																										}}
+																										{...field}
+																									/>
+																								</FormControl>
+																								<FormMessage className="m-0 -mt-2" />
+																							</FormItem>
+																						)}
+																					/>
 																				</ContextMenuTrigger>
 																				<ContextMenuContent className="w-64">
 																					<ContextMenuSub>
@@ -345,6 +362,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 															)
 
 															setColId((prev) => prev + 1)
+															setNumCols((prev) => prev + 1)
 														}}
 													>
 														+
@@ -364,7 +382,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 														name: String.fromCharCode(65 + currentRubric.criteria.length), // Generates next letter (A, B, C...)
 														description: "",
 														points: 0,
-														scoringDescription: Array(columnsCount).fill(""),
+														scoringDescription: Array(columnsCount).fill("Descripción"),
 													}
 
 													form.setValue(
