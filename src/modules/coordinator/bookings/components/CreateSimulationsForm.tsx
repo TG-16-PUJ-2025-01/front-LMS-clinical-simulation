@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/modules/core/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/modules/core/components/ui/popover";
 import { Command, CommandInput, CommandList, CommandItem } from "@/modules/core/components/ui/command";
@@ -17,13 +17,7 @@ interface Reservation {
   date: string;
   startTime: string;
   endTime: string;
-  room: string;
-}
-
-interface BookingFormProps {
-  rooms: Room[];
-  reservations: Reservation[];
-  onAddReservation: (reservation: Reservation) => void;
+  room: string;    
 }
 
 // 📌 Generar opciones de horario (cada 15 minutos)
@@ -32,28 +26,51 @@ const generateTimeOptions = () => {
   for (let hour = 0; hour < 24; hour++) {
     for (const minute of ["00", "15", "30", "45"]) {
       times.push(`${hour.toString().padStart(2, "0")}:${minute}`);
-    }
+    } 
   }
   return times;
 };
 
 const timeOptions = generateTimeOptions();
 
-// 📌 Componente Principal
-export default function CreateSimulationsForm({ rooms, reservations, onAddReservation }: BookingFormProps) {
-  const [selectedRoom, setSelectedRoom] = useState<Room>(rooms[0]);
+
+export default function CreateSimulationsForm() {
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<Room>({ id: "", name: "" });
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
+  const [rooms, setRooms] = useState<Room[]>([]);
+
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/room/all");
+        const data = await response.json();
+        setRooms(data.data.map((room: { id: number; name: string }) => ({
+          id: room.id.toString(),
+          name: room.name,
+        })));
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   const addReservation = () => {
-    if (!selectedDate || !startTime || !endTime) return;
-    onAddReservation({
+    if (!selectedDate || !startTime || !endTime || !selectedRoom.name) return;
+
+    const newReservation: Reservation = {
       date: format(selectedDate, "yyyy-MM-dd"),
       startTime,
       endTime,
       room: selectedRoom.name,
-    });
+    };
+
+    setReservations((prev) => [...prev, newReservation]);
     setStartTime("");
     setEndTime("");
   };
@@ -100,7 +117,7 @@ export default function CreateSimulationsForm({ rooms, reservations, onAddReserv
           <Command>
             <CommandInput placeholder="Buscar hora..." />
             <CommandList className="max-h-48 overflow-auto">
-              {timeOptions.map(time => (
+              {timeOptions.map((time) => (
                 <CommandItem key={time} value={time} onSelect={() => setStartTime(time)}>
                   <Check className={`mr-2 h-4 w-4 ${startTime === time ? "opacity-100" : "opacity-0"}`} />
                   {time}
@@ -123,7 +140,7 @@ export default function CreateSimulationsForm({ rooms, reservations, onAddReserv
           <Command>
             <CommandInput placeholder="Buscar hora..." />
             <CommandList className="max-h-48 overflow-auto">
-              {timeOptions.map(time => (
+              {timeOptions.map((time) => (
                 <CommandItem key={time} value={time} onSelect={() => setEndTime(time)}>
                   <Check className={`mr-2 h-4 w-4 ${endTime === time ? "opacity-100" : "opacity-0"}`} />
                   {time}
@@ -138,7 +155,7 @@ export default function CreateSimulationsForm({ rooms, reservations, onAddReserv
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
-            {selectedRoom.name}
+            {selectedRoom.name || "Selecciona una sala"}
             <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -146,7 +163,7 @@ export default function CreateSimulationsForm({ rooms, reservations, onAddReserv
           <Command>
             <CommandInput placeholder="Buscar sala..." />
             <CommandList>
-              {rooms.map((room: Room) => (
+              {rooms.map((room) => (
                 <CommandItem key={room.id} value={room.name} onSelect={() => setSelectedRoom(room)}>
                   <Check className={`mr-2 h-4 w-4 ${selectedRoom.id === room.id ? "opacity-100" : "opacity-0"}`} />
                   {room.name}
@@ -164,14 +181,18 @@ export default function CreateSimulationsForm({ rooms, reservations, onAddReserv
 
       {/* Lista de reservas */}
       <div className="border p-2 rounded h-32 overflow-auto">
-        {reservations.length > 0 ? reservations.map((res: Reservation, index: number) => (
-          <div key={index} className="border-b p-1 flex justify-between items-center">
-            <p>{res.date} ({res.startTime} - {res.endTime})</p>
-            <Button variant="ghost" size="sm">
-              <Trash2 className="h-4 w-4 text-red-500" />
-            </Button>
-          </div>
-        )) : <p className="text-gray-500">No hay reservas en el carrito aún</p>}
+        {reservations.length > 0 ? (
+          reservations.map((res, index) => (
+            <div key={index} className="border-b p-1 flex justify-between items-center">
+              <p>{res.date} ({res.startTime} - {res.endTime})</p>
+              <Button variant="ghost" size="sm" onClick={() => setReservations((prev) => prev.filter((_, i) => i !== index))}>
+                <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No hay reservas en el carrito aún</p>
+        )}
       </div>
 
       {/* Botón de guardar todas */}
