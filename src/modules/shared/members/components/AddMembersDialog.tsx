@@ -60,6 +60,7 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 			const fetchNonMembers = async () => {
 				const res = await getProfessorsNotInClass(Number(classId), filter)
 				setStudents(res.data) // Guardamos los estudiantes en el estado\
+				console.log(res.data)
 				setFilteredStudents(
 					res.data.filter((student) =>
 						`${student.name} ${student.lastName}`.toLowerCase().includes(filter.toLowerCase())
