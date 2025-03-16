@@ -11,7 +11,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Search, Trash2 } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Search, Sheet, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -46,7 +46,7 @@ export function StudentsClassDataTable() {
 	const [rowSelection, setRowSelection] = useState({})
 	const { id } = useParams()
 
-	const [openDialog, setOpenDialog] = useState<"delete" | "students" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"delete" | "students" | "professors" |null>(null)
 	const [selectedStudent, setSelectedStudent] = useState<UserModel | undefined>(undefined)
 	const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
 
@@ -74,6 +74,7 @@ export function StudentsClassDataTable() {
 				!(sorting[0]?.desc ?? false),
 				Number(id) //obtener el id de la url navigate(`/admin/classes/${Class.id}/members`)}
 			)
+
 			setData(res.data)
 
 			setPaginationInfo({
@@ -85,7 +86,7 @@ export function StudentsClassDataTable() {
 		fetchMembers()
 	}, [pagination, filter, sorting, openDialog, id])
 
-	const handleOpenDialog = (type: "delete" | "students", Usermodel?: UserModel) => {
+	const handleOpenDialog = (type: "delete" | "students" | "professors", Usermodel?: UserModel) => {
 		setOpenDialog(type)
 		setSelectedStudent(Usermodel ?? undefined)
 		setSelectedClassId(id ? Number(id) : null)
@@ -186,9 +187,9 @@ export function StudentsClassDataTable() {
 				
 				let displayRole = "Sin rol"; 
 				if (roles.includes(Role.PROFESOR)) {
-					displayRole = Role.PROFESOR;
+					displayRole = Role.PROFESOR.toLowerCase();
 				} else if (roles.includes(Role.ESTUDIANTE)) {
-					displayRole = Role.ESTUDIANTE;
+					displayRole = Role.ESTUDIANTE.toLowerCase();
 				}
 			
 				return <div className="text-center">{displayRole}</div>;
@@ -260,7 +261,13 @@ export function StudentsClassDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => handleOpenDialog("students")}>Anadir miembros</Button>
+					<div className="flex items-center space-x-2">
+						<Button onClick={() => handleOpenDialog("students")}>Añadir estudiantes</Button>
+						<Button onClick={() => handleOpenDialog("professors")}>Añadir profesores</Button>
+						<Button  className="bg-green-800">
+							<Sheet className="h-4 w-4 text-white" />
+						</Button>
+					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
 					<Table>
@@ -322,9 +329,10 @@ export function StudentsClassDataTable() {
 				</div>
 			</div>
 			<AddMembersDialog
-				open={openDialog === "students"}
+				open={openDialog === "students" || openDialog === "professors"}
 				onClose={handleCloseDialog}
 				classId={Number(id)}
+				isStudent={openDialog === "students"}
 			/>
 			<DeleteStudentClassDialog
 				open={openDialog === "delete"}
