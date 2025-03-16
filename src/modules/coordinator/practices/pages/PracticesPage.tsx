@@ -25,7 +25,7 @@ export default function PracticesPage() {
 			const res = await getPracticeByClassId(Number(id))
 			setData(res.data)
 		} catch (error) {
-			toast.error("No se encuentra la clase o no hay practicas asociadas a esta clase")
+			toast.error("No se encuentra la clase")
 		}
 	}
 
@@ -64,7 +64,7 @@ export default function PracticesPage() {
 			</LayoutSlot>
 			<LayoutSlot name="title">Prácticas</LayoutSlot>
 			<div className="mb-4 flex justify-end">
-				<Button onClick={() => handleOpenDialog("add")}>Crear Practica</Button>
+				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
 			</div>
 			<div className="flex justify-center">
 				<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">

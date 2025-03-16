@@ -135,7 +135,7 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 				<DialogHeader>
 					<DialogTitle>Agregar Práctica</DialogTitle>
 					<DialogDescription>
-						Puedes agregar una nueva practica con los siguientes atributos
+						Puedes agregar una nueva práctica con los siguientes atributos
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
