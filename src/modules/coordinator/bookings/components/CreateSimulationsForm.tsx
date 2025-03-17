@@ -6,6 +6,9 @@ import { Check, ChevronsUpDown, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar } from "@/modules/core/components/ui/calendar";
+import { Combobox } from "@/modules/core/components/Combobox/Combobox";
+import { getAllRooms } from "../services/bookingService";
+
 
 // 📌 Definición de tipos
 interface Room {
@@ -33,27 +36,24 @@ const generateTimeOptions = () => {
 
 const timeOptions = generateTimeOptions();
 
-
 export default function CreateSimulationsForm() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<Room>({ id: "", name: "" });
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
-  const [rooms, setRooms] = useState<Room[]>([]);
-
+  const [rooms, setRooms] = useState<{ key: string; value: string }[]>([]); 
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch("http://localhost:8080/room/all");
-        const data = await response.json();
-        setRooms(data.data.map((room: { id: number; name: string }) => ({
-          id: room.id.toString(),
-          name: room.name,
-        })));
+        const roomsData = await getAllRooms();
+        setRooms(roomsData.map(room => ({ key: room.id, value: room.name })));
+        if (roomsData.length > 0) {
+          setSelectedRoom({ id: roomsData[0].id.toString(), name: roomsData[0].name });
+        }
       } catch (error) {
-        console.error("Error fetching rooms:", error);
+        console.error("Error cargando salas:", error);
       }
     };
 
@@ -61,7 +61,7 @@ export default function CreateSimulationsForm() {
   }, []);
 
   const addReservation = () => {
-    if (!selectedDate || !startTime || !endTime || !selectedRoom.name) return;
+    if (!selectedDate || !startTime || !endTime || !selectedRoom) return;
 
     const newReservation: Reservation = {
       date: format(selectedDate, "yyyy-MM-dd"),
@@ -151,28 +151,21 @@ export default function CreateSimulationsForm() {
         </PopoverContent>
       </Popover>
 
-      {/* Selección de sala */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="w-full justify-between">
-            {selectedRoom.name || "Selecciona una sala"}
-            <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
-          <Command>
-            <CommandInput placeholder="Buscar sala..." />
-            <CommandList>
-              {rooms.map((room) => (
-                <CommandItem key={room.id} value={room.name} onSelect={() => setSelectedRoom(room)}>
-                  <Check className={`mr-2 h-4 w-4 ${selectedRoom.id === room.id ? "opacity-100" : "opacity-0"}`} />
-                  {room.name}
-                </CommandItem>
-              ))}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+      {/* Selección de sala con Combobox */}
+
+      <Combobox
+        options={rooms}
+        placeholderText="Seleccionar sala"
+        itemName="Sala"
+        onChange={(selected) => {
+          const selectedRoomData = rooms.find(room => room.key === selected.key);
+          if (selectedRoomData) {
+            setSelectedRoom({ id: selectedRoomData.key.toString(), name: selectedRoomData.value });
+          }
+        }}
+        selectedValue={selectedRoom?.name || ""}
+      />
+
 
       {/* Botón de añadir */}
       <Button onClick={addReservation} variant="secondary" className="w-full azul-javeriana">

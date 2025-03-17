@@ -39,3 +39,47 @@ export async function createSimulations(simulations: CreateSimulationRequest) {
 		throw error;
 	}
 }
+
+interface Room {
+  id: number;
+  name: string;
+}
+
+interface Reservation {
+  startDateTime: string;
+  endDateTime: string;
+}
+
+export async function getAllRooms(): Promise<Room[]> {
+  try {
+    const response = await axios.get(`${API_URL}/room/all`);
+    return response.data.data.map((room: { id: number; name: string }) => ({
+      id: room.id,
+      name: room.name,
+    }));
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
+    throw error;
+  }
+}
+
+export async function getReservationsByRoom(roomId: string): Promise<Reservation[]> {
+  if (!roomId) {
+    console.warn("No se puede hacer la petición: sala o fecha no seleccionada");
+    return [];
+  }
+
+  try {
+    const response = await axios.get(`${API_URL}/simulation/room`, {
+      params: { roomId },
+    });
+
+    return response.data.data.map((res: { startDateTime: string; endDateTime: string }) => ({
+      startDateTime: res.startDateTime,
+      endDateTime: res.endDateTime,
+    }));
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    throw error;
+  }
+}
