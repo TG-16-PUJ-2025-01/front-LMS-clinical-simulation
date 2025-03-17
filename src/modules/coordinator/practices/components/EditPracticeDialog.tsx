@@ -105,8 +105,8 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 						Puedes editar los siguientes atributos de la sala.{" "}
 						<strong>
 							<div>
-								Si desea modificar el tipo, número de grupos o duración de la simulación,{" "}
-								<u>debe crear otra práctica y eliminar esta.</u>
+								Si deseas modificar el tipo, número de grupos o duración de la simulación,{" "}
+								<u>debes crear otra práctica y eliminar esta.</u>
 							</div>
 						</strong>
 					</DialogDescription>
