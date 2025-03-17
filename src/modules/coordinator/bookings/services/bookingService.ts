@@ -2,6 +2,7 @@ import axios from "axios"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import { API_URL } from "@/modules/core/config/env"
 import Simulation from "@/modules/core/models/simulation"
+import User from "@/modules/core/models/user"
 
 export async function getSimulationsByPracticeId(
 	practiceId: number,
@@ -38,4 +39,9 @@ export async function createSimulations(simulations: CreateSimulationRequest) {
 		console.error("Error al crear las simulaciones:", error);
 		throw error;
 	}
+}
+
+export async function getSimulationStudents(simulationId: number): Promise<ApiResponse<User[]>> {
+	const { data } = await axios.get(`${API_URL}/simulation/${simulationId}/users`);
+	return data;
 }
