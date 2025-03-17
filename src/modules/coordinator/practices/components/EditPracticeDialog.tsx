@@ -64,7 +64,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			const updatedPractice: Practice = {
-				...practice!,
+				...practice,
 				name: values.name,
 				description: values.description,
 				gradeable: values.gradeable,
@@ -107,7 +107,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 										name="name"
 										render={({ field }) => (
 											<FormItem className="grid grid-cols-4 items-center gap-4">
-												<FormLabel className="m-0 text-right">Nombre</FormLabel>
+												<FormLabel htmlFor="name" className="m-0 text-right">Nombre</FormLabel>
 												<FormControl>
 													<Input
 														id="name"
@@ -125,7 +125,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 										name="description"
 										render={({ field }) => (
 											<FormItem className="grid grid-cols-4 items-center gap-4">
-												<FormLabel className="m-0 text-right">Descripcion</FormLabel>
+												<FormLabel htmlFor="description" className="m-0 text-right">Descripcion</FormLabel>
 												<FormControl>
 													<Input
 														id="description"
@@ -143,11 +143,12 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 										name="gradeable"
 										render={({ field }) => (
 											<FormItem className="grid grid-cols-4 items-center gap-4">
-												<FormLabel className="text-right">Evaluación</FormLabel>
+												<FormLabel htmlFor="gradeable" className="text-right">Evaluación</FormLabel>
 												<div className="col-span-3 flex items-center gap-2">
 													<FormControl>
 														<Checkbox
 															id="gradeable"
+															name="gradeable"
 															checked={field.value}
 															onCheckedChange={field.onChange}
 														/>
@@ -159,7 +160,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 										)}
 									/>
 									<div className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Tipo</FormLabel>
+										<FormLabel htmlFor="type" className="m-0 text-right">Tipo</FormLabel>
 										<Input
 											id="type"
 											value={
@@ -171,9 +172,11 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 										/>
 									</div>
 									<div className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Duración Simulación</FormLabel>
+										<FormLabel htmlFor="simulationDuration" className="m-0 text-right">Duración Simulación</FormLabel>
 										<div className="col-span-3 flex items-center">
 											<Input
+												id="simulationDuration"
+												name="simulationDuration"
 												type="number"
 												value={practice.simulationDuration}
 												className="m-0 w-24 text-center"
@@ -185,7 +188,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 									{practice.type === "GRUPAL" && (
 										<>
 											<div className="grid grid-cols-4 items-center gap-4">
-												<FormLabel className="m-0 text-right">Número de grupos</FormLabel>
+												<FormLabel htmlFor="numberOfGroups" className="m-0 text-right">Número de grupos</FormLabel>
 												<Input
 													type="number"
 													id="numberOfGroups"
@@ -195,9 +198,7 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 												/>
 											</div>
 											<div className="grid grid-cols-4 items-center gap-4">
-												<FormLabel className="m-0 text-right">
-													Máximo estudiantes por grupo
-												</FormLabel>
+												<FormLabel htmlFor="maxStudentsGroup" className="m-0 text-right">Máximo estudiantes por grupo</FormLabel>
 												<Input
 													type="number"
 													id="maxStudentsGroup"
