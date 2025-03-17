@@ -48,7 +48,7 @@ const formSchema = z.object({
 })
 
 export default function EditPracticeDialog({ open, onClose, practice }: Props) {
-	if (!practice) return null; // Add this line to handle null practice
+	if (!practice) return null
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -86,19 +86,13 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 				maxStudentsGroup: practice.maxStudentsGroup,
 			}
 
-			console.log(updatedPractice)
-
 			await updatePractice(practice.id, updatedPractice)
 
 			toast.success("Práctica actualizada exitosamente.")
 
 			onClose(false)
 		} catch (error: any) {
-			if (error.response && error.response.data && error.response.data.message) {
-				toast.error(error.response.data.message)
-			} else {
-				toast.error("Error al actualizar la práctica")
-			}
+			toast.error("Error al actualizar la práctica")
 		}
 	}
 
@@ -110,7 +104,10 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 					<DialogDescription>
 						Puedes editar los siguientes atributos de la sala.{" "}
 						<strong>
-							<div>Si desea modificar el tipo, número de grupos o duración de la simulación, <u>debe crear otra practica.</u></div>
+							<div>
+								Si deseas modificar el tipo, número de grupos o duración de la simulación,{" "}
+								<u>debes crear otra práctica y eliminar esta.</u>
+							</div>
 						</strong>
 					</DialogDescription>
 				</DialogHeader>
