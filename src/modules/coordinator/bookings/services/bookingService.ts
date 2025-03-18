@@ -33,7 +33,7 @@ interface CreateSimulationRequest {
 
 export async function createSimulations(simulations: CreateSimulationRequest) {
 	try {
-		const response = await axios.post(`${API_URL}`, simulations);
+		const response = await axios.post(`${API_URL}/simulation`, simulations);
 		return response.data;
 	} catch (error) {
 		console.error("Error al crear las simulaciones:", error);

@@ -8,11 +8,10 @@ import '@schedule-x/theme-shadcn/dist/index.css';
 import CreateSimulationsForm from "./CreateSimulationsForm";
 import { getAllRooms, getReservationsByRoom } from "../services/bookingService";
 import { Combobox } from "@/modules/core/components/Combobox/Combobox";
-import { createCalendarControlsPlugin } from "@schedule-x/calendar-controls";
 
 interface BookingDialogProps {
   open: boolean;
-  onClose: (open: boolean) => void;
+  onClose: () => void; 
 }
 
 interface Room {
@@ -20,18 +19,11 @@ interface Room {
   name: string;
 }
 
-interface Reservation {
-  startDateTime: string;
-  endDateTime: string;
-}
-
 export default function CreateSimulationsDialog({ open, onClose }: BookingDialogProps) {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [rooms, setRooms] = useState<{ key: number; value: string }[]>([]);
 
-  // 📌 Configuración del calendario y plugins
   const eventsServicePlugin = useMemo(() => createEventsServicePlugin(), []);
-  const calendarControls = useMemo(() => createCalendarControlsPlugin(), []);
 
   const calendarApp = useNextCalendarApp(
     { 
@@ -39,7 +31,7 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
       theme: "shadcn blue", 
       locale: "es-ES",
     },
-    [eventsServicePlugin, calendarControls]
+    [eventsServicePlugin]
   );
 
   useEffect(() => {
@@ -55,17 +47,17 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
       }
     };
 
-    fetchRooms();
-  }, []);
+    if (open) {
+      fetchRooms();
+    }
+  }, [open]);
 
   useEffect(() => {
-
     const fetchReservations = async () => {
       if (!selectedRoom) return;
 
       try {
         const reservationsData = await getReservationsByRoom(selectedRoom.id);
-
         if (eventsServicePlugin?.set) {
           eventsServicePlugin.set(
             reservationsData.map((res, index) => ({
@@ -85,7 +77,7 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
   }, [selectedRoom, eventsServicePlugin, calendarApp]);
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="max-w-[90vw] h-[80vh] flex flex-row gap-4">
         <div className="w-2/3 border rounded-lg p-6 relative">
           <DialogHeader>
@@ -114,7 +106,7 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
           </div>
         </div>
 
-        <CreateSimulationsForm />
+        <CreateSimulationsForm onClose={onClose} />
       </DialogContent>
     </Dialog>
   );

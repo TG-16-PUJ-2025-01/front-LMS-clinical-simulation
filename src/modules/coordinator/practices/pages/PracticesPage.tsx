@@ -59,8 +59,12 @@ export default function PracticesPage() {
 							label: "Calendario",
 							href: "/calendario",
 						},
+						{
+							label: "Página de inicio de la clase",
+							href: `/coordinador/clases/${id}/practicas`,
+						},
 					]}
-				/>
+			/>
 			</LayoutSlot>
 			<LayoutSlot name="title">Prácticas</LayoutSlot>
 			<div className="mb-4 flex justify-end">
