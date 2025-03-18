@@ -80,6 +80,24 @@ export function SimulationDataTable() {
 
 	const columns: ColumnDef<Simulation>[] = [
 		{
+			id: "groupNumber",
+			header: ({ column }) => (
+				<div className="relative w-full text-center">
+					<Button
+						variant="ghost"
+						className="mx-auto flex"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Número de Grupo
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				return <div className="text-center">{row.index + 1}</div>
+			},
+		},
+		{
 			accessorKey: "startDateTime",
 			header: ({ column }) => (
 				<div className="relative w-full">
