@@ -29,7 +29,7 @@ type CardProps = React.ComponentProps<typeof Card> & {
 	numberOfGroups: number | null
 	maxStudentsGroup: number | null
 	type: "GRUPAL" | "INDIVIDUAL"
-	onClick?: () => void // Agregado para permitir la navegación
+	onClick?: () => void
 	onEdit: () => void
 	onDelete: () => void
 }
@@ -104,17 +104,15 @@ export function CardPractice({
 							</TooltipTrigger>
 							<TooltipContent>
 								{type === "GRUPAL" ? (
-									<div>
+									<span>
 										<p>Práctica grupal</p>
 										<p>Número de grupos: {numberOfGroups ?? "N/A"}</p>
 										<p>Máximo estudiantes por grupo: {maxStudentsGroup ?? "N/A"}</p>
-									</div>
+									</span>
 								) : (
-									<div>
+									<span>
 										<p>Práctica individual</p>
-										<p>Número de grupos: N/A</p>
-										<p>Máximo estudiantes por grupo: N/A</p>
-									</div>
+									</span>
 								)}
 							</TooltipContent>
 						</Tooltip>
