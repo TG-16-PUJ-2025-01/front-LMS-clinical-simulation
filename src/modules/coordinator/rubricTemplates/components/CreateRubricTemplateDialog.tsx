@@ -123,14 +123,14 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 						id: 1,
 						name: "A",
 						description: "",
-						weight: 100,
+						weight: 50,
 						scoringDescription: ["Descripción", "Descripción"],
 					},
 					{
 						id: 2,
 						name: "B",
 						description: "",
-						weight: 100,
+						weight: 50,
 						scoringDescription: ["Descripción", "Descripción"],
 					},
 				],
@@ -164,7 +164,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[1200px]" onSubmit={() => {}}>
+			<DialogContent className="sm:max-w-[1200px] max-h-screen" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Crear Rúbrica</DialogTitle>
 					<DialogDescription>Ingresa los siguientes atributos de la rúbrica</DialogDescription>
@@ -211,18 +211,23 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 							render={({ field }) => (
 								<FormItem className="flex max-w-full flex-col gap-2">
 									<FormControl>
-										<section className="flex max-w-[calc(100vw-48px)] xl:max-w-[1152px] flex-col gap-2">
+										<section className="flex max-w-[92vw] flex-col gap-2 xl:max-w-[1152px]">
 											<div className="flex h-full w-full gap-2">
-												<article className="flex-1 overflow-auto rounded-md border">
+												<article className="flex-1 overflow-auto rounded-md border max-h-[60vh]">
 													<Table className="h-full w-full">
 														<TableHeader>
 															<TableRow>
 																<TableHead className="w-[100px] border py-1 align-top">
 																	Criterios
 																</TableHead>
-																<TableHead className="w-16 border py-1 align-top">Peso</TableHead>
+																<TableHead className="w-20 min-w-20 border py-1 align-top">
+																	Peso
+																</TableHead>
 																{field.value.columns.map((column, index) => (
-																	<TableHead key={column.id} className="border py-1">
+																	<TableHead
+																		key={column.id}
+																		className="text-accent-foreground border py-1"
+																	>
 																		<FormField
 																			control={form.control}
 																			name={`rubric.columns.${index}.title`}
