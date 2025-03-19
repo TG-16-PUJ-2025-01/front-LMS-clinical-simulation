@@ -34,9 +34,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
 import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
-import { format } from "date-fns"
+import { format } from 'date-fns'
 import CreateSimulationsDialog from "./CreateSimulationsDialog"
-import ViewMembersDialog from "./ViewMembersDialog"
 
 export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -46,22 +45,21 @@ export function SimulationDataTable() {
 	const { id } = useParams()
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
-	const [isViewMembersDialogOpen, setIsViewMembersDialogOpen] = useState(false)
-	const [selectedSimulation, setselectedSimulation] = useState<Simulation | null>(null)
 
 	const [data, setData] = useState<Simulation[]>([])
 
 	const [pagination, setPagination] = useState({
-		pageIndex: 0,
-		pageSize: 10,
+		pageIndex: 0, //initial page index
+		pageSize: 10, //default page size
 	})
 
 	const [paginationInfo, setPaginationInfo] = useState({
-		total: 0,
-		totalPages: 0,
+		total: 0, //total number of records
+		totalPages: 0, //total number of pages
 	})
 
 	useEffect(() => {
+
 		const fetchSimulations = async () => {
 			const res = await getSimulationsByPracticeId(
 				Number(id),
@@ -80,24 +78,6 @@ export function SimulationDataTable() {
 
 	const columns: ColumnDef<Simulation>[] = [
 		{
-			id: "groupNumber",
-			header: ({ column }) => (
-				<div className="relative w-full text-center">
-					<Button
-						variant="ghost"
-						className="mx-auto flex"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Número de Grupo
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				return <div className="text-center">{row.index + 1}</div>
-			},
-		},
-		{
 			accessorKey: "startDateTime",
 			header: ({ column }) => (
 				<div className="relative w-full">
@@ -112,8 +92,8 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("startDateTime"))
-				return <div className="text-center capitalize">{format(date, "dd/MM/yyyy HH:mm")}</div>
+				const date = new Date(row.getValue("startDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
 			},
 		},
 		{
@@ -131,8 +111,8 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("endDateTime"))
-				return <div className="text-center capitalize">{format(date, "dd/MM/yyyy HH:mm")}</div>
+				const date = new Date(row.getValue("endDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
 			},
 		},
 		{
@@ -168,8 +148,8 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("gradeDateTime"))
-				return <div className="text-center capitalize">{format(date, "dd/MM/yyyy HH:mm")}</div>
+				const date = new Date(row.getValue("gradeDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
 			},
 		},
 		{
@@ -187,7 +167,7 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
 				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
 			},
 		},
@@ -195,7 +175,7 @@ export function SimulationDataTable() {
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {
-				const simulation = row.original
+				const practice = row.original
 
 				return (
 					<DropdownMenu>
@@ -207,16 +187,8 @@ export function SimulationDataTable() {
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem
-								onClick={() => {
-									setselectedSimulation(simulation)
-									setIsViewMembersDialogOpen(true)
-								}}
-							>
-								<Users /> Ver Miembros
-							</DropdownMenuItem>
 							<DropdownMenuItem>
-								<Pencil /> Editar
+								<Users /> Ver Miembros
 							</DropdownMenuItem>
 							<DropdownMenuItem>
 								<Pencil /> Calificar
@@ -328,11 +300,6 @@ export function SimulationDataTable() {
 				</div>
 			</div>
 			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
-			<ViewMembersDialog
-				open={isViewMembersDialogOpen}
-				onClose={() => setIsViewMembersDialogOpen(false)}
-				simulationId={selectedSimulation?.id!}
-			/>
 		</>
 	)
 }

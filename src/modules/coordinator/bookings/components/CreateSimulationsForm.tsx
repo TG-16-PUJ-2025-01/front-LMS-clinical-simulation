@@ -5,9 +5,12 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar } from "@/modules/core/components/ui/calendar";
 import { Combobox } from "@/modules/core/components/Combobox/Combobox";
-import { Check, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { createSimulations, getAllRooms } from "../services/bookingService";
+import { useParams } from "react-router-dom";
+import Practice from "@/modules/core/models/practice";
+import { getPracticeById } from "../../practices/services/PracticeService";
 
 interface CreateSimulationsFormProps {
   onClose: () => void;
@@ -25,48 +28,67 @@ interface Reservation {
   room: number;
 }
 
-const generateTimeOptions = () => {
-  const times: { key: string; value: string }[] = [];
-  for (let hour = 0; hour < 24; hour++) {
-    for (const minute of ["00", "15", "30", "45"]) {
-      const time = `${hour.toString().padStart(2, "0")}:${minute}`;
-      times.push({ key: time, value: time });
-    }
-  }
-  return times;
-};
-
-const timeOptions = generateTimeOptions();
-
 export default function CreateSimulationsForm({ onClose }: CreateSimulationsFormProps) {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
-  const [rooms, setRooms] = useState<{ key: string; value: string }[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [rooms, setRooms] = useState<{ key: number; value: string }[]>([]);
+  const practiceId = useParams<{ id: string }>().id;
+  const [practice, setPractice] = useState<Practice | null>(null);
+  const [timeOptions, setTimeOptions] = useState<{ key: number; value: string }[]>([]);
+
 
   useEffect(() => {
+    
     const fetchRooms = async () => {
       try {
         const roomsData = await getAllRooms();
-        const formattedRooms = roomsData.map((room) => ({
-          key: room.id.toString(),
+        const formattedRooms = roomsData.map((room: Room) => ({
+          key: room.id,
           value: room.name,
         }));
         setRooms(formattedRooms);
 
         if (formattedRooms.length > 0) {
-          setSelectedRoom({ id: parseInt(formattedRooms[0].key), name: formattedRooms[0].value });
+          setSelectedRoom({ id: formattedRooms[0].key, name: formattedRooms[0].value });
         }
       } catch (error) {
         console.error("Error cargando salas:", error);
       }
     };
-
     fetchRooms();
   }, []);
+
+  useEffect(() => {
+    const fetchPractice = async () => {
+      try {
+        const res = await getPracticeById(Number(practiceId));
+        setPractice(res.data);
+      } catch (error) {
+        console.error("Error cargando la práctica:", error);
+      }
+    };
+    fetchPractice();
+  }, [practiceId]);
+
+
+  useEffect(() => {
+    if (!practice?.simulationDuration) return;
+
+    const interval = practice.simulationDuration; // Duración de la simulación en minutos
+    const times: { key: number; value: string }[] = [];
+    
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += interval) {
+        const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+        times.push({ key: hour * 100 + minute, value: time });
+      }
+    }
+    
+    setTimeOptions(times);
+  }, [practice?.simulationDuration]);
 
   const addReservation = () => {
     if (!selectedDate || !startTime || !endTime || !selectedRoom) {
@@ -106,13 +128,13 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
 
   const saveReservations = async () => {
     if (reservations.length === 0) {
-      setError("No hay reservas para guardar.");
+      toast.error("No hay reservas para guardar.");
       return;
     }
 
     const requestData = {
       simulations: reservations.map((res) => ({
-        practiceId: 1,
+        practiceId: Number(practiceId),
         roomId: res.room,
         startDateTime: `${res.date}T${res.startTime}:00`,
         endDateTime: `${res.date}T${res.endTime}:00`,
@@ -123,14 +145,16 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
       await createSimulations(requestData);
       toast.success("Reservas guardadas con éxito.");
       setReservations([]);
-      setError(null);
       onClose();
     } catch (err) {
       console.error("Error al enviar reservas:", err);
-      setError("Hubo un problema al guardar las reservas.");
       toast.error("No se pudo guardar las reservas.");
     }
   };
+
+  function totalTimeToBook() {
+    return practice?.numberOfGroups && practice?.simulationDuration ? practice.numberOfGroups * practice.simulationDuration : 0;
+  }
 
   return (
     <div className="w-1/3 border rounded-lg p-4 flex flex-col space-y-4">
@@ -139,6 +163,13 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
       <p className="text-sm text-gray-500">
         Reserva los espacios para las simulaciones de los estudiantes. El sistema asigna automáticamente un espacio a cada estudiante o grupo según la duración de la práctica. No es necesario reservar cada evaluación por separado.
       </p>
+
+      <ul className="text-sm text-gray-500 list-disc list-inside">
+        <li><span className="font-semibold">Número de grupos:</span> {practice?.numberOfGroups}</li>
+        <li><span className="font-semibold">Duración de cada práctica:</span> {practice?.simulationDuration} minutos</li>
+        <li><span className="font-semibold">Total de minutos a reservar:</span> {totalTimeToBook()} minutos</li>
+      </ul>
+
       {/* DatePicker */}
       <Popover>
         <PopoverTrigger asChild>
@@ -151,25 +182,24 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
         </PopoverContent>
       </Popover>
 
-      {/* Selección de hora de inicio con Combobox */}
+      {/* Selección de horas */}
       <Combobox
         options={timeOptions}
         placeholderText="Seleccionar hora de inicio"
         itemName="Hora"
-        onChange={(selected) => setStartTime(selected.key)}
+        onChange={(selected) => setStartTime(selected.value)}
         selectedValue={startTime}
       />
 
-      {/* Selección de hora de finalización con Combobox */}
       <Combobox
         options={timeOptions}
         placeholderText="Seleccionar hora de finalización"
         itemName="Hora"
-        onChange={(selected) => setEndTime(selected.key)}
+        onChange={(selected) => setEndTime(selected.value)}
         selectedValue={endTime}
       />
 
-      {/* Selección de sala con Combobox */}
+      {/* Selección de sala */}
       <Combobox
         options={rooms}
         placeholderText="Seleccionar sala"
@@ -177,7 +207,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
         onChange={(selected) => {
           const selectedRoomData = rooms.find((room) => room.key === selected.key);
           if (selectedRoomData) {
-            setSelectedRoom({ id: parseInt(selectedRoomData.key), name: selectedRoomData.value });
+            setSelectedRoom({ id: selectedRoomData.key, name: selectedRoomData.value });
           }
         }}
         selectedValue={selectedRoom?.name || ""}

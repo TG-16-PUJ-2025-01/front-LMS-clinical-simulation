@@ -30,6 +30,10 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
       views: [createViewWeek()], 
       theme: "shadcn blue", 
       locale: "es-ES",
+      dayBoundaries: {
+        start: '06:00',
+        end: '20:00',
+      },
     },
     [eventsServicePlugin]
   );
