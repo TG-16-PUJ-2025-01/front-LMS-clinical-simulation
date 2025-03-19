@@ -40,7 +40,7 @@ export async function updateRoom(room: Room): Promise<ApiResponse<Room>> {
 }
 
 export async function deleteRoom(id: number): Promise<ApiResponse<null>> {
-	const { data } = await axios.delete(`${API_URL}/room/delete/${id}`)
+	const { data } = await axios.delete(`${API_URL}/room/${id}`)
 	return data
 }
 
