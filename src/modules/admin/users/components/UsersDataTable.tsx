@@ -253,6 +253,7 @@ export function UsersDataTable() {
               className="w-full pl-8"
             />
           </div>
+      
           <div className="flex space-x-2 mt-4">
             <Button onClick={() => setOpenMailConfigDialog(true)}>
               Configurar servidor de correo
@@ -267,7 +268,7 @@ export function UsersDataTable() {
           </div>
         )}
 
-        <div className="rounded-md border">
+        <div className="rounded-md border mt-4">
             <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
