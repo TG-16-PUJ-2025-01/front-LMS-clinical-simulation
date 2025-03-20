@@ -35,6 +35,7 @@ export function Combobox({
 	const handleSelect = (currentValue: string) => {
 		setValue(currentValue === value ? "" : currentValue)
 		setOpen(false)
+
 		const keyValue = options.find((option) => option.value === currentValue)?.key
 		onChange && onChange({ value: currentValue , key: keyValue})
 	}
