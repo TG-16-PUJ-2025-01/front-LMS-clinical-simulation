@@ -50,44 +50,124 @@ interface Props {
 	rubricTemplateData?: RubricTemplate
 }
 
-const formSchema = z.object({
-	title: z.string().nonempty({
-		message: "El título es obligatorio",
-	}),
-	courses: z
-		.array(
-			z.object({
-				id: z.number().optional(),
-				name: z.string().min(1, {
-					message: "Debes ingresar una descripción",
-				}),
-			})
-		)
-		.nonempty({
-			message: "Debes seleccionar al menos una asignatura",
+const formSchema = z
+	.object({
+		title: z.string().nonempty({
+			message: "El título es obligatorio",
 		}),
-	rubric: z.object({
-		columns: z.array(
+		courses: z.array(
 			z.object({
 				id: z.number().optional(),
-				title: z.string().min(1),
-				scoringScale: z.object({
-					min: z.coerce.number().min(0).max(5),
-					max: z.coerce.number().min(0).max(5),
-				}),
+				name: z.string(),
 			})
 		),
-		criteria: z.array(
-			z.object({
-				id: z.number().optional(),
-				name: z.string().min(1),
-				description: z.string().min(1),
-				weight: z.coerce.number().positive().max(100),
-				scoringDescription: z.array(z.string().min(1)),
+		rubric: z.object({
+			columns: z.array(
+				z.object({
+					id: z.number().optional(),
+					title: z.string(),
+					scoringScale: z.object({
+						min: z.coerce.number(),
+						max: z.coerce.number(),
+					}),
+				})
+			),
+			criteria: z.array(
+				z.object({
+					id: z.number().optional(),
+					name: z.string(),
+					description: z.string(),
+					weight: z.coerce.number(),
+					scoringDescription: z.array(z.string()),
+				})
+			),
+		}),
+	})
+	.superRefine(({ rubric }, ctx) => {
+		const totalWeight = rubric.criteria.reduce((sum, criteria) => sum + criteria.weight, 0)
+		if (totalWeight !== 100) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "El peso total de los criterios debe ser igual a 100%",
+				path: ["rubric"],
 			})
-		),
-	}),
-})
+		}
+
+		if (rubric.columns.length < 1) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "La rúbrica debe tener al menos una columna",
+				path: ["rubric"],
+			})
+		}
+
+		if (rubric.criteria.length < 1) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "La rúbrica debe tener al menos un criterio",
+				path: ["rubric"],
+			})
+		}
+
+		const hasInvalidScoringScale = rubric.columns.some(
+			(column) => column.scoringScale.min > column.scoringScale.max
+		)
+		if (hasInvalidScoringScale) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "El puntaje mínimo no puede ser mayor al puntaje máximo",
+				path: ["rubric"],
+			})
+		}
+
+		const hasOverlappingScoringScale = rubric.columns.some((column, index) =>
+			rubric.columns.some(
+				(otherColumn, otherIndex) =>
+					index !== otherIndex &&
+					(column.scoringScale.min < otherColumn.scoringScale.max &&
+						column.scoringScale.max > otherColumn.scoringScale.min)
+			)
+		)
+
+		if (hasOverlappingScoringScale) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Los rangos de puntaje no pueden superponerse",
+				path: ["rubric"],
+			})
+		}
+
+		const hasEmptyScoringDescription = rubric.criteria.some((criteria) =>
+			criteria.scoringDescription.some((description) => description === "")
+		)
+		if (hasEmptyScoringDescription) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Todas las celdas de la rúbrica deben tener descripción",
+				path: ["rubric"],
+			})
+		}
+
+		const hasEmptyCriteriaName = rubric.criteria.some((criteria) => criteria.name === "")
+
+		if (hasEmptyCriteriaName) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Todos los criterios deben tener nombre",
+				path: ["rubric"],
+			})
+		}
+
+		const hasEmptyColumnTitle = rubric.columns.some((column) => column.title === "")
+
+		if (hasEmptyColumnTitle) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Todas las columnas deben tener título",
+				path: ["rubric"],
+			})
+		}
+	})
 
 export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 	const [colId, setColId] = useState<number>(3)
@@ -164,10 +244,10 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[1200px] max-h-screen" onSubmit={() => {}}>
+			<DialogContent className="max-h-screen sm:max-w-[1200px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Crear Rúbrica</DialogTitle>
-					<DialogDescription>Ingresa los siguientes atributos de la rúbrica</DialogDescription>
+					<DialogDescription>Para más opciones en la rúbrica, oprima <span className="font-bold">click derecho</span> sobre cualquier celda</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 					<Form {...form}>
@@ -213,7 +293,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 									<FormControl>
 										<section className="flex max-w-[92vw] flex-col gap-2 xl:max-w-[1152px]">
 											<div className="flex h-full w-full gap-2">
-												<article className="flex-1 overflow-auto rounded-md border max-h-[60vh]">
+												<article className="max-h-[60vh] flex-1 overflow-auto rounded-md border">
 													<Table className="h-full w-full">
 														<TableHeader>
 															<TableRow>
@@ -242,7 +322,6 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																							{...field}
 																						/>
 																					</FormControl>
-																					<FormMessage className="m-0 -mt-2" />
 																				</FormItem>
 																			)}
 																		/>
@@ -305,7 +384,6 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																							{...field}
 																						/>
 																					</FormControl>
-																					<FormMessage className="m-0 -mt-2" />
 																				</FormItem>
 																			)}
 																		/>
@@ -352,7 +430,6 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																										{...field}
 																									/>
 																								</FormControl>
-																								<FormMessage className="m-0 -mt-2" />
 																							</FormItem>
 																						)}
 																					/>
