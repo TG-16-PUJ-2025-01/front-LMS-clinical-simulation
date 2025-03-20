@@ -1,4 +1,4 @@
 export default interface RoomType {
-    id?: number;
+    id: number;
     name: string;
 }
