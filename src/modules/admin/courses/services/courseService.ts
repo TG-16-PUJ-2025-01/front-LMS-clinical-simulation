@@ -1,21 +1,22 @@
-import axios from "axios"
-import { API_URL } from "@/modules/core/config/env"
-import Course from "@/modules/core/models/course"
-import ApiResponse from "@/modules/core/models/apiResponse"
-import User from "@/modules/core/models/user"
-import EditCourseDTO from "../dtos/editCourseDTO"
-import CreateCourseDTO from "../dtos/createCourseDTO"
+import axios from "axios";
+import { API_URL } from "@/modules/core/config/env";
+import { setToken } from "@/modules/core/lib/tokenHandler";
+import Course from "@/modules/core/models/course";
+import ApiResponse from "@/modules/core/models/apiResponse";
+import User from "@/modules/core/models/user";
+import EditCourseDTO from "../dtos/editCourseDTO";
+import CreateCourseDTO from "../dtos/createCourseDTO";
 
 const axiosInstance = axios.create({
-	baseURL: API_URL,
-})
+  baseURL: API_URL,
+});
 
 export async function getCourses(
-	page: number,
-	size: number,
-	filter: string,
-	sort: string,
-	asc: boolean
+  page: number,
+  size: number,
+  filter: string,
+  sort: string,
+  asc: boolean
 ): Promise<ApiResponse<Course[]>> {
 	const { data } = await axios.get(`${API_URL}/course/all`, {
 		params: {
@@ -51,8 +52,8 @@ export async function createCourse(newCourse: CreateCourseDTO): Promise<ApiRespo
 }
 
 export async function updateCourse(
-	id: number,
-	updatedCourse: EditCourseDTO
+  id: number,
+  updatedCourse: EditCourseDTO
 ): Promise<ApiResponse<Course>> {
 	const { data } = await axios.put(`${API_URL}/course/update/${id}`, updatedCourse)
 	return {

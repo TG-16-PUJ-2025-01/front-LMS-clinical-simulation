@@ -7,11 +7,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/modules/core/components/ui/dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/modules/core/components/ui/avatar"
 import { Input } from "@/modules/core/components/ui/input"
 import { useEffect, useState } from "react"
 import { Search, X, Sheet } from "lucide-react"
-import { getStudentsNotInClass, updateClassMembers } from "../services/membersService"
+import { getStudentsNotInClass, updateClassMembers, getProfessorsNotInClass } from "../services/membersService"
 import Role from "../../../core/models/role"
 import { ScrollArea } from "@/modules/core/components/ui/scroll-area"
 import { Separator } from "@/modules/core/components/ui/separator"
@@ -30,10 +29,11 @@ interface User {
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
-	classId: number
+	classId: number,
+	isStudent: boolean
 }
 
-export default function AddMembersDialog({ open, onClose, classId }: Props) {
+export default function AddMembersDialog({ open, onClose, classId, isStudent }: Props) {
 	const [filter, setFilter] = useState<string>("")
 	const [students, setStudents] = useState<User[]>([])
 	const [filteredStudents, setFilteredStudents] = useState<User[]>([])
@@ -41,17 +41,35 @@ export default function AddMembersDialog({ open, onClose, classId }: Props) {
 	const [selectedStudents, setSelectedStudents] = useState<User[]>([])
 
 	useEffect(() => {
-		const fetchNonMembers = async () => {
-			const res = await getStudentsNotInClass(Number(classId), filter)
-			setStudents(res.data) // Guardamos los estudiantes en el estado\
-			setFilteredStudents(
-				res.data.filter((student) =>
-					`${student.name} ${student.lastName}`.toLowerCase().includes(filter.toLowerCase())
+		if(isStudent) 
+		{
+			const fetchNonMembers = async () => {
+				const res = await getStudentsNotInClass(Number(classId), filter)
+				setStudents(res.data) // Guardamos los estudiantes en el estado\
+				setFilteredStudents(
+					res.data.filter((student) =>
+						`${student.name} ${student.lastName}`.toLowerCase().includes(filter.toLowerCase())
+					)
 				)
-			)
+			}
+			fetchNonMembers()
+
+		}
+		else
+		{
+			const fetchNonMembers = async () => {
+				const res = await getProfessorsNotInClass(Number(classId), filter)
+				setStudents(res.data) // Guardamos los estudiantes en el estado\
+				console.log(res.data)
+				setFilteredStudents(
+					res.data.filter((student) =>
+						`${student.name} ${student.lastName}`.toLowerCase().includes(filter.toLowerCase())
+					)
+				)
+			}
+			fetchNonMembers()
 		}
 
-		fetchNonMembers()
 	}, [filter, classId, open])
 
 	const handleConfirm = async () => {
@@ -110,19 +128,12 @@ export default function AddMembersDialog({ open, onClose, classId }: Props) {
 									filteredStudents.map((student) => (
 										<div key={student.id} onClick={() => handleSelectStudent(student)}>
 											<div className="flex cursor-pointer items-center gap-3 rounded-lg bg-white p-4 shadow-md transition-colors hover:bg-gray-100">
-												<Avatar className="h-8 w-8">
-													<AvatarImage src="https://github.com/shadcn.png" alt={student.name} />
-													<AvatarFallback>
-														{student.name[0]}
-														{student.lastName[0]}
-													</AvatarFallback>
-												</Avatar>
 												<div className="text-xs text-gray-900">
 													<h3 className="font-semibold">
 														{student.name} {student.lastName}
 													</h3>
 													<p className="text-gray-600">
-														{student.roles.length > 0 ? student.roles[0] : "Sin rol"}
+														{student.roles.length > 0 ? student.roles[0].toLowerCase() : "Sin rol"}
 													</p>
 												</div>
 											</div>
@@ -148,13 +159,6 @@ export default function AddMembersDialog({ open, onClose, classId }: Props) {
 									className="mb-2 flex items-center justify-between rounded-md bg-gray-100 p-3 shadow-sm"
 								>
 									<div className="flex items-center gap-3">
-										<Avatar className="h-8 w-8">
-											<AvatarImage src="https://github.com/shadcn.png" alt={student.name} />
-											<AvatarFallback>
-												{student.name[0]}
-												{student.lastName[0]}
-											</AvatarFallback>
-										</Avatar>
 										<div>
 											<h3 className="text-sm font-semibold">
 												{student.name} {student.lastName}
@@ -182,9 +186,6 @@ export default function AddMembersDialog({ open, onClose, classId }: Props) {
 				<DialogFooter>
 					<Button onClick={() => onClose(false)}>Cancelar</Button>
 					<Button onClick={handleConfirm}>Añadir</Button>
-					<Button onClick={handleConfirm} className="bg-green-800">
-						Añadir con Excel <Sheet className="h-4 w-4 text-white" />
-					</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

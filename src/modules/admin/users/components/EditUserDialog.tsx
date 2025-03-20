@@ -17,7 +17,8 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormLabel
+    FormLabel,
+    FormMessage
 } from "@/modules/core/components/ui/form";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
@@ -124,6 +125,7 @@ export default function EditUserDialog({ open, onClose, onSuccess, user }: Props
                                         <FormControl>
                                             <Input id="institutionalId" disabled className="col-span-3 m-0" {...field} />
                                         </FormControl>
+                                        <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
                                     </FormItem>
                                 )}
                             />
@@ -136,6 +138,7 @@ export default function EditUserDialog({ open, onClose, onSuccess, user }: Props
                                         <FormControl>
                                             <Input id="name" className="col-span-3 m-0" {...field} />
                                         </FormControl>
+                                        <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
                                     </FormItem>
                                 )}
                             />
@@ -148,6 +151,7 @@ export default function EditUserDialog({ open, onClose, onSuccess, user }: Props
                                         <FormControl>
                                             <Input id="lastName" className="col-span-3 m-0" {...field} />
                                         </FormControl>
+                                        <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
                                     </FormItem>
                                 )}
                             />
@@ -160,6 +164,7 @@ export default function EditUserDialog({ open, onClose, onSuccess, user }: Props
                                         <FormControl>
                                             <Input id="email" disabled className="col-span-3 m-0" {...field} />
                                         </FormControl>
+                                        <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
                                     </FormItem>
                                 )}
                             />
@@ -180,6 +185,7 @@ export default function EditUserDialog({ open, onClose, onSuccess, user }: Props
                                                 className="w-full"
                                             />
                                         </FormControl>
+                                        <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
                                     </FormItem>
                                 )}
                             />

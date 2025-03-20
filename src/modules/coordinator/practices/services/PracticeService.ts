@@ -2,7 +2,7 @@ import axios from "axios"
 import Practice from "@/modules/core/models/practice"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import { API_URL } from "@/modules/core/config/env"
-import PracticeDto from "../dto/PracticeDto"
+import PracticeDto from "../dto/practiceDto"
 
 export async function getAllPractices(
     page: number,
@@ -29,8 +29,8 @@ export async function getPracticeById(id: number): Promise<ApiResponse<Practice>
     return data
 }
 
-export async function getPracticeByClassId(id: number): Promise<ApiResponse<Practice>> {
-    const { data } = await axios.get(`${API_URL}/practice/class/${id}`)
+export async function getPracticeByClassId(classId: number): Promise<ApiResponse<Practice[]>> {
+    const { data } = await axios.get(`${API_URL}/practice/class/${classId}`)
     return data
 }
 

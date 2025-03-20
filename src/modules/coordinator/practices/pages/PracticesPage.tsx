@@ -2,22 +2,31 @@ import { useEffect, useState } from "react"
 import { CardPractice } from "../components/CardPractice"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
-import { getAllPractices } from "../services/PracticeService"
+import { getPracticeByClassId } from "../services/PracticeService"
 import Practice from "@/modules/core/models/practice"
 import { Button } from "@/modules/core/components/ui/button"
 import DeletePracticeDialog from "../components/DeletePracticeDialog"
 import EditPracticeDialog from "../components/EditPracticeDialog"
 import AddPracticeDialog from "../components/AddPracticeDialog"
+import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "sonner"
 
 export default function PracticesPage() {
+	const navigate = useNavigate()
+	const { id } = useParams()
 	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "add" | null>(null)
 	const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
 
 	const [data, setData] = useState<Practice[]>([])
 
 	const fetchPractices = async () => {
-		const res = await getAllPractices(0, 10, "", "name", true)
-		setData(res.data)
+		if (!id) return
+		try {
+			const res = await getPracticeByClassId(Number(id))
+			setData(res.data)
+		} catch (error) {
+			toast.error("No se encuentra la clase")
+		}
 	}
 
 	useEffect(() => {
@@ -36,21 +45,30 @@ export default function PracticesPage() {
 		fetchPractices()
 	}
 
+	const handlePracticeNavigation = (practice: Practice) => {
+		setSelectedPractice(practice)
+		navigate(`/coordinador/practica/${practice.id}`)
+	}
+
 	return (
 		<>
 			<LayoutSlot name="header">
 				<NavBar
 					navLinks={[
 						{
-							label: "aqui",
-							href: "coordinador/practicas",
+							label: "Calendario",
+							href: "/calendario",
+						},
+						{
+							label: "Página de inicio de la clase",
+							href: `/coordinador/clases/${id}/practicas`,
 						},
 					]}
-				/>
+			/>
 			</LayoutSlot>
 			<LayoutSlot name="title">Prácticas</LayoutSlot>
 			<div className="mb-4 flex justify-end">
-				<Button onClick={() => handleOpenDialog("add")}>Crear Practica</Button>
+				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
 			</div>
 			<div className="flex justify-center">
 				<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
@@ -62,6 +80,7 @@ export default function PracticesPage() {
 							numberOfGroups={practice.numberOfGroups ?? null}
 							maxStudentsGroup={practice.maxStudentsGroup ?? null}
 							type={practice.type}
+							onClick={() => handlePracticeNavigation(practice)}
 							onEdit={() => handleOpenDialog("edit", practice)}
 							onDelete={() => handleOpenDialog("delete", practice)}
 						/>
@@ -78,7 +97,11 @@ export default function PracticesPage() {
 				onClose={handleCloseDialog}
 				practice={selectedPractice!}
 			/>
-			<AddPracticeDialog open={openDialog === "add"} onClose={handleCloseDialog} />
+			<AddPracticeDialog
+				open={openDialog === "add"}
+				onClose={handleCloseDialog}
+				onPracticeCreated={handlePracticeNavigation}
+			/>
 		</>
 	)
 }

@@ -27,7 +27,6 @@ import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { updateClass } from "../services/classService"
 import Course from "@/modules/core/models/course"
 import { getCourses } from "../../courses/services/courseService"
-import DatePicker from "@/modules/core/components/DatePicker"
 
 interface Props {
 	open: boolean
