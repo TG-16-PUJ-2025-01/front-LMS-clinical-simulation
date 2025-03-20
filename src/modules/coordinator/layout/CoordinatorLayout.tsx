@@ -5,5 +5,9 @@ interface Props {
 }
 
 export default function CoordinatorLayout({ children }: Props) {
-	return <PrivateLayout>{children}</PrivateLayout>
+	return (
+		<PrivateLayout>
+			{children}
+		</PrivateLayout>
+	)
 }
