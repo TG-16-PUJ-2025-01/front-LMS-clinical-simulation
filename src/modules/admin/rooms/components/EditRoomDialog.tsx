@@ -58,6 +58,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 			name: "",
 			capacity: 0,
 			type: {
+				id: undefined,
 				name: "",
 			},
 		},
@@ -104,11 +105,8 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 
 			onClose(false)
 		} catch (error: any) {
-			if (error.response && error.response.data && error.response.data.message) {
-				toast.error(error.response.data.message)
-			} else {
-				toast.error("Error al actualizar la sala")
-			}
+			toast.error("El nombre de la sala ya existe")
+			
 		}
 	}
 
@@ -177,6 +175,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 												className="col-span-3 m-0"
 												{...field}
 												onChange={(e) => field.onChange(Number(e.target.value))}
+												min={0}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
