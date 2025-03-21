@@ -189,7 +189,6 @@ export default function CreateUserDialog({ open, onClose, onSuccess }: Props) {
                                                 onChange={(selected) => field.onChange(selected.map((r) => r.value))}
                                                 placeholder="Selecciona los roles"
                                                 className="w-full md:text-sm"
-
                                             />
                                         </FormControl>
                                         <FormMessage className="col-span-4 m-0 -mt-2 text-right" />
