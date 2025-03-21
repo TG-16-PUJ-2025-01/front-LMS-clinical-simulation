@@ -45,6 +45,7 @@ import {
 import Select from "react-select"
 import { Textarea } from "@/modules/core/components/ui/textarea"
 import makeAnimated from "react-select/animated"
+import { createRubricTemplate } from "../services/rubricTemplateService"
 
 const animatedComponents = makeAnimated()
 
@@ -367,7 +368,11 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			// await createRubricTemplate({})
+			await createRubricTemplate({
+				title: values.title,
+				courses: values.courses.map((course) => course.value),
+				rubric: values.rubric,
+			})
 
 			onClose(false)
 
