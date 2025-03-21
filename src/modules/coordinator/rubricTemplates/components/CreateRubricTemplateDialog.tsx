@@ -182,6 +182,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 	const [criteriaId, setCriteriaId] = useState<number>(3)
 	const [numCols, setNumCols] = useState<number>(2)
 	const [courses, setCourses] = useState<{ value: number; label: string }[]>([])
+	const [coursesFilter, setCoursesFilter] = useState<string>("")
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -355,18 +356,18 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 
 	useEffect(() => {
 		const fetchCourses = async () => {
-			const res = await getCourses(0, 10, "", "name", true)
+			const res = await getCourses(0, 1000, coursesFilter, "name", true)
 			setCourses(res.data.map((course) => ({ value: course.courseId!, label: course.name })))
 		}
 
 		fetchCourses()
 
 		form.reset()
-	}, [form, open])
+	}, [form, open, coursesFilter])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			//await createRubricTemplate({})
+			// await createRubricTemplate({})
 
 			onClose(false)
 
@@ -427,7 +428,6 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 								name="courses"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Cursos</FormLabel>
 										<FormControl className="col-span-3">
 											<Select
 												components={animatedComponents}
@@ -436,7 +436,9 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 												value={field.value}
 												onChange={(selected) => field.onChange(selected)}
 												placeholder="Seleccionar cursos"
-												className="w-full"
+												className="w-full min-w-40"
+												onInputChange={(input) => setCoursesFilter(input)}
+												noOptionsMessage={() => "No se encontraron cursos"}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
