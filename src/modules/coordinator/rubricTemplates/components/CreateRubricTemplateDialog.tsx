@@ -42,7 +42,11 @@ import {
 	ContextMenuSubTrigger,
 	ContextMenuTrigger,
 } from "@/modules/core/components/ui/context-menu"
+import Select from "react-select"
 import { Textarea } from "@/modules/core/components/ui/textarea"
+import makeAnimated from "react-select/animated"
+
+const animatedComponents = makeAnimated()
 
 interface Props {
 	open: boolean
@@ -55,16 +59,20 @@ const formSchema = z
 		title: z.string().nonempty({
 			message: "El título es obligatorio",
 		}),
-		courses: z.array(
-			z.object({
-				id: z.number().optional(),
-				name: z.string(),
-			})
-		),
+		courses: z
+			.array(
+				z.object({
+					value: z.number(),
+					label: z.string(),
+				})
+			)
+			.nonempty({
+				message: "Debe seleccionar al menos un curso",
+			}),
 		rubric: z.object({
 			columns: z.array(
 				z.object({
-					id: z.number().optional(),
+					id: z.number(),
 					title: z.string(),
 					scoringScale: z.object({
 						min: z.coerce.number(),
@@ -74,7 +82,7 @@ const formSchema = z
 			),
 			criteria: z.array(
 				z.object({
-					id: z.number().optional(),
+					id: z.number(),
 					name: z.string(),
 					description: z.string(),
 					weight: z.coerce.number(),
@@ -124,8 +132,8 @@ const formSchema = z
 			rubric.columns.some(
 				(otherColumn, otherIndex) =>
 					index !== otherIndex &&
-					(column.scoringScale.min < otherColumn.scoringScale.max &&
-						column.scoringScale.max > otherColumn.scoringScale.min)
+					column.scoringScale.min < otherColumn.scoringScale.max &&
+					column.scoringScale.max > otherColumn.scoringScale.min
 			)
 		)
 
@@ -173,6 +181,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 	const [colId, setColId] = useState<number>(3)
 	const [criteriaId, setCriteriaId] = useState<number>(3)
 	const [numCols, setNumCols] = useState<number>(2)
+	const [courses, setCourses] = useState<{ value: number; label: string }[]>([])
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -218,10 +227,136 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 		},
 	})
 
+	const deleteColumn = (id: number) => {
+		const currentRubric = form.getValues("rubric")
+
+		if (currentRubric.columns.length === 1) {
+			return
+		}
+
+		let index = -1
+
+		// Remove column
+		const newColumns = currentRubric.columns.filter((col) => {
+			if (col.id !== id) {
+				index++
+				return true
+			}
+		})
+
+		// Update each criteria's scoring scale and descriptions
+		const updatedCriteria = currentRubric.criteria.map((criteria) => ({
+			...criteria,
+			scoringDescription: criteria.scoringDescription.filter((_, idx) => idx !== index),
+		}))
+
+		form.setValue(
+			"rubric",
+			{
+				columns: newColumns,
+				criteria: updatedCriteria,
+			},
+			{ shouldDirty: true }
+		)
+
+		setNumCols((prev) => prev - 1)
+	}
+
+	const deleteCriteria = (id: number) => {
+		const currentRubric = form.getValues("rubric")
+
+		if (currentRubric.criteria.length === 1) {
+			return
+		}
+
+		// Remove criteria
+		const newCriteria = currentRubric.criteria.filter((criteria) => criteria.id !== id)
+
+		form.setValue(
+			"rubric",
+			{
+				columns: currentRubric.columns,
+				criteria: newCriteria,
+			},
+			{ shouldDirty: true }
+		)
+	}
+
+	const addColumn = (id: number, where: "left" | "right" = "left") => {
+		const currentRubric = form.getValues("rubric")
+
+		let index = currentRubric.columns.findIndex((col) => col.id === id)
+
+		index = where === "left" ? index : index + 1
+
+		const newColumns = [
+			...currentRubric.columns.slice(0, index),
+			{
+				id: colId,
+				title: "Columna " + colId,
+				scoringScale: { min: 0, max: 5 },
+			},
+			...currentRubric.columns.slice(index),
+		]
+
+		const updatedCriteria = currentRubric.criteria.map((criteria) => ({
+			...criteria,
+			scoringDescription: [
+				...criteria.scoringDescription.slice(0, index),
+				"Descripción",
+				...criteria.scoringDescription.slice(index),
+			],
+		}))
+
+		form.setValue(
+			"rubric",
+			{
+				columns: newColumns,
+				criteria: updatedCriteria,
+			},
+			{ shouldDirty: true }
+		)
+
+		setColId((prev) => prev + 1)
+		setNumCols((prev) => prev + 1)
+	}
+
+	const addCriteria = (id: number, where: "above" | "below" = "above") => {
+		const currentRubric = form.getValues("rubric")
+		let index = currentRubric.criteria.findIndex((criteria) => criteria.id === id)
+
+		index = where === "above" ? index : index + 1
+
+		const newCriteria = {
+			id: criteriaId,
+			name: String.fromCharCode(65 + currentRubric.criteria.length), // Generates next letter (A, B, C...)
+			description: "",
+			weight: 0,
+			scoringDescription: Array<string>(currentRubric.columns.length).fill("Descripción"),
+		}
+
+		const updatedCriteria = [
+			...currentRubric.criteria.slice(0, index),
+			newCriteria,
+			...currentRubric.criteria.slice(index),
+		]
+
+		form.setValue(
+			"rubric",
+			{
+				columns: currentRubric.columns,
+				criteria: updatedCriteria,
+			},
+			{ shouldDirty: true }
+		)
+
+		setCriteriaId((prev) => prev + 1)
+	}
+
 	useEffect(() => {
 		const fetchCourses = async () => {
 			const res = await getCourses(0, 10, "", "name", true)
-			//setCourses(res.data)
+			setCourses(res.data.map((course) => ({ value: course.courseId!, label: course.name })))
 		}
 
 		fetchCourses()
@@ -247,7 +382,10 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 			<DialogContent className="max-h-screen sm:max-w-[1200px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Crear Rúbrica</DialogTitle>
-					<DialogDescription>Para más opciones en la rúbrica, oprima <span className="font-bold">click derecho</span> sobre cualquier celda</DialogDescription>
+					<DialogDescription>
+						Para más opciones en la rúbrica, oprima <span className="font-bold">click derecho</span>{" "}
+						sobre cualquier celda
+					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 					<Form {...form}>
@@ -284,6 +422,27 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 								itemName="rúbrica"
 								onChange={() => {}}
 							/>
+							<FormField
+								control={form.control}
+								name="courses"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Cursos</FormLabel>
+										<FormControl className="col-span-3">
+											<Select
+												components={animatedComponents}
+												isMulti
+												options={courses}
+												value={field.value}
+												onChange={(selected) => field.onChange(selected)}
+												placeholder="Seleccionar cursos"
+												className="w-full"
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
 						</div>
 						<FormField
 							control={form.control}
@@ -308,63 +467,75 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																		key={column.id}
 																		className="text-accent-foreground border py-1"
 																	>
-																		<FormField
-																			control={form.control}
-																			name={`rubric.columns.${index}.title`}
-																			render={({ field }) => (
-																				<FormItem className="flex flex-col gap-2">
-																					<FormControl>
-																						<Textarea
-																							className="h-full min-h-min min-w-full resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
-																							style={{
-																								maxWidth: `calc((100vw - 176px) / ${numCols})`,
-																							}}
-																							{...field}
-																						/>
-																					</FormControl>
-																				</FormItem>
-																			)}
-																		/>
-																		<span className="text-blue-javeriana flex items-center gap-2 text-xs font-bold italic">
-																			<FormField
-																				control={form.control}
-																				name={`rubric.columns.${index}.scoringScale.min`}
-																				render={({ field }) => (
-																					<FormItem className="flex items-baseline gap-2">
-																						<FormLabel>Min</FormLabel>
-																						<FormControl>
-																							<Input
-																								type="number"
-																								min={0}
-																								max={5}
-																								className="field-sizing-content h-min w-fit px-2"
-																								{...field}
-																							/>
-																						</FormControl>
-																					</FormItem>
-																				)}
+																		<ContextMenu>
+																			<ContextMenuTrigger className="flex h-full w-full grow flex-col">
+																				<FormField
+																					control={form.control}
+																					name={`rubric.columns.${index}.title`}
+																					render={({ field }) => (
+																						<FormItem className="flex flex-col gap-2">
+																							<FormControl>
+																								<Textarea
+																									className="h-full min-h-min min-w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																									style={{
+																										maxWidth: `calc((100vw - 176px) / ${numCols})`,
+																									}}
+																									{...field}
+																								/>
+																							</FormControl>
+																						</FormItem>
+																					)}
+																				/>
+																				<span className="text-blue-javeriana flex items-center gap-2 text-xs font-bold italic">
+																					<FormField
+																						control={form.control}
+																						name={`rubric.columns.${index}.scoringScale.min`}
+																						render={({ field }) => (
+																							<FormItem className="flex items-baseline gap-2">
+																								<FormLabel>Min</FormLabel>
+																								<FormControl>
+																									<Input
+																										type="number"
+																										min={0}
+																										max={5}
+																										className="field-sizing-content h-min w-fit px-2"
+																										{...field}
+																									/>
+																								</FormControl>
+																							</FormItem>
+																						)}
+																					/>
+																					-
+																					<FormField
+																						control={form.control}
+																						name={`rubric.columns.${index}.scoringScale.max`}
+																						render={({ field }) => (
+																							<FormItem className="flex items-baseline gap-2">
+																								<FormLabel>Max</FormLabel>
+																								<FormControl>
+																									<Input
+																										type="number"
+																										min={0}
+																										max={5}
+																										className="field-sizing-content h-min w-fit px-2"
+																										{...field}
+																									/>
+																								</FormControl>
+																							</FormItem>
+																						)}
+																					/>
+																					puntos
+																				</span>
+																			</ContextMenuTrigger>
+																			<CustomContextMenuContent
+																				colActions={{
+																					id: column.id,
+																					add: addColumn,
+																					delete: deleteColumn,
+																					deleteDisabled: field.value.columns.length === 1,
+																				}}
 																			/>
-																			-
-																			<FormField
-																				control={form.control}
-																				name={`rubric.columns.${index}.scoringScale.max`}
-																				render={({ field }) => (
-																					<FormItem className="flex items-baseline gap-2">
-																						<FormLabel>Max</FormLabel>
-																						<FormControl>
-																							<Input
-																								type="number"
-																								min={0}
-																								max={5}
-																								className="field-sizing-content h-min w-fit px-2"
-																								{...field}
-																							/>
-																						</FormControl>
-																					</FormItem>
-																				)}
-																			/>
-																			puntos
-																		</span>
+																		</ContextMenu>
 																	</TableHead>
 																))}
 															</TableRow>
@@ -373,40 +544,66 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 															{field.value.criteria.map((criteria, index) => (
 																<TableRow key={criteria.id}>
 																	<TableCell className="border font-medium">
-																		<FormField
-																			control={form.control}
-																			name={`rubric.criteria.${index}.name`}
-																			render={({ field }) => (
-																				<FormItem className="flex flex-col gap-2">
-																					<FormControl>
-																						<Textarea
-																							className="h-full min-h-min w-2 max-w-[100px] min-w-full resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
-																							{...field}
-																						/>
-																					</FormControl>
-																				</FormItem>
-																			)}
-																		/>
+																		<ContextMenu>
+																			<ContextMenuTrigger className="flex h-full w-full grow flex-col">
+																				<FormField
+																					control={form.control}
+																					name={`rubric.criteria.${index}.name`}
+																					render={({ field }) => (
+																						<FormItem className="flex flex-col gap-2">
+																							<FormControl>
+																								<Textarea
+																									className="h-full min-h-min w-2 max-w-[100px] min-w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																									{...field}
+																								/>
+																							</FormControl>
+																						</FormItem>
+																					)}
+																				/>
+																			</ContextMenuTrigger>
+																			<CustomContextMenuContent
+																				rowActions={{
+																					id: criteria.id,
+																					add: addCriteria,
+																					delete: deleteCriteria,
+																					deleteDisabled:
+																						form.getValues("rubric").criteria.length === 1,
+																				}}
+																			/>
+																		</ContextMenu>
 																	</TableCell>
 																	<TableCell className="border font-medium">
-																		<FormField
-																			control={form.control}
-																			name={`rubric.criteria.${index}.weight`}
-																			render={({ field }) => (
-																				<FormItem className="inline-flex w-[calc(100%-1rem)] flex-col gap-2">
-																					<FormControl>
-																						<Input
-																							type="number"
-																							min={0}
-																							max={100}
-																							className="h-full min-h-min w-full max-w-[100px] resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
-																							{...field}
-																						/>
-																					</FormControl>
-																				</FormItem>
-																			)}
-																		/>
-																		<span>%</span>
+																		<ContextMenu>
+																			<ContextMenuTrigger className="flex h-full w-full grow">
+																				<FormField
+																					control={form.control}
+																					name={`rubric.criteria.${index}.weight`}
+																					render={({ field }) => (
+																						<FormItem className="inline-flex w-[calc(100%-1rem)] flex-col gap-2">
+																							<FormControl>
+																								<Input
+																									type="number"
+																									min={0}
+																									max={100}
+																									className="h-full min-h-min w-full max-w-[100px] resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																									{...field}
+																								/>
+																							</FormControl>
+																						</FormItem>
+																					)}
+																				/>
+																				<span>%</span>
+																			</ContextMenuTrigger>
+																			<CustomContextMenuContent
+																				rowActions={{
+																					id: criteria.id,
+																					add: addCriteria,
+																					delete: deleteCriteria,
+																					deleteDisabled:
+																						form.getValues("rubric").criteria.length === 1,
+																				}}
+																			/>
+																		</ContextMenu>
 																	</TableCell>
 																	{criteria.scoringDescription.map((_, index2) => (
 																		<TableCell
@@ -423,7 +620,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																							<FormItem className="flex w-full flex-col gap-2">
 																								<FormControl>
 																									<Textarea
-																										className="h-full min-h-fit min-w-full resize-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																										className="h-full min-h-fit min-w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
 																										style={{
 																											maxWidth: `calc((100vw - 176px) / ${numCols})`,
 																										}}
@@ -434,33 +631,21 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 																						)}
 																					/>
 																				</ContextMenuTrigger>
-																				<ContextMenuContent className="w-64">
-																					<ContextMenuSub>
-																						<ContextMenuSubTrigger inset>
-																							Insertar
-																						</ContextMenuSubTrigger>
-																						<ContextMenuSubContent className="w-48">
-																							<ContextMenuItem>Fila encima</ContextMenuItem>
-																							<ContextMenuItem>Fila debajo</ContextMenuItem>
-																							<ContextMenuSeparator />
-																							<ContextMenuItem>
-																								Columna a la izquierda
-																							</ContextMenuItem>
-																							<ContextMenuItem>
-																								Columna a la derecha
-																							</ContextMenuItem>
-																						</ContextMenuSubContent>
-																					</ContextMenuSub>
-																					<ContextMenuSub>
-																						<ContextMenuSubTrigger inset>
-																							Eliminar
-																						</ContextMenuSubTrigger>
-																						<ContextMenuSubContent className="w-48">
-																							<ContextMenuItem>Fila</ContextMenuItem>
-																							<ContextMenuItem>Columna</ContextMenuItem>
-																						</ContextMenuSubContent>
-																					</ContextMenuSub>
-																				</ContextMenuContent>
+																				<CustomContextMenuContent
+																					colActions={{
+																						id: field.value.columns[index2].id,
+																						add: addColumn,
+																						delete: deleteColumn,
+																						deleteDisabled: field.value.columns.length === 1,
+																					}}
+																					rowActions={{
+																						id: criteria.id,
+																						add: addCriteria,
+																						delete: deleteCriteria,
+																						deleteDisabled:
+																							form.getValues("rubric").criteria.length === 1,
+																					}}
+																				/>
 																			</ContextMenu>
 																		</TableCell>
 																	))}
@@ -556,5 +741,75 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 				</form>
 			</DialogContent>
 		</Dialog>
+	)
+}
+
+interface CustomContextMenuContentProps {
+	colActions?: {
+		id: number
+		add: (index: number, where: "left" | "right") => void
+		delete: (index: number) => void
+		deleteDisabled: boolean
+	}
+	rowActions?: {
+		id: number
+		add: (index: number, where: "above" | "below") => void
+		delete: (index: number) => void
+		deleteDisabled: boolean
+	}
+}
+
+function CustomContextMenuContent({ colActions, rowActions }: CustomContextMenuContentProps) {
+	return (
+		<ContextMenuContent className="w-64">
+			<ContextMenuSub>
+				<ContextMenuSubTrigger inset>Insertar</ContextMenuSubTrigger>
+				<ContextMenuSubContent className="w-48">
+					{rowActions && (
+						<>
+							<ContextMenuItem onClick={() => rowActions.add(rowActions.id, "above")}>
+								Fila encima
+							</ContextMenuItem>
+							<ContextMenuItem onClick={() => rowActions.add(rowActions.id, "below")}>
+								Fila debajo
+							</ContextMenuItem>
+						</>
+					)}
+
+					{rowActions && colActions && <ContextMenuSeparator />}
+					{colActions && (
+						<>
+							<ContextMenuItem onClick={() => colActions.add(colActions.id, "left")}>
+								Columna a la izquierda
+							</ContextMenuItem>
+							<ContextMenuItem onClick={() => colActions.add(colActions.id, "right")}>
+								Columna a la derecha
+							</ContextMenuItem>
+						</>
+					)}
+				</ContextMenuSubContent>
+			</ContextMenuSub>
+			<ContextMenuSub>
+				<ContextMenuSubTrigger inset>Eliminar</ContextMenuSubTrigger>
+				<ContextMenuSubContent className="w-48">
+					{rowActions && (
+						<ContextMenuItem
+							onClick={() => rowActions.delete(rowActions.id)}
+							disabled={rowActions.deleteDisabled}
+						>
+							Fila
+						</ContextMenuItem>
+					)}
+					{colActions && (
+						<ContextMenuItem
+							onClick={() => colActions.delete(colActions.id)}
+							disabled={colActions.deleteDisabled}
+						>
+							Columna
+						</ContextMenuItem>
+					)}
+				</ContextMenuSubContent>
+			</ContextMenuSub>
+		</ContextMenuContent>
 	)
 }
