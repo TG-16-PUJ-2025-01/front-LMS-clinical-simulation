@@ -97,7 +97,17 @@ const formSchema = z
 		if (totalWeight !== 100) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
-				message: "El peso total de los criterios debe ser igual a 100%",
+				message: "La suma de pesos de los criterios debe ser igual a 100%",
+				path: ["rubric"],
+			})
+		}
+
+		const numEmptyWeights = rubric.criteria.filter((criteria) => criteria.weight === 0).length
+
+		if (numEmptyWeights > 0) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Todos los criterios deben tener un peso positivo",
 				path: ["rubric"],
 			})
 		}
@@ -371,7 +381,20 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 			await createRubricTemplate({
 				title: values.title,
 				courses: values.courses.map((course) => course.value),
-				rubric: values.rubric,
+				columns: values.rubric.columns.map((column) => ({
+					title: column.title,
+					scoringScale: {
+						lowerValue: column.scoringScale.min,
+						upperValue: column.scoringScale.max,
+					},
+				})),
+				criteria: values.rubric.criteria.map((criteria) => ({
+					name: criteria.name,
+					description: criteria.description,
+					weight: criteria.weight,
+					scoringScaleDescription: criteria.scoringDescription,
+				})),
+				archived: false,
 			})
 
 			onClose(false)
@@ -432,8 +455,8 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 								control={form.control}
 								name="courses"
 								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormControl className="col-span-3">
+									<FormItem>
+										<FormControl>
 											<Select
 												components={animatedComponents}
 												isMulti
@@ -441,7 +464,22 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 												value={field.value}
 												onChange={(selected) => field.onChange(selected)}
 												placeholder="Seleccionar cursos"
-												className="w-full min-w-40"
+												classNamePrefix="react-select"
+												className="w-full min-w-40 rounded-md p-0"
+												styles={{
+													control: (baseStyles) => ({
+														...baseStyles,
+														"borderColor": "",
+														borderRadius: 'var(--radius-md)',
+														boxShadow: "",
+														"&:hover": { borderColor: "" },
+														"&:focus": { borderColor: "black" },
+													}),
+												}}
+												classNames={{
+													control: () =>
+														"flex w-full rounded-md border border-input bg-transparent text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:shadow-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+												}}
 												onInputChange={(input) => setCoursesFilter(input)}
 												noOptionsMessage={() => "No se encontraron cursos"}
 											/>
