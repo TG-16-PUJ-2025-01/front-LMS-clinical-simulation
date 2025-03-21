@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { ScheduleXCalendar, useNextCalendarApp } from "@schedule-x/react"
 import { createEventsServicePlugin } from "@schedule-x/events-service"
+import { createEventModalPlugin } from "@schedule-x/event-modal"
 
 import {
 	createViewWeek,
@@ -54,8 +55,5 @@ export default function CalendarComponent() {
 	}, [])
 
 	return <ScheduleXCalendar calendarApp={calendarApp} />
-}
-function createEventModalPlugin() {
-	throw new Error("Function not implemented.")
 }
 
