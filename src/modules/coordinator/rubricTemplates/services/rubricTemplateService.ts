@@ -30,9 +30,9 @@ export async function getRubricTemplates(
 	})
 	return {
 		...data,
-		data: {
-			...data.data,
-			creationDate: new Date(data.data.creationDate),
-		},
+		data: data.data.map((rubric: RubricTemplate) => ({
+			...rubric,
+			creationDate: new Date(rubric.creationDate),
+		})),
 	}
 }

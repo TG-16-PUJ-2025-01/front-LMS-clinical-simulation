@@ -69,8 +69,6 @@ export function RubricTemplateDataTable() {
 				!(sorting[0]?.desc ?? false)
 			)
 
-			console.log(res)
-
 			setData(res.data)
 
 			setPaginationInfo({
@@ -112,8 +110,7 @@ export function RubricTemplateDataTable() {
 			},
 		},
 		{
-			id: "creationDate",
-			accessorFn: ({ creationDate }) => `${creationDate}`,
+			accessorKey: "creationDate",
 			header: ({ column }) => {
 				return (
 					<div className="relative w-full">
@@ -122,13 +119,17 @@ export function RubricTemplateDataTable() {
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 						>
-							Fecha de creacion
+							Fecha de creación
 							{column.getIsSorted() && <ArrowUpDown />}
 						</Button>
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("creationDate")}</div>,
+			cell: ({ row }) => (
+				<div className="text-center">
+					{(row.getValue("creationDate") as Date).toLocaleDateString()}
+				</div>
+			),
 		},
 		{
 			id: "actions",
@@ -201,7 +202,7 @@ export function RubricTemplateDataTable() {
 					</div>
 					<Button onClick={() => handleOpenDialog("create")}>Nueva Rubrica</Button>
 				</div>
-				<div className="rounded-md border mt-4">
+				<div className="mt-4 rounded-md border">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
