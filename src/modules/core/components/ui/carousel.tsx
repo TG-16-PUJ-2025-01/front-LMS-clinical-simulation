@@ -32,11 +32,9 @@ const CarouselContext = React.createContext<CarouselContextProps | null>(null)
 
 function useCarousel() {
   const context = React.useContext(CarouselContext)
-
   if (!context) {
     throw new Error("useCarousel must be used within a <Carousel />")
   }
-
   return context
 }
 
@@ -65,12 +63,22 @@ function Carousel({
     setCanScrollNext(api.canScrollNext())
   }, [])
 
+  // Modificación para que desplace tres ítems hacia atrás
   const scrollPrev = React.useCallback(() => {
-    api?.scrollPrev()
+    if (api) {
+      const currentSnap = api.selectedScrollSnap()
+      const newIndex = Math.max(0, currentSnap - 3) // Mover tres anteriores
+      api.scrollTo(newIndex)
+    }
   }, [api])
 
+  // Modificación para que desplace tres ítems hacia adelante
   const scrollNext = React.useCallback(() => {
-    api?.scrollNext()
+    if (api) {
+      const currentSnap = api.selectedScrollSnap()
+      const newIndex = Math.min(api.scrollSnapList().length - 1, currentSnap + 3) // Mover tres siguientes
+      api.scrollTo(newIndex)
+    }
   }, [api])
 
   const handleKeyDown = React.useCallback(
@@ -106,7 +114,7 @@ function Carousel({
     <CarouselContext.Provider
       value={{
         carouselRef,
-        api: api,
+        api,
         opts,
         orientation:
           orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
@@ -142,7 +150,9 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
       <div
         className={cn(
           "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
+          orientation === "horizontal"
+            ? "-ml-4 flex-nowrap"
+            : "-mt-4 flex-col",
           className
         )}
         {...props}
@@ -160,8 +170,10 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
       aria-roledescription="slide"
       data-slot="carousel-item"
       className={cn(
-        "min-w-0 shrink-0 grow-0 basis-full",
-        orientation === "horizontal" ? "pl-4" : "pt-4",
+        "shrink-0 grow-0",
+        orientation === "horizontal"
+          ? "pl-4 basis-1/3"
+          : "pt-4 basis-full",
         className
       )}
       {...props}

@@ -1,214 +1,36 @@
-import {
-	ColumnDef,
-	ColumnFiltersState,
-	SortingState,
-	VisibilityState,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	getPaginationRowModel,
-	getSortedRowModel,
-	useReactTable,
-} from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/modules/core/components/ui/dropdown-menu"
 import { Input } from "@/modules/core/components/ui/input"
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/modules/core/components/ui/table"
-import Class from "@/modules/core/models/class"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/modules/core/components/ui/carousel"
+import {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+	CarouselNext,
+	CarouselPrevious,
+} from "@/modules/core/components/ui/carousel"
+import { CardClass } from "./CardClass"
+import { getCoordinatorCourses } from "../services/courseService"
+import CourseDTO from "../dtos/courseDto"
 
 export function CoursesDataTable() {
-	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-	const [rowSelection, setRowSelection] = useState({})
-	const navigate = useNavigate()
-
-	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
-	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
-
-	const [data, setData] = useState<Class[]>([])
-
-	const [pagination, setPagination] = useState({
-		pageIndex: 0, //initial page index
-		pageSize: 10, //default page size
-	})
-
-	const [paginationInfo, setPaginationInfo] = useState({
-		total: 0, //total number of records
-		totalPages: 0, //total number of pages
-	})
+	const [data, setData] = useState<CourseDTO[]>([])
 
 	useEffect(() => {
-		if (openDialog) return
+		const fetchCoursesAndClasses = async () => {
+			// Here we should fetch the courses and classes
+			// using the filter and pagination values
+			// and update the UI with the results
+			const res = await getCoordinatorCourses(filter, true)
 
-		const fetchClasses = async () => {}
+			setData(res.data)
+			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
+		}
 
-		fetchClasses()
-	}, [pagination, filter, sorting, openDialog])
-
-	const handleOpenDialog = (type: "create" | "edit" | "delete", Class?: Class) => {
-		setOpenDialog(type)
-		setSelectedClass(Class ?? null)
-	}
-
-	const handleCloseDialog = () => {
-		setOpenDialog(null)
-		setSelectedClass(null)
-	}
-
-	const columns: ColumnDef<Class>[] = [
-		{
-			accessorKey: "javerianaId",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						ID
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("javerianaId")}</div>
-			},
-		},
-		{
-			id: "course",
-			accessorFn: ({ course }) => `${course.name}`,
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						>
-							Asignatura
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
-		},
-		{
-			id: "professors",
-			accessorFn: ({ professors }) =>
-				professors && professors[0]
-					? `${professors[0]?.name} ${professors[0]?.lastName} `
-					: "No asignado",
-
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						>
-							Profesor
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("professors")}</div>,
-		},
-		{
-			accessorKey: "period",
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						>
-							Periodo
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("period")}</div>,
-		},
-		{
-			id: "actions",
-			enableHiding: false,
-			cell: ({ row }) => {
-				const Class = row.original
-
-				return (
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" className="ml-auto flex h-8 w-8 p-0">
-								<MoreHorizontal />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
-							<DropdownMenuItem onClick={() => navigate(`/admin/clases/${Class.classId}/miembros`)}>
-								<User /> Lista de miembros
-							</DropdownMenuItem>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => handleOpenDialog("edit", Class)}>
-								<Pencil /> Editar
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => handleOpenDialog("delete", Class)}>
-								<Trash2 /> Borrar
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				)
-			},
-		},
-	]
-
-	const table = useReactTable({
-		data,
-		columns,
-		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
-		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		getFilteredRowModel: getFilteredRowModel(),
-		onColumnVisibilityChange: setColumnVisibility,
-		onRowSelectionChange: setRowSelection,
-		manualPagination: true,
-		onPaginationChange: setPagination,
-		rowCount: paginationInfo.total,
-		pageCount: paginationInfo.totalPages,
-		state: {
-			sorting,
-			columnFilters,
-			columnVisibility,
-			rowSelection,
-			pagination,
-		},
-	})
+		fetchCoursesAndClasses()
+	}, [filter])
 
 	return (
 		<>
@@ -220,27 +42,40 @@ export function CoursesDataTable() {
 						value={filter}
 						onChange={(event) => {
 							setFilter(event.target.value)
-							setPagination({ ...pagination, pageIndex: 0 })
 						}}
 						className="w-full pl-8"
 					/>
 				</div>
 			</div>
-			<div className="w-full">
-				<div className="flex items-center justify-between\">
-					<h1>ASIGNATURA 1 </h1>
-					<Button>Recomendar rubrica</Button>				</div>
-				<div className="mt-4 rounded-md border">
-					<Carousel>
-						<CarouselContent>
-							<CarouselItem>...</CarouselItem>
-							<CarouselItem>...</CarouselItem>
-							<CarouselItem>...</CarouselItem>
-						</CarouselContent>
-						<CarouselPrevious />
-						<CarouselNext />
-					</Carousel>
-				</div>
+
+			<div className="mt-4 w-full">
+				{data.map((course) => (
+					<div key={course.courseId} className="mt-6">
+						<div className="mt-1 flex items-center space-x-4">
+							<h1 className="text-xl font-bold">{course.name}</h1> {/* Nombre de la asignatura */}
+							<Button>Recomendar rúbrica</Button>
+						</div>
+
+						<div className="rounded-md p-2">
+							<div className="relative">
+								<Carousel className="relative">
+									<CarouselContent className="p-10">
+										{course.classes.map((classItem) => (
+											<CarouselItem key={classItem.classId}>
+												<CardClass
+													title={`${classItem.javerianaId.toString()} - ${classItem.period}`} // Nombre de la clase
+													professor={classItem.professors.map((prof) => prof.name).join(", ")} // Lista de profesores separados por comas
+												/>
+											</CarouselItem>
+										))}
+									</CarouselContent>
+									<CarouselPrevious className="absolute top-1/2 left-0 -translate-y-1/2 transform" />
+									<CarouselNext className="absolute top-1/2 right-2 -translate-y-1/2 transform" />
+								</Carousel>
+							</div>
+						</div>
+					</div>
+				))}
 			</div>
 		</>
 	)

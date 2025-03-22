@@ -15,10 +15,10 @@ import AdminRoomsPage from "@/modules/admin/rooms/pages/RoomsPage"
 import AdminUsersPage from "@/modules/admin/users/pages/UsersPage"
 import CoordinatorSimulationPage from "@/modules/coordinator/simulations/pages/SimulationPage"
 import MembersPage from "@/modules/shared/members/pages/MembersPage"
-import { CoursesDataTable } from "@/modules/coordinator/courses/components/CoursesDataTable"
 import CoordinatorPracticesPage from "@/modules/coordinator/practices/pages/PracticesPage"
 import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/BookingPage"
 import CalendarPage from "@/modules/shared/calendar/pages/CalendarPage"
+import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesPage"
 
 export default function Router() {
 	return (
@@ -39,7 +39,7 @@ export default function Router() {
 				<Route element={<CoordinatorRoute />}>
 					<Route path="/calendario" element={<CalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
-					<Route path="/coordinador/asignaturas" element={<CoursesDataTable />}></Route>
+					<Route path="/coordinador/asignaturas" element={<CoordinatorCoursesPage />}></Route>
 					<Route path="/coordinador/practica/:id" element={<CoordinatorBookingPage />}></Route>
 					<Route
 						path="/coordinador/clases/:id/practicas"

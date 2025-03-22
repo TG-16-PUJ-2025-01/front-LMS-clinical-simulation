@@ -6,10 +6,10 @@ interface Props {
 }
 
 export default function PrivateLayout({ children }: Props) {
-  const { slots } = useLayoutSlots()
+	const { slots } = useLayoutSlots()
 
-  return (
-    <div className="min-h-screen bg-gray-100">
+	return (
+		<div className="min-h-screen bg-gray-100">
 			{slots.header}
 			<main className="container mx-auto flex flex-col items-center gap-4 p-4">
 				<h1 className="w-full text-2xl font-semibold">{slots.title}</h1>
@@ -19,5 +19,5 @@ export default function PrivateLayout({ children }: Props) {
 			</main>
 			<Toaster />
 		</div>
-  )
+	)
 }
