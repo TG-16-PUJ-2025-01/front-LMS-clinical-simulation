@@ -1,8 +1,6 @@
 export default interface Criteria {
+    criteriaId?: string
     name: string
-    description: string
-    points: number
-    scoringScale: [number, number][]
+    weight: number
     scoringScaleDescription: string[]
-    score: number | null
 }

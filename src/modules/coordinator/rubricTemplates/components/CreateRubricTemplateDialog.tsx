@@ -85,7 +85,6 @@ const formSchema = z
 				z.object({
 					id: z.number(),
 					name: z.string(),
-					description: z.string(),
 					weight: z.coerce.number(),
 					scoringDescription: z.array(z.string()),
 				})
@@ -223,14 +222,12 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 					{
 						id: 1,
 						name: "A",
-						description: "",
 						weight: 50,
 						scoringDescription: ["Descripción", "Descripción"],
 					},
 					{
 						id: 2,
 						name: "B",
-						description: "",
 						weight: 50,
 						scoringDescription: ["Descripción", "Descripción"],
 					},
@@ -390,7 +387,6 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 				})),
 				criteria: values.rubric.criteria.map((criteria) => ({
 					name: criteria.name,
-					description: criteria.description,
 					weight: criteria.weight,
 					scoringScaleDescription: criteria.scoringDescription,
 				})),

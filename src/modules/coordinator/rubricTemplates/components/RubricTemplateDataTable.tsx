@@ -10,7 +10,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -33,9 +33,8 @@ import EditRubricTemplateDialog from "./EditRubricTemplateDialog"
 import DeleteRubricTemplateDialog from "./DeleteRubricTemplateDialog"
 import { useEffect, useState } from "react"
 import CreateRubricTemplateDialog from "./CreateRubricTemplateDialog"
-import {  } from "../services/rubricTemplateService"
-import { useNavigate } from "react-router-dom"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
+import { getRubricTemplates } from "../services/rubricTemplateService"
 
 export function RubricTemplateDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -43,7 +42,6 @@ export function RubricTemplateDataTable() {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
-	const navigate = useNavigate()
 
 	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
 	const [selectedRubric, setSelectedRubric] = useState<RubricTemplate | null>(null)
@@ -62,7 +60,6 @@ export function RubricTemplateDataTable() {
 
 	useEffect(() => {
 		if (openDialog) return
-        /*
 		const fetchRubricTemplates = async () => {
 			const res = await getRubricTemplates(
 				pagination.pageIndex,
@@ -72,15 +69,17 @@ export function RubricTemplateDataTable() {
 				!(sorting[0]?.desc ?? false)
 			)
 
+			console.log(res)
+
 			setData(res.data)
-			//console.log("fetching classes"+ `${res.data.forEach((element) => console.log(element))}`)
+
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
 			})
 		}
 
-		fetchClasses()*/
+		fetchRubricTemplates()
 	}, [pagination, filter, sorting, openDialog])
 
 	const handleOpenDialog = (type: "create" | "edit" | "delete", rubric?: RubricTemplate) => {
@@ -103,13 +102,13 @@ export function RubricTemplateDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						Titulo
+						Título
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center">{row.getValue("javerianaId")}</div>
+				return <div className="text-center">{row.getValue("title")}</div>
 			},
 		},
 		{
@@ -129,7 +128,7 @@ export function RubricTemplateDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("course")}</div>,
+			cell: ({ row }) => <div className="text-center">{row.getValue("creationDate")}</div>,
 		},
 		{
 			id: "actions",
