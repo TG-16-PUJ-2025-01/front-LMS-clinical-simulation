@@ -16,15 +16,20 @@ import {
 	FormControl,
 	FormField,
 	FormItem,
-	FormLabel,
 	FormMessage,
 } from "@/modules/core/components/ui/form"
 
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import {  } from "../services/rubricTemplateService"
+import {} from "../services/rubricTemplateService"
 import { getCourses } from "../../../admin/courses/services/courseService"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
+import { rubricValidation } from "../lib/utils"
+import Select from "react-select"
+import { RubricFormItem } from "./RubricFormItem"
+import makeAnimated from 'react-select/animated';
+
+const animatedComponents = makeAnimated()
 
 interface Props {
 	open: boolean
@@ -32,78 +37,175 @@ interface Props {
 	rubricTemplateData?: RubricTemplate
 }
 
-const formSchema = z.object({
-	title: z.string().nonempty({
-		message: "Debe ingresar un titulo para la rubrica",
-	}),
-})
+const formSchema = z
+	.object({
+		title: z.string().nonempty({
+			message: "El título es obligatorio",
+		}),
+		courses: z
+			.array(
+				z.object({
+					value: z.number(),
+					label: z.string(),
+				})
+			)
+			.nonempty({
+				message: "Debe seleccionar al menos un curso",
+			}),
+		rubric: z.object({
+			columns: z.array(
+				z.object({
+					rubricColumnId: z.number().optional(),
+					title: z.string(),
+					scoringScale: z.object({
+						lowerValue: z.coerce.number(),
+						upperValue: z.coerce.number(),
+					}),
+				})
+			),
+			criteria: z.array(
+				z.object({
+					criteriaId: z.number().optional(),
+					name: z.string(),
+					weight: z.coerce.number(),
+					scoringScaleDescription: z.array(z.string()),
+				})
+			),
+		}),
+	})
+	.superRefine(rubricValidation)
 
-//lista de strings
-const periods = ["10", "20", "30"]
+export default function EditRubricTemplateDialog({ open, onClose, rubricTemplateData }: Props) {
+	const [courses, setCourses] = useState<{ value: number; label: string }[]>([])
+	const [coursesFilter, setCoursesFilter] = useState<string>("")
 
-export default function EditClassDialog({ open, onClose, rubricTemplateData }: Props) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
-		shouldUnregister: false,
 		defaultValues: {
 			title: "",
+			courses: [],
+			rubric: {
+				columns: [],
+				criteria: [],
+			},
 		},
 	})
 
 	useEffect(() => {
+			form.reset({
+				title: rubricTemplateData?.title,
+				courses: rubricTemplateData?.courses?.map((course) => ({ value: course.courseId!, label: course.name })),
+				rubric: {
+					columns: rubricTemplateData?.columns,
+					criteria: rubricTemplateData?.criteria,
+				},
+			})
+		}, [form, rubricTemplateData])
+
+	useEffect(() => {
 		const fetchCourses = async () => {
-			const res = await getCourses(0, 10, "", "name", true)
-			//setCourses(res.data)
+			const res = await getCourses(0, 20, coursesFilter, "name", true)
+			setCourses(res.data.map((course) => ({ value: course.courseId!, label: course.name })))
 		}
 
 		fetchCourses()
-		form.reset({
-			title: rubricTemplateData?.title,
-		})
-	}, [form, rubricTemplateData])
+
+		form.reset()
+	}, [form, open, coursesFilter])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			//console.log("Form values before submit:", form.getValues()); // Verifica el estado antes del submit
 			//console.log("Values received in onSubmit:", values);
-	
+
 			//await updateRubricTemplate();
-	
-			onClose(false);
-			toast.success("Rubrica actualizada correctamente");
+
+			onClose(false)
+			toast.success("Rubrica actualizada correctamente")
 		} catch (error) {
-            //depende porque hay muchos errores posibles
-			toast.error("Error al actualizar la rubrica");
+			console.error(error)
+			toast.error("Error al actualizar la rubrica")
 		}
 	}
-	
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
+			<DialogContent className="max-h-screen sm:max-w-[1200px]" onSubmit={() => {}}>
 				<DialogHeader>
-					<DialogTitle>Editar rubrica</DialogTitle>
-					<DialogDescription>Puedes editar los siguientes atributos de la rubrica</DialogDescription>
+					<DialogTitle>Editar Rúbrica</DialogTitle>
+					<DialogDescription>
+						Puedes editar los siguientes atributos de la rubrica
+					</DialogDescription>
 				</DialogHeader>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 					<Form {...form}>
-						<div className="grid gap-4 py-4">
+						<div className="flex gap-4">
 							<FormField
 								control={form.control}
 								name="title"
 								render={({ field }) => (
-									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Titulo</FormLabel>
+									<FormItem className="flex flex-col gap-2">
 										<FormControl>
-											<Input id="id" placeholder="title" className="col-span-3 m-0" {...field} />
+											<Input id="id" placeholder="Título" className="col-span-3 m-0" {...field} />
+										</FormControl>
+										<FormMessage className="m-0 -mt-2" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="courses"
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<Select
+												components={animatedComponents}
+												isMulti
+												options={courses}
+												value={field.value}
+												onChange={(selected) => field.onChange(selected)}
+												placeholder="Seleccionar cursos"
+												classNamePrefix="react-select"
+												className="w-full min-w-40 rounded-md p-0"
+												styles={{
+													control: (baseStyles) => ({
+														...baseStyles,
+														"borderColor": "",
+														"borderRadius": "var(--radius-md)",
+														"boxShadow": "",
+														"&:hover": { borderColor: "" },
+														"&:focus": { borderColor: "black" },
+													}),
+												}}
+												classNames={{
+													control: () =>
+														"flex w-full rounded-md border border-input bg-transparent text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:shadow-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+												}}
+												onInputChange={(input) => setCoursesFilter(input)}
+												noOptionsMessage={() => "No se encontraron cursos"}
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
 								)}
 							/>
 						</div>
+						<FormField
+							control={form.control}
+							name="rubric"
+							render={({ field }) => (
+								<RubricFormItem
+									rubric={field.value}
+									control={form.control}
+									setRubric={(rubric) => form.setValue("rubric", rubric, { shouldDirty: true })}
+								/>
+							)}
+						/>
+
 						<DialogFooter>
-							<Button type="submit">Guardar</Button>
+							<Button type="submit" className="mt-4">
+								Crear
+							</Button>
 						</DialogFooter>
 					</Form>
 				</form>

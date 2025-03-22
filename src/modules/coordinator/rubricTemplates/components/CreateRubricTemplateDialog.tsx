@@ -22,7 +22,6 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { getCourses } from "../../../admin/courses/services/courseService"
-import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import Select from "react-select"
 import makeAnimated from "react-select/animated"
 import { createRubricTemplate } from "../services/rubricTemplateService"
@@ -34,7 +33,6 @@ const animatedComponents = makeAnimated()
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
-	rubricTemplateData?: RubricTemplate
 }
 
 const formSchema = z
@@ -123,7 +121,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 
 	useEffect(() => {
 		const fetchCourses = async () => {
-			const res = await getCourses(0, 1000, coursesFilter, "name", true)
+			const res = await getCourses(0, 20, coursesFilter, "name", true)
 			setCourses(res.data.map((course) => ({ value: course.courseId!, label: course.name })))
 		}
 

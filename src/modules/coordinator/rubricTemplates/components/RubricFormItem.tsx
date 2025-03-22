@@ -55,6 +55,8 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 	const [criteriaId, setCriteriaId] = useState<number>(3)
 	const [numCols, setNumCols] = useState<number>(2)
 
+	console.log(rubric)
+
 	const deleteColumn = (id: number) => {
 		const currentRubric = rubric
 

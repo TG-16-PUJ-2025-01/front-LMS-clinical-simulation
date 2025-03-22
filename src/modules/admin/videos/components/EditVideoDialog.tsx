@@ -61,6 +61,7 @@ export default function EditVideoDialog({ open, onClose, video }: Props) {
 			await updateVideo(video!.videoId, values)
 			toast.success("Video actualizado")
 		} catch (error) {
+			console.error(error)
 			toast.error("Error al actualizar el video")
 		}
 		onClose(false)
