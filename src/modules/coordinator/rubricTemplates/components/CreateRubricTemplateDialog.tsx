@@ -331,7 +331,11 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 							control={form.control}
 							name="rubric"
 							render={({ field }) => (
-								<RubricFormItem form={form} field={field} />
+								<RubricFormItem
+									rubric={field.value}
+									control={form.control}
+									setRubric={(rubric) => form.setValue("rubric", rubric, { shouldDirty: true })}
+								/>
 							)}
 						/>
 

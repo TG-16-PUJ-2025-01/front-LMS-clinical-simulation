@@ -23,14 +23,13 @@ import {
 	TableHead,
 	TableBody,
 	TableCell,
-  Table,
+	Table,
 } from "@/modules/core/components/ui/table"
 import { Textarea } from "@/modules/core/components/ui/textarea"
 import Criteria from "@/modules/core/models/criteria"
 import { RubricColumn } from "@/modules/core/models/rubricColumn"
 import { useState } from "react"
-import { FieldValues, UseFormReturn } from "react-hook-form"
-
+import { Control, FieldValues, Path } from "react-hook-form"
 
 interface BasicRubric {
 	columns: RubricColumn[]
@@ -38,23 +37,22 @@ interface BasicRubric {
 }
 
 interface RubricFormValues extends FieldValues {
-	title: string
-	courses: [{ label: string; value: number }, ...{ label: string; value: number }[]]
 	rubric: BasicRubric
 }
 
-interface Props {
-	form: UseFormReturn<RubricFormValues, unknown>
-	field: { value: RubricFormValues["rubric"] }
+interface Props<T extends RubricFormValues = RubricFormValues> {
+	setRubric: (value: BasicRubric) => void
+	control: Control<T>
+	rubric: BasicRubric
 }
 
-export function RubricFormItem({ form, field }: Props) {
+export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({ control, setRubric, rubric }: Props<T>) {
 	const [colId, setColId] = useState<number>(3)
 	const [criteriaId, setCriteriaId] = useState<number>(3)
 	const [numCols, setNumCols] = useState<number>(2)
 
 	const deleteColumn = (id: number) => {
-		const currentRubric = form.getValues("rubric")
+		const currentRubric = rubric
 
 		if (currentRubric.columns.length === 1) {
 			return
@@ -76,20 +74,16 @@ export function RubricFormItem({ form, field }: Props) {
 			scoringScaleDescription: criteria.scoringScaleDescription.filter((_, idx) => idx !== index),
 		}))
 
-		form.setValue(
-			"rubric",
-			{
-				columns: newColumns,
-				criteria: updatedCriteria,
-			},
-			{ shouldDirty: true }
-		)
+		setRubric({
+			columns: newColumns,
+			criteria: updatedCriteria,
+		})
 
 		setNumCols((prev) => prev - 1)
 	}
 
 	const deleteCriteria = (id: number) => {
-		const currentRubric = form.getValues("rubric")
+		const currentRubric = rubric
 
 		if (currentRubric.criteria.length === 1) {
 			return
@@ -98,26 +92,24 @@ export function RubricFormItem({ form, field }: Props) {
 		// Remove criteria
 		const newCriteria = currentRubric.criteria.filter((criteria) => criteria.criteriaId !== id)
 
-		form.setValue(
-			"rubric",
+		setRubric(
 			{
 				columns: currentRubric.columns,
 				criteria: newCriteria,
-			},
-			{ shouldDirty: true }
+			}
 		)
 	}
 
 	const addColumn = (id?: number, where: "left" | "right" = "left") => {
-		const currentRubric = form.getValues("rubric")
-  
-    let index
-    if (id) {
-      index = currentRubric.columns.findIndex((col) => col.rubricColumnId === id)
-      index = where === "left" ? index : index + 1
-    } else {
-      index = currentRubric.columns.length
-    }
+		const currentRubric = rubric
+
+		let index
+		if (id) {
+			index = currentRubric.columns.findIndex((col) => col.rubricColumnId === id)
+			index = where === "left" ? index : index + 1
+		} else {
+			index = currentRubric.columns.length
+		}
 
 		const newColumns: RubricColumn[] = [
 			...currentRubric.columns.slice(0, index),
@@ -138,13 +130,11 @@ export function RubricFormItem({ form, field }: Props) {
 			],
 		}))
 
-		form.setValue(
-			"rubric",
+		setRubric(
 			{
 				columns: newColumns,
 				criteria: updatedCriteria,
-			},
-			{ shouldDirty: true }
+			}
 		)
 
 		setColId((prev) => prev + 1)
@@ -152,15 +142,15 @@ export function RubricFormItem({ form, field }: Props) {
 	}
 
 	const addCriteria = (id?: number, where: "above" | "below" = "above") => {
-		const currentRubric = form.getValues("rubric")
+		const currentRubric = rubric
 
-    let index
-    if (id) {
-      index = currentRubric.criteria.findIndex((criteria) => criteria.criteriaId === id)
-      index = where === "above" ? index : index + 1
-    } else {
-      index = currentRubric.criteria.length
-    }
+		let index
+		if (id) {
+			index = currentRubric.criteria.findIndex((criteria) => criteria.criteriaId === id)
+			index = where === "above" ? index : index + 1
+		} else {
+			index = currentRubric.criteria.length
+		}
 
 		const newCriteria: Criteria = {
 			criteriaId,
@@ -175,13 +165,11 @@ export function RubricFormItem({ form, field }: Props) {
 			...currentRubric.criteria.slice(index),
 		]
 
-		form.setValue(
-			"rubric",
+		setRubric(
 			{
 				columns: currentRubric.columns,
 				criteria: updatedCriteria,
-			},
-			{ shouldDirty: true }
+			}
 		)
 
 		setCriteriaId((prev) => prev + 1)
@@ -198,7 +186,7 @@ export function RubricFormItem({ form, field }: Props) {
 									<TableRow>
 										<TableHead className="w-[100px] border py-1 align-top">Criterios</TableHead>
 										<TableHead className="w-20 min-w-20 border py-1 align-top">Peso</TableHead>
-										{field.value.columns.map((column, index) => (
+										{rubric.columns.map((column, index) => (
 											<TableHead
 												key={column.rubricColumnId}
 												className="text-accent-foreground border py-1"
@@ -206,8 +194,8 @@ export function RubricFormItem({ form, field }: Props) {
 												<ContextMenu>
 													<ContextMenuTrigger className="flex h-full w-full grow flex-col">
 														<FormField
-															control={form.control}
-															name={`rubric.columns.${index}.title`}
+															control={control}
+															name={`rubric.columns.${index}.title` as Path<T>}
 															render={({ field }) => (
 																<FormItem className="flex flex-col gap-2">
 																	<FormControl>
@@ -224,8 +212,8 @@ export function RubricFormItem({ form, field }: Props) {
 														/>
 														<span className="text-blue-javeriana flex items-center gap-2 text-xs font-bold italic">
 															<FormField
-																control={form.control}
-																name={`rubric.columns.${index}.scoringScale.lowerValue`}
+																control={control}
+																name={`rubric.columns.${index}.scoringScale.lowerValue` as Path<T>}
 																render={({ field }) => (
 																	<FormItem className="flex items-baseline gap-2">
 																		<FormLabel>Min</FormLabel>
@@ -243,8 +231,8 @@ export function RubricFormItem({ form, field }: Props) {
 															/>
 															-
 															<FormField
-																control={form.control}
-																name={`rubric.columns.${index}.scoringScale.upperValue`}
+																control={control}
+																name={`rubric.columns.${index}.scoringScale.upperValue` as Path<T>}
 																render={({ field }) => (
 																	<FormItem className="flex items-baseline gap-2">
 																		<FormLabel>Max</FormLabel>
@@ -268,7 +256,7 @@ export function RubricFormItem({ form, field }: Props) {
 															id: column.rubricColumnId!,
 															add: addColumn,
 															delete: deleteColumn,
-															deleteDisabled: field.value.columns.length === 1,
+															deleteDisabled: rubric.columns.length === 1,
 														}}
 													/>
 												</ContextMenu>
@@ -277,14 +265,14 @@ export function RubricFormItem({ form, field }: Props) {
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{field.value.criteria.map((criteria, index) => (
+									{rubric.criteria.map((criteria, index) => (
 										<TableRow key={criteria.criteriaId}>
 											<TableCell className="border font-medium">
 												<ContextMenu>
 													<ContextMenuTrigger className="flex h-full w-full grow flex-col">
 														<FormField
-															control={form.control}
-															name={`rubric.criteria.${index}.name`}
+															control={control}
+															name={`rubric.criteria.${index}.name` as Path<T>}
 															render={({ field }) => (
 																<FormItem className="flex flex-col gap-2">
 																	<FormControl>
@@ -302,7 +290,7 @@ export function RubricFormItem({ form, field }: Props) {
 															id: criteria.criteriaId!,
 															add: addCriteria,
 															delete: deleteCriteria,
-															deleteDisabled: form.getValues("rubric").criteria.length === 1,
+															deleteDisabled: rubric.criteria.length === 1,
 														}}
 													/>
 												</ContextMenu>
@@ -311,8 +299,8 @@ export function RubricFormItem({ form, field }: Props) {
 												<ContextMenu>
 													<ContextMenuTrigger className="flex h-full w-full grow">
 														<FormField
-															control={form.control}
-															name={`rubric.criteria.${index}.weight`}
+															control={control}
+															name={`rubric.criteria.${index}.weight` as Path<T>}
 															render={({ field }) => (
 																<FormItem className="inline-flex w-[calc(100%-1rem)] flex-col gap-2">
 																	<FormControl>
@@ -334,22 +322,22 @@ export function RubricFormItem({ form, field }: Props) {
 															id: criteria.criteriaId!,
 															add: addCriteria,
 															delete: deleteCriteria,
-															deleteDisabled: form.getValues("rubric").criteria.length === 1,
+															deleteDisabled: rubric.criteria.length === 1,
 														}}
 													/>
 												</ContextMenu>
 											</TableCell>
 											{criteria.scoringScaleDescription.map((_, index2) => (
 												<TableCell
-													key={`${criteria.criteriaId}-${field.value.columns[index2].rubricColumnId}`}
+													key={`${criteria.criteriaId}-${rubric.columns[index2].rubricColumnId}`}
 													className="border p-0"
 													style={{ width: `calc((100vw - 176px) / ${numCols})` }}
 												>
 													<ContextMenu>
 														<ContextMenuTrigger className="flex h-full w-full grow p-2">
 															<FormField
-																control={form.control}
-																name={`rubric.criteria.${index}.scoringScaleDescription.${index2}`}
+																control={control}
+																name={`rubric.criteria.${index}.scoringScaleDescription.${index2}` as Path<T>}
 																render={({ field }) => (
 																	<FormItem className="flex w-full flex-col gap-2">
 																		<FormControl>
@@ -367,16 +355,16 @@ export function RubricFormItem({ form, field }: Props) {
 														</ContextMenuTrigger>
 														<CustomContextMenuContent
 															colActions={{
-																id: field.value.columns[index2].rubricColumnId!,
+																id: rubric.columns[index2].rubricColumnId!,
 																add: addColumn,
 																delete: deleteColumn,
-																deleteDisabled: field.value.columns.length === 1,
+																deleteDisabled: rubric.columns.length === 1,
 															}}
 															rowActions={{
 																id: criteria.criteriaId!,
 																add: addCriteria,
 																delete: deleteCriteria,
-																deleteDisabled: field.value.criteria.length === 1,
+																deleteDisabled: rubric.criteria.length === 1,
 															}}
 														/>
 													</ContextMenu>
