@@ -27,6 +27,7 @@ import Select from "react-select"
 import makeAnimated from "react-select/animated"
 import { createRubricTemplate } from "../services/rubricTemplateService"
 import { RubricFormItem } from "./RubricFormItem"
+import { rubricValidation } from "../lib/utils"
 
 const animatedComponents = makeAnimated()
 
@@ -72,101 +73,7 @@ const formSchema = z
 			),
 		}),
 	})
-	.superRefine(({ rubric }, ctx) => {
-		const totalWeight = rubric.criteria.reduce((sum, criteria) => sum + criteria.weight, 0)
-		if (totalWeight !== 100) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "La suma de pesos de los criterios debe ser igual a 100%",
-				path: ["rubric"],
-			})
-		}
-
-		const numEmptyWeights = rubric.criteria.filter((criteria) => criteria.weight === 0).length
-
-		if (numEmptyWeights > 0) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Todos los criterios deben tener un peso positivo",
-				path: ["rubric"],
-			})
-		}
-
-		if (rubric.columns.length < 1) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "La rúbrica debe tener al menos una columna",
-				path: ["rubric"],
-			})
-		}
-
-		if (rubric.criteria.length < 1) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "La rúbrica debe tener al menos un criterio",
-				path: ["rubric"],
-			})
-		}
-
-		const hasInvalidScoringScale = rubric.columns.some(
-			(column) => column.scoringScale.lowerValue > column.scoringScale.upperValue
-		)
-		if (hasInvalidScoringScale) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "El puntaje mínimo no puede ser mayor al puntaje máximo",
-				path: ["rubric"],
-			})
-		}
-
-		const hasOverlappingScoringScale = rubric.columns.some((column, index) =>
-			rubric.columns.some(
-				(otherColumn, otherIndex) =>
-					index !== otherIndex &&
-					column.scoringScale.lowerValue < otherColumn.scoringScale.upperValue &&
-					column.scoringScale.upperValue > otherColumn.scoringScale.lowerValue
-			)
-		)
-
-		if (hasOverlappingScoringScale) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Los rangos de puntaje no pueden superponerse",
-				path: ["rubric"],
-			})
-		}
-
-		const hasEmptyScoringDescription = rubric.criteria.some((criteria) =>
-			criteria.scoringScaleDescription.some((description) => description === "")
-		)
-		if (hasEmptyScoringDescription) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Todas las celdas de la rúbrica deben tener descripción",
-				path: ["rubric"],
-			})
-		}
-
-		const hasEmptyCriteriaName = rubric.criteria.some((criteria) => criteria.name === "")
-
-		if (hasEmptyCriteriaName) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Todos los criterios deben tener nombre",
-				path: ["rubric"],
-			})
-		}
-
-		const hasEmptyColumnTitle = rubric.columns.some((column) => column.title === "")
-
-		if (hasEmptyColumnTitle) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Todas las columnas deben tener título",
-				path: ["rubric"],
-			})
-		}
-	})
+	.superRefine(rubricValidation)
 
 export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 	const [courses, setCourses] = useState<{ value: number; label: string }[]>([])
@@ -230,8 +137,15 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 			await createRubricTemplate({
 				title: values.title,
 				courses: values.courses.map((course) => course.value),
-				columns: values.rubric.columns,
-				criteria: values.rubric.criteria,
+				columns: values.rubric.columns.map((column) => ({
+					title: column.title,
+					scoringScale: column.scoringScale,
+				})),
+				criteria: values.rubric.criteria.map((column) => ({
+					name: column.name,
+					weight: column.weight,
+					scoringScaleDescription: column.scoringScaleDescription,
+				})),
 				archived: false,
 			})
 

@@ -36,7 +36,7 @@ interface BasicRubric {
 	criteria: Criteria[]
 }
 
-interface RubricFormValues extends FieldValues {
+export interface RubricFormValues extends FieldValues {
 	rubric: BasicRubric
 }
 
@@ -46,7 +46,11 @@ interface Props<T extends RubricFormValues = RubricFormValues> {
 	rubric: BasicRubric
 }
 
-export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({ control, setRubric, rubric }: Props<T>) {
+export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
+	control,
+	setRubric,
+	rubric,
+}: Props<T>) {
 	const [colId, setColId] = useState<number>(3)
 	const [criteriaId, setCriteriaId] = useState<number>(3)
 	const [numCols, setNumCols] = useState<number>(2)
@@ -92,12 +96,10 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({ 
 		// Remove criteria
 		const newCriteria = currentRubric.criteria.filter((criteria) => criteria.criteriaId !== id)
 
-		setRubric(
-			{
-				columns: currentRubric.columns,
-				criteria: newCriteria,
-			}
-		)
+		setRubric({
+			columns: currentRubric.columns,
+			criteria: newCriteria,
+		})
 	}
 
 	const addColumn = (id?: number, where: "left" | "right" = "left") => {
@@ -130,12 +132,10 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({ 
 			],
 		}))
 
-		setRubric(
-			{
-				columns: newColumns,
-				criteria: updatedCriteria,
-			}
-		)
+		setRubric({
+			columns: newColumns,
+			criteria: updatedCriteria,
+		})
 
 		setColId((prev) => prev + 1)
 		setNumCols((prev) => prev + 1)
@@ -165,12 +165,10 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({ 
 			...currentRubric.criteria.slice(index),
 		]
 
-		setRubric(
-			{
-				columns: currentRubric.columns,
-				criteria: updatedCriteria,
-			}
-		)
+		setRubric({
+			columns: currentRubric.columns,
+			criteria: updatedCriteria,
+		})
 
 		setCriteriaId((prev) => prev + 1)
 	}
@@ -337,7 +335,9 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({ 
 														<ContextMenuTrigger className="flex h-full w-full grow p-2">
 															<FormField
 																control={control}
-																name={`rubric.criteria.${index}.scoringScaleDescription.${index2}` as Path<T>}
+																name={
+																	`rubric.criteria.${index}.scoringScaleDescription.${index2}` as Path<T>
+																}
 																render={({ field }) => (
 																	<FormItem className="flex w-full flex-col gap-2">
 																		<FormControl>
