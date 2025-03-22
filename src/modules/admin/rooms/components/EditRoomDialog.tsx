@@ -29,7 +29,7 @@ import { ComboboxCreate } from "../../../core/components/Combobox/ComboboxCreate
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
-	room?: Room
+	room: Room
 }
 
 const formSchema = z.object({
