@@ -1,6 +1,6 @@
 import Course from "./course"
 import Criteria from "./criteria"
-import { RubricColumns } from "./rubricColumns"
+import { RubricColumn } from "./rubricColumn"
 import User from "./user"
 
 export default interface RubricTemplate {
@@ -8,7 +8,7 @@ export default interface RubricTemplate {
     title: string
     creator: User
     criteria: Criteria[]
-    columns: RubricColumns[]
+    columns: RubricColumn[]
     courses: Course[]
     creationDate: Date
     archived: boolean

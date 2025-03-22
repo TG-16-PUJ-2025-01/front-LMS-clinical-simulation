@@ -1,5 +1,5 @@
 export default interface Criteria {
-    criteriaId?: string
+    criteriaId?: number
     name: string
     weight: number
     scoringScaleDescription: string[]

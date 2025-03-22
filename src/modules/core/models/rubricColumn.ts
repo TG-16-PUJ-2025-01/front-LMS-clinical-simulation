@@ -1,4 +1,4 @@
-export interface RubricColumns {
+export interface RubricColumn {
 	rubricColumnId?: number
 	title: string
 	scoringScale: {
