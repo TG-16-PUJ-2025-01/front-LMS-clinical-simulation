@@ -3,6 +3,7 @@ import axios from "axios"
 import RubricTemplateDto from "../dtos/rubricTemplateDto"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import ApiResponse from "@/modules/core/models/apiResponse"
+import Course from "@/modules/core/models/course"
 
 export function createRubricTemplate(data: RubricTemplateDto) {
 	return axios.post(`${API_URL}/rubric/template`, data)
@@ -28,6 +29,7 @@ export async function getRubricTemplates(
 			mine,
 		},
 	})
+
 	return {
 		...data,
 		data: data.data.map((rubric: RubricTemplate) => ({
@@ -35,4 +37,9 @@ export async function getRubricTemplates(
 			creationDate: new Date(rubric.creationDate),
 		})),
 	}
+}
+
+export async function getCoursesByRubricTemplate(rubricTemplateId: number): Promise<ApiResponse<Course[]>> {
+	const { data } = await axios.get(`${API_URL}/rubric/template/${rubricTemplateId}/courses`)
+	return data
 }

@@ -21,13 +21,13 @@ import {
 
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import {} from "../services/rubricTemplateService"
+import { getCoursesByRubricTemplate } from "../services/rubricTemplateService"
 import { getCourses } from "../../../admin/courses/services/courseService"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import { rubricValidation } from "../lib/utils"
 import Select from "react-select"
 import { RubricFormItem } from "./RubricFormItem"
-import makeAnimated from 'react-select/animated';
+import makeAnimated from "react-select/animated"
 
 const animatedComponents = makeAnimated()
 
@@ -92,15 +92,29 @@ export default function EditRubricTemplateDialog({ open, onClose, rubricTemplate
 	})
 
 	useEffect(() => {
+		const fetchRubricCourses = async () => {
+			const res = await getCoursesByRubricTemplate(rubricTemplateData!.rubricTemplateId!)
+
 			form.reset({
 				title: rubricTemplateData?.title,
-				courses: rubricTemplateData?.courses?.map((course) => ({ value: course.courseId!, label: course.name })),
+				courses: res.data.map((course) => ({
+					value: course.courseId!,
+					label: course.name,
+				})),
 				rubric: {
-					columns: rubricTemplateData?.columns,
-					criteria: rubricTemplateData?.criteria,
+					columns: rubricTemplateData?.columns.map((column, index) => ({
+						rubricColumnId: index,
+						...column,
+					})),
+					criteria: rubricTemplateData?.criteria.map((criteria, index) => ({
+						criteriaId: index,
+						...criteria,
+					})),
 				},
 			})
-		}, [form, rubricTemplateData])
+		}
+		fetchRubricCourses()
+	}, [form, rubricTemplateData])
 
 	useEffect(() => {
 		const fetchCourses = async () => {
@@ -137,78 +151,80 @@ export default function EditRubricTemplateDialog({ open, onClose, rubricTemplate
 						Puedes editar los siguientes atributos de la rubrica
 					</DialogDescription>
 				</DialogHeader>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-					<Form {...form}>
-						<div className="flex gap-4">
-							<FormField
-								control={form.control}
-								name="title"
-								render={({ field }) => (
-									<FormItem className="flex flex-col gap-2">
-										<FormControl>
-											<Input id="id" placeholder="Título" className="col-span-3 m-0" {...field} />
-										</FormControl>
-										<FormMessage className="m-0 -mt-2" />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="courses"
-								render={({ field }) => (
-									<FormItem>
-										<FormControl>
-											<Select
-												components={animatedComponents}
-												isMulti
-												options={courses}
-												value={field.value}
-												onChange={(selected) => field.onChange(selected)}
-												placeholder="Seleccionar cursos"
-												classNamePrefix="react-select"
-												className="w-full min-w-40 rounded-md p-0"
-												styles={{
-													control: (baseStyles) => ({
-														...baseStyles,
-														"borderColor": "",
-														"borderRadius": "var(--radius-md)",
-														"boxShadow": "",
-														"&:hover": { borderColor: "" },
-														"&:focus": { borderColor: "black" },
-													}),
-												}}
-												classNames={{
-													control: () =>
-														"flex w-full rounded-md border border-input bg-transparent text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:shadow-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-												}}
-												onInputChange={(input) => setCoursesFilter(input)}
-												noOptionsMessage={() => "No se encontraron cursos"}
-											/>
-										</FormControl>
-										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
-									</FormItem>
-								)}
-							/>
-						</div>
-						<FormField
-							control={form.control}
-							name="rubric"
-							render={({ field }) => (
-								<RubricFormItem
-									rubric={field.value}
+				{rubricTemplateData && (
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+						<Form {...form}>
+							<div className="flex gap-4">
+								<FormField
 									control={form.control}
-									setRubric={(rubric) => form.setValue("rubric", rubric, { shouldDirty: true })}
+									name="title"
+									render={({ field }) => (
+										<FormItem className="flex flex-col gap-2">
+											<FormControl>
+												<Input id="id" placeholder="Título" className="col-span-3 m-0" {...field} />
+											</FormControl>
+											<FormMessage className="m-0 -mt-2" />
+										</FormItem>
+									)}
 								/>
-							)}
-						/>
+								<FormField
+									control={form.control}
+									name="courses"
+									render={({ field }) => (
+										<FormItem>
+											<FormControl>
+												<Select
+													components={animatedComponents}
+													isMulti
+													options={courses}
+													value={field.value}
+													onChange={(selected) => field.onChange(selected)}
+													placeholder="Seleccionar cursos"
+													classNamePrefix="react-select"
+													className="w-full min-w-40 rounded-md p-0"
+													styles={{
+														control: (baseStyles) => ({
+															...baseStyles,
+															"borderColor": "",
+															"borderRadius": "var(--radius-md)",
+															"boxShadow": "",
+															"&:hover": { borderColor: "" },
+															"&:focus": { borderColor: "black" },
+														}),
+													}}
+													classNames={{
+														control: () =>
+															"flex w-full rounded-md border border-input bg-transparent text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:shadow-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+													}}
+													onInputChange={(input) => setCoursesFilter(input)}
+													noOptionsMessage={() => "No se encontraron cursos"}
+												/>
+											</FormControl>
+											<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+										</FormItem>
+									)}
+								/>
+							</div>
+							<FormField
+								control={form.control}
+								name="rubric"
+								render={({ field }) => (
+									<RubricFormItem
+										rubric={field.value}
+										control={form.control}
+										setRubric={(rubric) => form.setValue("rubric", rubric, { shouldDirty: true })}
+									/>
+								)}
+							/>
 
-						<DialogFooter>
-							<Button type="submit" className="mt-4">
-								Crear
-							</Button>
-						</DialogFooter>
-					</Form>
-				</form>
+							<DialogFooter>
+								<Button type="submit" className="mt-4">
+									Crear
+								</Button>
+							</DialogFooter>
+						</Form>
+					</form>
+				)}
 			</DialogContent>
 		</Dialog>
 	)
