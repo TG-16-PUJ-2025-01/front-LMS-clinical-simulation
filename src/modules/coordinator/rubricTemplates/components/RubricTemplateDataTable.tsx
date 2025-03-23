@@ -34,6 +34,8 @@ import { useEffect, useState } from "react"
 import CreateRubricTemplateDialog from "./CreateRubricTemplateDialog"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import { getRubricTemplates } from "../services/rubricTemplateService"
+import { RadioGroup, RadioGroupItem } from "@/modules/core/components/ui/radio-group"
+import { Label } from "@/modules/core/components/ui/label"
 
 export function RubricTemplateDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -41,8 +43,11 @@ export function RubricTemplateDataTable() {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
+	const [archived, setArchived] = useState<"all" | "archived">("all")
 
-	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | "archive" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | "archive" | null>(
+		null
+	)
 	const [selectedRubric, setSelectedRubric] = useState<RubricTemplate | null>(null)
 
 	const [data, setData] = useState<RubricTemplate[]>([])
@@ -65,7 +70,8 @@ export function RubricTemplateDataTable() {
 				pagination.pageSize,
 				filter,
 				sorting[0]?.id,
-				!(sorting[0]?.desc ?? false)
+				!(sorting[0]?.desc ?? false),
+				archived === "archived",
 			)
 
 			setData(res.data)
@@ -77,9 +83,12 @@ export function RubricTemplateDataTable() {
 		}
 
 		fetchRubricTemplates()
-	}, [pagination, filter, sorting, openDialog])
+	}, [pagination, filter, sorting, openDialog, archived])
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete" | "archive", rubric?: RubricTemplate) => {
+	const handleOpenDialog = (
+		type: "create" | "edit" | "delete" | "archive",
+		rubric?: RubricTemplate
+	) => {
 		setOpenDialog(type)
 		setSelectedRubric(rubric ?? null)
 	}
@@ -189,17 +198,33 @@ export function RubricTemplateDataTable() {
 		<>
 			<div className="w-full">
 				<div className="flex items-center justify-between">
-					<div className="relative w-1/2 max-w-sm">
-						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
-						<Input
-							placeholder="Buscar..."
-							value={filter}
-							onChange={(event) => {
-								setFilter(event.target.value)
-								setPagination({ ...pagination, pageIndex: 0 })
-							}}
-							className="w-full pl-8"
-						/>
+					<div className="flex w-full items-center space-x-4">
+						<div className="relative w-1/2 max-w-sm">
+							<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
+							<Input
+								placeholder="Buscar..."
+								value={filter}
+								onChange={(event) => {
+									setFilter(event.target.value)
+									setPagination({ ...pagination, pageIndex: 0 })
+								}}
+								className="w-full pl-8"
+							/>
+						</div>
+						<RadioGroup
+							value={archived}
+							onValueChange={(value) => setArchived(value as "all" | "archived")}
+							className="flex items-center space-x-2"
+						>
+							<div className="flex items-center space-x-1">
+								<RadioGroupItem value="all" id="r1" />
+								<Label htmlFor="r1">Todas</Label>
+							</div>
+							<div className="flex items-center space-x-1">
+								<RadioGroupItem value="archived" id="r2" />
+								<Label htmlFor="r2">Archivadas</Label>
+							</div>
+						</RadioGroup>
 					</div>
 					<Button onClick={() => handleOpenDialog("create")}>Nueva Rubrica</Button>
 				</div>

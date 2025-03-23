@@ -41,22 +41,22 @@ export interface RubricFormValues extends FieldValues {
 }
 
 interface Props<T extends RubricFormValues = RubricFormValues> {
+	getRubric: () => BasicRubric
 	setRubric: (value: BasicRubric) => void
 	control: Control<T>
-	rubric: BasicRubric
 }
 
 export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 	control,
 	setRubric,
-	rubric,
+	getRubric,
 }: Props<T>) {
 	const [colId, setColId] = useState<number>(3)
 	const [criteriaId, setCriteriaId] = useState<number>(3)
 	const [numCols, setNumCols] = useState<number>(2)
 
 	const deleteColumn = (id: number) => {
-		const currentRubric = rubric
+		const currentRubric = getRubric()
 
 		if (currentRubric.columns.length === 1) {
 			return
@@ -87,7 +87,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 	}
 
 	const deleteCriteria = (id: number) => {
-		const currentRubric = rubric
+		const currentRubric = getRubric()
 
 		if (currentRubric.criteria.length === 1) {
 			return
@@ -103,7 +103,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 	}
 
 	const addColumn = (id?: number, where: "left" | "right" = "left") => {
-		const currentRubric = rubric
+		const currentRubric = getRubric()
 
 		let index
 		if (id) {
@@ -142,7 +142,8 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 	}
 
 	const addCriteria = (id?: number, where: "above" | "below" = "above") => {
-		const currentRubric = rubric
+		const currentRubric = getRubric()
+		console.log(currentRubric.criteria)
 
 		let index
 		if (id) {
@@ -184,7 +185,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 									<TableRow>
 										<TableHead className="w-[100px] border py-1 align-top">Criterios</TableHead>
 										<TableHead className="w-20 min-w-20 border py-1 align-top">Peso</TableHead>
-										{rubric.columns.map((column, index) => (
+										{getRubric().columns.map((column, index) => (
 											<TableHead
 												key={column.rubricColumnId}
 												className="text-accent-foreground border py-1"
@@ -254,7 +255,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 															id: column.rubricColumnId!,
 															add: addColumn,
 															delete: deleteColumn,
-															deleteDisabled: rubric.columns.length === 1,
+															deleteDisabled: getRubric().columns.length === 1,
 														}}
 													/>
 												</ContextMenu>
@@ -263,7 +264,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{rubric.criteria.map((criteria, index) => (
+									{getRubric().criteria.map((criteria, index) => (
 										<TableRow key={criteria.criteriaId}>
 											<TableCell className="border font-medium">
 												<ContextMenu>
@@ -288,7 +289,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 															id: criteria.criteriaId!,
 															add: addCriteria,
 															delete: deleteCriteria,
-															deleteDisabled: rubric.criteria.length === 1,
+															deleteDisabled: getRubric().criteria.length === 1,
 														}}
 													/>
 												</ContextMenu>
@@ -320,14 +321,14 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 															id: criteria.criteriaId!,
 															add: addCriteria,
 															delete: deleteCriteria,
-															deleteDisabled: rubric.criteria.length === 1,
+															deleteDisabled: getRubric().criteria.length === 1,
 														}}
 													/>
 												</ContextMenu>
 											</TableCell>
 											{criteria.scoringScaleDescription.map((_, index2) => (
 												<TableCell
-													key={`${criteria.criteriaId}-${rubric.columns[index2].rubricColumnId}`}
+													key={`${criteria.criteriaId}-${getRubric().columns[index2].rubricColumnId}`}
 													className="border p-0"
 													style={{ width: `calc((100vw - 176px) / ${numCols})` }}
 												>
@@ -355,16 +356,16 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 														</ContextMenuTrigger>
 														<CustomContextMenuContent
 															colActions={{
-																id: rubric.columns[index2].rubricColumnId!,
+																id: getRubric().columns[index2].rubricColumnId!,
 																add: addColumn,
 																delete: deleteColumn,
-																deleteDisabled: rubric.columns.length === 1,
+																deleteDisabled: getRubric().columns.length === 1,
 															}}
 															rowActions={{
 																id: criteria.criteriaId!,
 																add: addCriteria,
 																delete: deleteCriteria,
-																deleteDisabled: rubric.criteria.length === 1,
+																deleteDisabled: getRubric().criteria.length === 1,
 															}}
 														/>
 													</ContextMenu>

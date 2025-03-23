@@ -93,6 +93,7 @@ export default function EditRubricTemplateDialog({ open, onClose, rubricTemplate
 
 	useEffect(() => {
 		const fetchRubricCourses = async () => {
+			if (!rubricTemplateData) return
 			const res = await getCoursesByRubricTemplate(rubricTemplateData!.rubricTemplateId!)
 
 			form.reset({
@@ -219,9 +220,9 @@ export default function EditRubricTemplateDialog({ open, onClose, rubricTemplate
 							<FormField
 								control={form.control}
 								name="rubric"
-								render={({ field }) => (
+								render={() => (
 									<RubricFormItem
-										rubric={field.value}
+										getRubric={() => form.getValues("rubric")}
 										control={form.control}
 										setRubric={(rubric) => form.setValue("rubric", rubric, { shouldDirty: true })}
 									/>
