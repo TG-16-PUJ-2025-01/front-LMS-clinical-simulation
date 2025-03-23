@@ -26,27 +26,32 @@ export function CoursesDataTable() {
 			// Here we should fetch the courses and classes
 			// using the filter and pagination values
 			// and update the UI with the results
-			const res = await getCoordinatorCourses(searchByKey,filter, true)
+			const res = await getCoordinatorCourses(searchByKey, filter, true)
 
 			setData(res.data)
 			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
 		}
 
 		fetchCoursesAndClasses()
-	}, [filter])
+	}, [filter,searchByKey])
 
 	return (
 		<>
-			<div className="flex items-center space-x-4 mt-2">
+			<div className="mt-2 flex items-center space-x-4">
 				<Combobox
 					placeholderText="Buscar por..."
-					options={searchBy.map((key) => ({
-						key: Number(key),
+					options={searchBy.map((key, index) => ({
+						key: index, // Unique numeric key
 						value: key,
 					}))}
 					itemName="por"
-					onChange={(selected) => setSearchByKey(selected.value.toString())}
+					onChange={(selected) => {
+						console.log("Selected option:", selected) // Debug log
+						setSearchByKey(selected.value.toString())
+						console.log("Selected option:", searchByKey) // Debug log
+					}}
 				/>
+
 				<div className="relative w-1/2 max-w-sm">
 					<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 					<Input

@@ -16,7 +16,7 @@ export async function getCoordinatorCourses(
 		},
 	})
 
-	console.log(data)
+	console.log( "data "+ searchByKey+" " + filter +" "+ asc)
 	return {
 		...data,
 		data: data.data,
