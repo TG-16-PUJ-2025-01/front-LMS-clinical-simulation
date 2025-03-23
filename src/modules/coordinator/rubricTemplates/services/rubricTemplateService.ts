@@ -47,3 +47,7 @@ export async function getCoursesByRubricTemplate(rubricTemplateId: number): Prom
 export async function updateRubricTemplate(rubricTemplateId: number, data: RubricTemplateDto) {
 	return axios.put(`${API_URL}/rubric/template/${rubricTemplateId}`, data)
 }
+
+export async function deleteRubricTemplate(rubricTemplateId: number) {
+	return axios.delete(`${API_URL}/rubric/template/${rubricTemplateId}`)
+}
