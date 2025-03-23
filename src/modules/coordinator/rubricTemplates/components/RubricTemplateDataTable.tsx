@@ -10,14 +10,13 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
+import { ArrowUpDown, Inbox, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
 import { Input } from "@/modules/core/components/ui/input"
@@ -43,7 +42,7 @@ export function RubricTemplateDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | "archive" | null>(null)
 	const [selectedRubric, setSelectedRubric] = useState<RubricTemplate | null>(null)
 
 	const [data, setData] = useState<RubricTemplate[]>([])
@@ -80,7 +79,7 @@ export function RubricTemplateDataTable() {
 		fetchRubricTemplates()
 	}, [pagination, filter, sorting, openDialog])
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete", rubric?: RubricTemplate) => {
+	const handleOpenDialog = (type: "create" | "edit" | "delete" | "archive", rubric?: RubricTemplate) => {
 		setOpenDialog(type)
 		setSelectedRubric(rubric ?? null)
 	}
@@ -146,9 +145,11 @@ export function RubricTemplateDataTable() {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
-							<DropdownMenuSeparator />
 							<DropdownMenuItem onClick={() => handleOpenDialog("edit", rubric)}>
 								<Pencil /> Editar
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={() => handleOpenDialog("archive", rubric)}>
+								<Inbox /> Archivar
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("delete", rubric)}>
 								<Trash2 /> Borrar

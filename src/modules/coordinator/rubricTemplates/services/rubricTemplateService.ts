@@ -43,3 +43,7 @@ export async function getCoursesByRubricTemplate(rubricTemplateId: number): Prom
 	const { data } = await axios.get(`${API_URL}/rubric/template/${rubricTemplateId}/courses`)
 	return data
 }
+
+export async function updateRubricTemplate(rubricTemplateId: number, data: RubricTemplateDto) {
+	return axios.put(`${API_URL}/rubric/template/${rubricTemplateId}`, data)
+}

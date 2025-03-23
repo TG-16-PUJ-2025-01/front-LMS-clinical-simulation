@@ -21,7 +21,7 @@ import {
 
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { getCoursesByRubricTemplate } from "../services/rubricTemplateService"
+import { getCoursesByRubricTemplate, updateRubricTemplate } from "../services/rubricTemplateService"
 import { getCourses } from "../../../admin/courses/services/courseService"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import { rubricValidation } from "../lib/utils"
@@ -129,10 +129,21 @@ export default function EditRubricTemplateDialog({ open, onClose, rubricTemplate
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			//console.log("Form values before submit:", form.getValues()); // Verifica el estado antes del submit
-			//console.log("Values received in onSubmit:", values);
 
-			//await updateRubricTemplate();
+			await updateRubricTemplate(rubricTemplateData!.rubricTemplateId!, {
+				title: values.title,
+				courses: values.courses.map((course) => course.value),
+				columns: values.rubric.columns.map((column) => ({
+					title: column.title,
+					scoringScale: column.scoringScale,
+				})),
+				criteria: values.rubric.criteria.map((column) => ({
+					name: column.name,
+					weight: column.weight,
+					scoringScaleDescription: column.scoringScaleDescription,
+				})),
+				archived: rubricTemplateData!.archived,
+			});
 
 			onClose(false)
 			toast.success("Rubrica actualizada correctamente")
@@ -219,7 +230,7 @@ export default function EditRubricTemplateDialog({ open, onClose, rubricTemplate
 
 							<DialogFooter>
 								<Button type="submit" className="mt-4">
-									Crear
+									Guardar
 								</Button>
 							</DialogFooter>
 						</Form>
