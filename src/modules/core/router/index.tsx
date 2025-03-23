@@ -45,6 +45,7 @@ export default function Router() {
 						path="/coordinador/clases/:id/practicas"
 						element={<CoordinatorPracticesPage />}
 					></Route>
+					<Route path="/coordinador/clases/:id/miembros" element={<MembersPage />}></Route>
 				</Route>
 
 				{/* Admin Routes */}
