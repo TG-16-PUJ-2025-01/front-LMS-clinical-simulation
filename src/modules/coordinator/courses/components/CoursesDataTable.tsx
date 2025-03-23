@@ -18,8 +18,15 @@ import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 export function CoursesDataTable() {
 	const [filter, setFilter] = useState<string>("")
 	const [data, setData] = useState<CourseDTO[]>([])
-	const searchBy = ["Asignaturas", "Clases", "Profesores"]
 	const [searchByKey, setSearchByKey] = useState<string>("")
+	const [year, setYear] = useState<string>("")
+	const [period, setPeriod] = useState<string>("")
+
+
+	const searchBy = ["Asignaturas", "Clases", "Profesores"]
+	const periodList = ["10", "20", "30",""]
+	const currentYear = new Date().getFullYear()
+	const yearList = Array.from({ length: 21 }, (_, i) => currentYear - i)
 
 	useEffect(() => {
 		const fetchCoursesAndClasses = async () => {
@@ -33,11 +40,39 @@ export function CoursesDataTable() {
 		}
 
 		fetchCoursesAndClasses()
-	}, [filter,searchByKey])
+	}, [filter, searchByKey])
 
 	return (
 		<>
 			<div className="mt-2 flex items-center space-x-4">
+				<Combobox
+					placeholderText="Año"
+					options={yearList.map((key, index) => ({
+						key: index,
+						value: key.toString(),
+					}))}
+					itemName="por"
+					onChange={(selected) => {
+						console.log("Selected option:", selected) // Debug log
+						setYear(selected.value.toString())
+						console.log("Selected option:", year) // Debug log
+					}}
+				/>
+
+				<Combobox
+					placeholderText="Periodo"
+					options={periodList.map((key, index) => ({
+						key: index,
+						value: key,
+					}))}
+					itemName="por"
+					onChange={(selected) => {
+						console.log("Selected option:", selected) // Debug log
+						setPeriod(selected.value.toString())
+						console.log("Selected option:", period) // Debug log
+					}}
+				/>
+
 				<Combobox
 					placeholderText="Buscar por..."
 					options={searchBy.map((key, index) => ({
@@ -91,7 +126,6 @@ export function CoursesDataTable() {
 										<CarouselNext className="absolute top-1/2 right-2 -translate-y-1/2 transform" />
 									</Carousel>
 								) : (
-									// Si no hay clases, muestra un mensaje alternativo
 									<div className="flex h-full items-center justify-center">
 										<p className="text-center text-gray-500">No hay clases asignadas</p>
 									</div>
