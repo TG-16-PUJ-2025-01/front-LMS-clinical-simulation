@@ -31,31 +31,57 @@ import { Checkbox } from "@/modules/core/components/ui/checkbox"
 import { Button } from "@/modules/core/components/ui/button"
 import Type from "@/modules/core/models/practiceType"
 import { createPractice } from "../services/PracticeService"
-import PracticeDto from "../dto/PracticeDto"
+import PracticeDto from "../dto/practiceDto"
+import Practice from "@/modules/core/models/practice"
+import { useParams } from "react-router-dom"
 
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
+	onPracticeCreated: (practice: Practice) => void
 }
 
-const formSchema = z.object({
-	name: z.string().nonempty({ message: "El nombre no puede estar vacío" }),
-	description: z.string().nonempty({ message: "La descripción no puede estar vacía" }),
-	type: z.string().nonempty({ message: "El tipo no puede estar vacío" }),
-	gradeable: z.boolean(),
-	simulationDuration: z.number().int().min(0, {
-		message: "La duración de la simulación debe ser mayor o igual a 0",
-	}),
-	numberOfGroups: z
-		.union([z.number().int().min(1, { message: "El número de grupos debe ser mayor a 0" }), z.null()])
-		.optional(),
-	maxStudentsGroup: z
-		.union([z.number().int().min(1, { message: "El número máximo de estudiantes por grupo debe ser mayor a 0" }), z.null()])
-		.optional(),
-})
+const formSchema = z
+	.object({
+		name: z.string().nonempty({ message: "El nombre no puede estar vacío" }),
+		description: z.string().nonempty({ message: "La descripción no puede estar vacía" }),
+		type: z.string().nonempty({ message: "El tipo no puede estar vacío" }),
+		gradeable: z.boolean(),
+		simulationDuration: z.number().int().min(1, {
+			message: "La duración de la simulación debe ser mayor o igual a 15",
+		}),
+		numberOfGroups: z.number().int().optional(),
+		maxStudentsGroup: z.number().int().optional(),
+	})
+	.refine(
+		(data) => {
+			if (data.type === "GRUPAL") {
+				return data.numberOfGroups
+			}
+			return true
+		},
+		{
+			message: "Debe ingresar el número de grupos y el máximo de estudiantes por grupo",
+			path: ["numberOfGroups"],
+		}
+	)
+	.refine(
+		(data) => {
+			if (data.type === "GRUPAL") {
+				return data.maxStudentsGroup
+			}
+			return true
+		},
+		{
+			message: "No debe ingresar el número de grupos ni el máximo de estudiantes por grupo",
+			path: ["maxStudentsGroup"],
+		}
+	)
 
-export default function AddPracticeDialog({ open, onClose }: Props) {
+export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: Props) {
 	const [isGroupPractice, setIsGroupPractice] = useState<boolean>(true)
+	const [, setPractice] = useState<Practice | null>(null)
+	const { id } = useParams()
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -85,16 +111,17 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 				gradeable: values.gradeable,
 				simulationDuration: values.simulationDuration,
 				...(isGroupPractice && {
-					numberOfGroups: values.numberOfGroups ?? 0,
-					maxStudentsGroup: values.maxStudentsGroup ?? 0,
+					numberOfGroups: values.numberOfGroups ?? null,
+					maxStudentsGroup: values.maxStudentsGroup ?? null,
 				}),
 			}
 
-			console.log(newPractice)
-
-			await createPractice(1, newPractice)
+			const response = await createPractice(Number(id), newPractice)
+			setPractice(response.data)
 
 			toast.success("Práctica creada exitosamente.")
+
+			onPracticeCreated(response.data)
 
 			onClose(false)
 		} catch (error: any) {
@@ -108,7 +135,7 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 				<DialogHeader>
 					<DialogTitle>Agregar Práctica</DialogTitle>
 					<DialogDescription>
-						Puedes agregar una nueva practica con los siguientes atributos
+						Puedes agregar una nueva práctica con los siguientes atributos
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -119,9 +146,14 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 								name="name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Nombre</FormLabel>
+										<FormLabel htmlFor="name" className="m-0 text-right">Nombre</FormLabel>
 										<FormControl>
-											<Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
+											<Input
+												id="name"
+												placeholder="Nombre"
+												className="col-span-3 m-0"
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
@@ -132,7 +164,7 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 								name="description"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Descripción</FormLabel>
+										<FormLabel htmlFor="description" className="m-0 text-right">Descripción</FormLabel>
 										<FormControl>
 											<Input
 												id="description"
@@ -150,9 +182,10 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 								name="type"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Tipo</FormLabel>
+										<FormLabel htmlFor="type" className="m-0 text-right">Tipo</FormLabel>
 										<FormControl>
 											<Select
+												name="type"
 												onValueChange={(value) => {
 													field.onChange(value)
 													setIsGroupPractice(value === "GRUPAL")
@@ -177,11 +210,12 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 								name="gradeable"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="text-right">Evaluación</FormLabel>
+										<FormLabel htmlFor="gradeable" className="text-right">Evaluación</FormLabel>
 										<div className="col-span-3 flex items-center gap-2">
 											<FormControl>
 												<Checkbox
 													id="gradeable"
+													name="gradeable"
 													checked={field.value}
 													onCheckedChange={field.onChange}
 												/>
@@ -197,10 +231,12 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 								name="simulationDuration"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Duración Simulación</FormLabel>
+										<FormLabel htmlFor="simulationDuration" className="m-0 text-right">Duración Simulación</FormLabel>
 										<FormControl>
 											<div className="col-span-3 flex items-center">
 												<Input
+													id="simulationDuration"
+													name="simulationDuration"
 													type="number"
 													value={field.value}
 													onChange={(e) => field.onChange(Number(e.target.value))}
@@ -223,14 +259,18 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 										name="numberOfGroups"
 										render={({ field }) => (
 											<FormItem className="grid grid-cols-4 items-center gap-4">
-												<FormLabel className="m-0 text-right">Número de grupos</FormLabel>
+												<FormLabel htmlFor="numberOfGroups" className="m-0 text-right">Número de grupos</FormLabel>
 												<FormControl>
 													<Input
-														type="number"
 														id="numberOfGroups"
+														name="numberOfGroups"
+														type="number"
 														className="col-span-3 m-0"
 														value={field.value ?? ""}
-														onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
+														min={0}
+														onChange={(e) =>
+															field.onChange(e.target.value ? Number(e.target.value) : null)
+														}
 													/>
 												</FormControl>
 												<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
@@ -242,16 +282,18 @@ export default function AddPracticeDialog({ open, onClose }: Props) {
 										name="maxStudentsGroup"
 										render={({ field }) => (
 											<FormItem className="grid grid-cols-4 items-center gap-4">
-												<FormLabel className="m-0 text-right">
-													Máximo estudiantes por grupo
-												</FormLabel>
+												<FormLabel htmlFor="maxStudentsGroup" className="m-0 text-right">Máximo estudiantes por grupo</FormLabel>
 												<FormControl>
 													<Input
-														type="number"
 														id="maxStudentsGroup"
+														name="maxStudentsGroup"
+														type="number"
 														className="col-span-3 m-0"
 														value={field.value ?? ""}
-														onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
+														min={0}
+														onChange={(e) =>
+															field.onChange(e.target.value ? Number(e.target.value) : null)
+														}
 													/>
 												</FormControl>
 												<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

@@ -46,7 +46,7 @@ const formSchema = z.object({
 		}),
 	}),
 	course: z.object({
-		id: z.number().optional(),
+		courseid: z.number().optional(),
 		name: z.string().nonempty({
 			message: "Debe seleccionar la asignatura asociada",
 		}),
@@ -75,7 +75,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 				name: "",
 			},
 			course: {
-				id: 0,
+				courseid: 0,
 				name: "",
 			},
 			year: new Date().getFullYear(),
@@ -86,6 +86,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 	useEffect(() => {
 		const fetchProfessors = async () => {
 			const res = await getAllProfessors()
+			//console.log(res.data)
 			setProfessors(res.data)
 		}
 
@@ -93,6 +94,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 
 		const fetchCourses = async () => {
 			const res = await getCourses(0, 10, "", "name", true)
+			//console.log(res.data)
 			setCourses(res.data)
 		}
 
@@ -103,10 +105,13 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
+
+			//console.log(values)
+
 			await createClass({
 				javerianaId: values.javerianaId,
 				professorsIds: [values.professor.id!],
-				courseId: values.course.id!,
+				courseId: values.course.courseid!,
 				period: values.year.toString() + "-" + values.yearPeriod,
 			})
 
@@ -159,6 +164,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 												onChange={(selected) => {
 													field.onChange(selected.value)
 													form.setValue("professor.id", selected.key)
+													//console.log(selected.key)
 												}}
 											/>
 										</FormControl>
@@ -182,7 +188,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 												itemName="curso"
 												onChange={(selected) => {
 													field.onChange(selected.value)
-													form.setValue("course.id", selected.key)
+													form.setValue("course.courseid", selected.key)
 												}}
 											/>
 										</FormControl>

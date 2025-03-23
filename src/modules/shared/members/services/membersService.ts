@@ -1,16 +1,17 @@
-import axios from "axios"
-import { API_URL } from "@/modules/core/config/env"
-import ApiResponse from "@/modules/core/models/apiResponse"
-import User from "@/modules/core/models/user"
-import Class from "@/modules/core/models/class"
+import axios from "axios";
+import { API_URL } from "@/modules/core/config/env";
+import ApiResponse from "@/modules/core/models/apiResponse";
+import User from "@/modules/core/models/user";
+import Class from "@/modules/core/models/class";
+
 
 export async function getClassMembers(
-    page: number,
-    size: number,
-    filter: string,
-    sort: string,
-    asc: boolean,
-    classId: number
+  page: number,
+  size: number,
+  filter: string,
+  sort: string,
+  asc: boolean,
+  classId: number
 ): Promise<ApiResponse<User[]>> {
     const { data } = await axios.get(`${API_URL}/class/${classId}/member/all`, {
         params: {
@@ -27,6 +28,52 @@ export async function getClassMembers(
     }
 }
 
+export async function getClassStudentsMembers(
+    page: number,
+    size: number,
+    filter: string,
+    sort: string,
+    asc: boolean,
+    classId: number
+  ): Promise<ApiResponse<User[]>> {
+      const { data } = await axios.get(`${API_URL}/class/${classId}/member/all`, {
+          params: {
+              page,
+              size,
+              filter,
+              sort,
+              asc,
+          },
+      })
+      return {
+          ...data,
+          data: (data.data),
+      }
+  }
+
+  export async function getClassProfessorsMembers(
+    page: number,
+    size: number,
+    filter: string,
+    sort: string,
+    asc: boolean,
+    classId: number
+  ): Promise<ApiResponse<User[]>> {
+      const { data } = await axios.get(`${API_URL}/class/${classId}/member/all`, {
+          params: {
+              page,
+              size,
+              filter,
+              sort,
+              asc,
+          },
+      })
+      return {
+          ...data,
+          data: (data.data),
+      }
+  }
+
 export async function getAllUsers(): Promise<ApiResponse<User[]>> {
     const { data } = await axios.get(`${API_URL}/member/all`)
 
@@ -37,7 +84,20 @@ export async function getAllUsers(): Promise<ApiResponse<User[]>> {
 }
 
 export async function getStudentsNotInClass(classId: number, filter: string): Promise<ApiResponse<User[]>> {
-    const { data } = await axios.get(`${API_URL}/class/${classId}/member/all/outside`, {
+    const { data } = await axios.get(`${API_URL}/class/${classId}/member/students/outside`, {
+        params: {
+            filter,
+        },
+    })
+
+    return {
+        ...data,
+        data: (data.data),
+    }
+}
+
+export async function getProfessorsNotInClass(classId: number, filter: string): Promise<ApiResponse<User[]>> {
+    const { data } = await axios.get(`${API_URL}/class/${classId}/member/professors/outside`, {
         params: {
             filter,
         },
@@ -66,3 +126,4 @@ export async function updateClassMembers(classId: number, selectecMembers: User[
         data: (data.data),
     }
 }
+
