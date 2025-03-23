@@ -100,7 +100,7 @@ export function CoursesDataTable() {
 				</div>
 			</div>
 
-			<div className="mt-4 w-full">
+			<div className="mt-4 w-full" style={{ minHeight: "600px" }}>
 				{data.map((course) => (
 					<div key={course.courseId} className="mt-6">
 						<div className="mt-1 flex items-center space-x-4">
