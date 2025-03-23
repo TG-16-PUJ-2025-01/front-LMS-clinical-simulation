@@ -143,7 +143,6 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 
 	const addCriteria = (id?: number, where: "above" | "below" = "above") => {
 		const currentRubric = getRubric()
-		console.log(currentRubric.criteria)
 
 		let index
 		if (id) {
