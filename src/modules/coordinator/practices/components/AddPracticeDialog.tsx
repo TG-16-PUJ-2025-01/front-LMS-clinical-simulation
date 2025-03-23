@@ -100,7 +100,7 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 		if (open) {
 			form.reset()
 		}
-	}, [open])
+	}, [open, form])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
@@ -124,7 +124,7 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 			onPracticeCreated(response.data)
 
 			onClose(false)
-		} catch (error: any) {
+		} catch (error) {
 			toast.error(error.response?.data?.message || "Error al crear la práctica")
 		}
 	}

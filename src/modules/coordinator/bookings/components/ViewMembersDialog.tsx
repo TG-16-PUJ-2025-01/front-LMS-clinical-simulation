@@ -34,6 +34,7 @@ export default function ViewMembersDialog({ open, onClose, simulationId }: ViewM
 					const response = await getSimulationStudents(simulationId)
 					setStudents(response.data)
 				} catch (error) {
+					console.error(error)
 					toast.error("Error al obtener los estudiantes de la simulación")
 				}
 			}

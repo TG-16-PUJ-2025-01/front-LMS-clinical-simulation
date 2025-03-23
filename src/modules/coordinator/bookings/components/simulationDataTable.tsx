@@ -74,7 +74,7 @@ export function SimulationDataTable() {
 		}
 
 		fetchSimulations()
-	}, [pagination, filter, sorting])
+	}, [pagination, filter, sorting, id])
 
 	const columns: ColumnDef<Simulation>[] = [
 		{
@@ -174,8 +174,7 @@ export function SimulationDataTable() {
 		{
 			id: "actions",
 			enableHiding: false,
-			cell: ({ row }) => {
-				const practice = row.original
+			cell: () => {
 
 				return (
 					<DropdownMenu>

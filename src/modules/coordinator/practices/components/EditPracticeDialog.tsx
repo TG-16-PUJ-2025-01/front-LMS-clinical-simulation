@@ -75,7 +75,8 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 			toast.success("Práctica actualizada exitosamente.")
 
 			onClose(false)
-		} catch (error: any) {
+		} catch (error) {
+			console.error(error)
 			toast.error("Error al actualizar la práctica")
 		}
 	}

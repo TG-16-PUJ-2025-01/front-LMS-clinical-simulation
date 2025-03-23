@@ -22,12 +22,13 @@ export default function SimulationPage() {
 
 		const fetchSimulation = async () => {
 			const response = await getSimulationById(parseInt(params.id ?? "0"))
+			console.log(response)
 			setSimulation(response.data)
 		}
 
 		fetchSimulation()
 		setIsSync(true)
-	}, [isSync])
+	}, [isSync, params.id])
 
 	useEffect(() => {
 		const videoElement = videoRef.current
