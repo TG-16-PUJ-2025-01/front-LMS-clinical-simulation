@@ -9,16 +9,11 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import { getSimulationsByPracticeId } from "../services/bookingService"
+import Simulation from "@/modules/core/models/simulation"
 import { Button } from "@/modules/core/components/ui/button"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/modules/core/components/ui/dropdown-menu"
 import { Input } from "@/modules/core/components/ui/input"
 import {
 	Table,
@@ -28,23 +23,30 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import Room from "@/modules/core/models/room"
-import EditRoomDialog from "./EditRoomDialog"
-import DeleteRoomDialog from "./DeleteRoomDialog"
-import { useEffect, useState } from "react"
-import { getAllRooms } from "../services/roomService"
-import AddRoomDialog from "./AddRoomDialog"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
 
-export function RoomsDataTable() {
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/modules/core/components/ui/dropdown-menu"
+import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
+import { format } from 'date-fns'
+import CreateSimulationsDialog from "./CreateSimulationsDialog"
+
+export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
+	const { id } = useParams()
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "add" | null>(null)
-	const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
+	const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-	const [data, setData] = useState<Room[]>([])
+	const [data, setData] = useState<Simulation[]>([])
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
@@ -57,15 +59,12 @@ export function RoomsDataTable() {
 	})
 
 	useEffect(() => {
-		if (openDialog) return
 
-		const fetchRooms = async () => {
-			const res = await getAllRooms(
+		const fetchSimulations = async () => {
+			const res = await getSimulationsByPracticeId(
+				Number(id),
 				pagination.pageIndex,
-				pagination.pageSize,
-				filter,
-				sorting[0]?.id,
-				!(sorting[0]?.desc ?? false)
+				pagination.pageSize
 			)
 			setData(res.data)
 			setPaginationInfo({
@@ -73,23 +72,13 @@ export function RoomsDataTable() {
 				totalPages: res.metadata.totalPages,
 			})
 		}
-		fetchRooms()
-	}, [pagination, filter, sorting, openDialog])
 
-	const handleOpenDialog = (type: "edit" | "delete" | "add", room?: Room) => {
-		setEditDialog(type)
-		setSelectedRoom(room ?? null)
-	}
+		fetchSimulations()
+	}, [pagination, filter, sorting, id])
 
-	const handleCloseDialog = () => {
-		setEditDialog(null)
-		setSelectedRoom(null)
-		setPagination((prev) => ({ ...prev }))
-	}
-
-	const columns: ColumnDef<Room>[] = [
+	const columns: ColumnDef<Simulation>[] = [
 		{
-			accessorKey: "name",
+			accessorKey: "startDateTime",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -97,18 +86,18 @@ export function RoomsDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						Nombre de la Sala
+						Hora de Inicio
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center capitalize">{row.getValue("name")}</div>
+				const date = new Date(row.getValue("startDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
 			},
 		},
 		{
-			id: "type",
-			accessorFn: (room) => room.type.name,
+			accessorKey: "endDateTime",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -116,16 +105,18 @@ export function RoomsDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						Tipo de Sala
+						Hora de Finalización
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
-			cell: ({ row }) => <div className="text-center">{row.getValue("type")}</div>,
+			cell: ({ row }) => {
+				const date = new Date(row.getValue("endDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+			},
 		},
 		{
-			id: "capacity",
-			accessorKey: "capacity",
+			accessorKey: "grade",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -133,18 +124,57 @@ export function RoomsDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						Capacidad
+						Calificación
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
-			cell: ({ row }) => <div className="text-center">{row.getValue("capacity")}</div>,
+			cell: ({ row }) => {
+				return <div className="text-center capitalize">{row.getValue("grade")}</div>
+			},
+		},
+		{
+			accessorKey: "gradeDateTime",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Hora de Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const date = new Date(row.getValue("gradeDateTime"));
+				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+			},
+		},
+		{
+			accessorKey: "gradeStatus",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Estado de Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
+				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
+			},
 		},
 		{
 			id: "actions",
 			enableHiding: false,
-			cell: ({ row }) => {
-				const room = row.original
+			cell: () => {
 
 				return (
 					<DropdownMenu>
@@ -156,11 +186,11 @@ export function RoomsDataTable() {
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => handleOpenDialog("edit", room)}>
-								<Pencil /> Editar
+							<DropdownMenuItem>
+								<Users /> Ver Miembros
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => handleOpenDialog("delete", room)}>
-								<Trash2 /> Borrar
+							<DropdownMenuItem>
+								<Pencil /> Calificar
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -207,9 +237,9 @@ export function RoomsDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => handleOpenDialog("add")}>Nueva Sala</Button>
+					<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
 				</div>
-				<div className="rounded-md border mt-4">
+				<div className="mt-4 rounded-md border">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
@@ -247,11 +277,7 @@ export function RoomsDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-between space-x-2 pt-4">
-					<span className="text-sm text-gray-600">
-						Página {paginationInfo.totalPages === 0 ? 0 : pagination.pageIndex + 1} de{" "}
-						{paginationInfo.totalPages}
-					</span>
+				<div className="flex items-center justify-end space-x-2 pt-4">
 					<div className="space-x-2">
 						<Button
 							variant="outline"
@@ -272,17 +298,7 @@ export function RoomsDataTable() {
 					</div>
 				</div>
 			</div>
-			<EditRoomDialog
-				open={openDialog === "edit"}
-				onClose={handleCloseDialog}
-				room={selectedRoom!}
-			/>
-			<DeleteRoomDialog
-				open={openDialog === "delete"}
-				onClose={handleCloseDialog}
-				roomId={selectedRoom?.id ?? 0}
-			/>
-			<AddRoomDialog open={openDialog === "add"} onClose={handleCloseDialog} />
+			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
 		</>
 	)
 }

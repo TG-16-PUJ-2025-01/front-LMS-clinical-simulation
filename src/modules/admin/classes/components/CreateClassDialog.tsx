@@ -1,4 +1,3 @@
-import DatePicker from "@/modules/core/components/DatePicker"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	Dialog,
@@ -120,6 +119,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 
 			toast.success("Clase creada correctamente")
 		} catch (error) {
+			console.error(error)
 			toast.error("Error al crear la clase")
 		}
 	}
