@@ -2,6 +2,8 @@ import { API_URL } from "@/modules/core/config/env"
 import { setToken } from "@/modules/core/lib/tokenHandler"
 import Role from "@/modules/core/models/role"
 import axios from "axios"
+import { LoginResponseDto } from "../dtos/loginResponseDto"
+import ApiResponse from "@/modules/core/models/apiResponse"
 
 interface LoginData {
 	email: string
@@ -13,11 +15,15 @@ interface ChangePasswordData {
 	newPassword: string
 }
 
-export const login = async (email: string, password: string) => {
+export const login = async (email: string, password: string): Promise<Role[]> => {
 	try {
 		const loginData: LoginData = { email, password }
-		const response = await axios.post<string>(`${API_URL}/auth/login`, loginData)
-		setToken(response.data)
+		const { data } = await axios.post<ApiResponse<LoginResponseDto>>(
+			`${API_URL}/auth/login`,
+			loginData
+		)
+		setToken(data.data.token)
+		return data.data.roles.map((role) => Role[role as keyof typeof Role])
 	} catch (error) {
 		console.error("Error durante el login:", error)
 		throw new Error("Error durante el login")

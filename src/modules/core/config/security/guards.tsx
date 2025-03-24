@@ -50,7 +50,6 @@ export function StudentRoute() {
 	useEffect(() => {
 		const checkPermissions = async () => {
 			try {
-
 				const roles = await getRolesByToken()
 				setIsStudent(roles.includes(Role.ESTUDIANTE))
 			} catch {
@@ -85,7 +84,6 @@ export function TeacherRoute() {
 	useEffect(() => {
 		const checkPermissions = async () => {
 			try {
-
 				const roles = await getRolesByToken()
 				setIsTeacher(roles.includes(Role.PROFESOR))
 			} catch {
@@ -120,7 +118,6 @@ export function CoordinatorRoute() {
 	useEffect(() => {
 		const checkPermissions = async () => {
 			try {
-
 				const roles = await getRolesByToken()
 				setIsCoordinator(roles.includes(Role.COORDINADOR))
 			} catch {
@@ -155,7 +152,6 @@ export function AdminRoute() {
 	useEffect(() => {
 		const checkPermissions = async () => {
 			try {
-
 				const roles = await getRolesByToken()
 				setIsAdmin(roles.includes(Role.ADMIN))
 			} catch {
