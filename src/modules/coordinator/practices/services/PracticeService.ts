@@ -34,7 +34,7 @@ export async function getPracticeByClassId(classId: number): Promise<ApiResponse
     return data
 }
 
-export async function updatePractice(id: number, practice: Practice): Promise<ApiResponse<Practice>> {
+export async function updatePractice(id: number, practice: PracticeDto): Promise<ApiResponse<Practice>> {
     const { data } = await axios.put(`${API_URL}/practice/${id}`, practice)
     return data
 }
