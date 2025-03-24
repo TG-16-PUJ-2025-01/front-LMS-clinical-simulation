@@ -61,7 +61,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
                         <button
                             type="button"
                             onClick={toggleShowPassword}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 cursor-pointer"
                         >
                             {showPassword ? (
                                 <Eye className="h-5 w-5 text-gray-500" />
@@ -81,7 +81,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
                     <button
                         type="button"
                         onClick={onForgotPassword}
-                        className="underline underline-offset-4"
+                        className="underline underline-offset-4 cursor-pointer"
                     >
                         ¿Olvidaste tu contraseña?
                     </button>
