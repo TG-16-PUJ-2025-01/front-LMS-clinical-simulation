@@ -23,18 +23,15 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
 			setError(null)
 
 			if (preferredRole) {
-				navigate(`${preferredRole.toLowerCase()}`)
+				navigate(`/${preferredRole.toLowerCase()}`)
 				return
 			}
 
-			if (roles.includes(Role.ADMIN)) {
-				navigate("/admin")
-			} else if (roles.includes(Role.COORDINADOR)) {
-				navigate("/coordinador")
-			} else if (roles.includes(Role.PROFESOR)) {
-				navigate("/profesor")
-			} else if (roles.includes(Role.ESTUDIANTE)) {
-				navigate("/estudiante")
+			for (const role of Object.values(Role)) {
+				if (roles.includes(role)) {
+					navigate(`/${role.toLowerCase()}`)
+					return
+				}
 			}
 		} catch (error) {
 			setError("Credenciales incorrectas. Por favor, inténtalo de nuevo.")
