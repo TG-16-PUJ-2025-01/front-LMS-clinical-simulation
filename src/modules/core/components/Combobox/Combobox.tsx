@@ -18,6 +18,7 @@ interface ComboboxSelectProps {
 	itemName?: string
 	onChange?: (selected: { key?: number; value: string }) => void
 	selectedValue?: string
+	className?: string
 }
 
 export function Combobox({
@@ -26,6 +27,7 @@ export function Combobox({
 	itemName = "Tipo",
 	onChange,
 	selectedValue = "",
+	className,
 }: ComboboxSelectProps) {
 	const [open, setOpen] = React.useState(false)
 	const [value, setValue] = React.useState(selectedValue)
@@ -37,7 +39,9 @@ export function Combobox({
 		setOpen(false)
 
 		const keyValue = options.find((option) => option.value === currentValue)?.key
-		onChange && onChange({ value: currentValue , key: keyValue})
+		if (onChange) {
+			onChange({ value: currentValue, key: keyValue })
+		}
 	}
 
 	React.useEffect(() => {
@@ -57,7 +61,7 @@ export function Combobox({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className="col-span-3 justify-between"
+					className={cn("col-span-3 justify-between", className)}
 				>
 					{value
 						? options.find((option) => option.value === value)?.value || value

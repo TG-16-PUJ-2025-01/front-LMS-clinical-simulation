@@ -3,6 +3,8 @@ import Room from "@/modules/core/models/room"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import RoomType from "@/modules/core/models/roomType"
 import { API_URL } from "@/modules/core/config/env"
+import RoomDto from "../dtos/RoomDto"
+import RoomTypeDto from "../dtos/roomTypeDto"
 
 export async function getAllRooms(
 	page: number,
@@ -34,22 +36,22 @@ export async function getRoomsTypes(): Promise<ApiResponse<RoomType[]>> {
 	return data
 }
 
-export async function updateRoom(room: Room): Promise<ApiResponse<Room>> {
-	const { data } = await axios.put(`${API_URL}/room/update`, room)
+export async function updateRoom(idRoom: number, room: RoomDto): Promise<ApiResponse<Room>> {
+	const { data } = await axios.put(`${API_URL}/room/${idRoom}`, room)
 	return data
 }
 
 export async function deleteRoom(id: number): Promise<ApiResponse<null>> {
-	const { data } = await axios.delete(`${API_URL}/room/delete/${id}`)
+	const { data } = await axios.delete(`${API_URL}/room/${id}`)
 	return data
 }
 
-export async function createRoom(room: Room): Promise<ApiResponse<Room>> {
-	const { data } = await axios.post(`${API_URL}/room/add`, room)
+export async function createRoom(room: RoomDto): Promise<ApiResponse<Room>> {
+	const { data } = await axios.post(`${API_URL}/room`, room)
 	return data
 }
 
-export async function addRoomType(name: string): Promise<ApiResponse<RoomType>> {
-	const { data } = await axios.post(`${API_URL}/room/type/add`, { name })
+export async function addRoomType(roomTypeDto: RoomTypeDto): Promise<ApiResponse<RoomType>> {
+	const { data } = await axios.post(`${API_URL}/room/type`, roomTypeDto)
 	return data
 }

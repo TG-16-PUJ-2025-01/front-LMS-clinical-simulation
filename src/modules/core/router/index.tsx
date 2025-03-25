@@ -18,6 +18,7 @@ import MembersPage from "@/modules/shared/members/pages/MembersPage"
 import CoordinatorPracticesPage from "@/modules/coordinator/practices/pages/PracticesPage"
 import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/BookingPage"
 import CalendarPage from "@/modules/shared/calendar/pages/CalendarPage"
+import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
 
 export default function Router() {
 	return (
@@ -43,6 +44,8 @@ export default function Router() {
 						path="/coordinador/clases/:id/practicas"
 						element={<CoordinatorPracticesPage />}
 					></Route>
+					<Route path="/coordinador/practicas" element={<CoordinatorPracticesPage />}></Route>
+					<Route path="/coordinador/rubricas" element={<RubricTemplatePage />}></Route>
 				</Route>
 
 				{/* Admin Routes */}

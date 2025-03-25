@@ -83,6 +83,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 			onClose(false)
 			toast.success("Asignatura creada exitosamente")
 		} catch (error) {
+			console.error(error)
 			toast.error("Error al crear la asignatura")
 		}
 	}

@@ -3,10 +3,6 @@ import { API_URL } from "@/modules/core/config/env"
 import Video from "@/modules/core/models/video"
 import ApiResponse from "@/modules/core/models/apiResponse"
 
-const axiosInstance = axios.create({
-	baseURL: API_URL,
-})
-
 interface EditVideo {
 	name: string
 	expirationDate: Date
@@ -19,7 +15,7 @@ export async function getVideos(
 	sort: string,
 	asc: boolean
 ): Promise<ApiResponse<Video[]>> {
-	const { data } = await axiosInstance.get("/video/all", {
+	const { data } = await axios.get(`${API_URL}/video/all`, {
 		params: {
 			page,
 			size,
@@ -40,9 +36,7 @@ export async function getVideos(
 }
 
 export async function updateVideo(videoId: number, video: EditVideo): Promise<ApiResponse<Video>> {
-	console.log(videoId)
-
-	const { data } = await axiosInstance.put(`/video/${videoId}`, video)
+	const { data } = await axios.put(`${API_URL}/video/${videoId}`, video)
 
 	return {
 		...data,
@@ -55,6 +49,6 @@ export async function updateVideo(videoId: number, video: EditVideo): Promise<Ap
 }
 
 export async function deleteVideo(videoId: number): Promise<ApiResponse<null>> {
-	const { data } = await axiosInstance.delete(`/video/${videoId}`)
+	const { data } = await axios.delete(`${API_URL}/video/${videoId}`)
 	return data
 }

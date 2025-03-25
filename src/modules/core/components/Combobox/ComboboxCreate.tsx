@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/modules/core/componen
 
 interface ComboboxCreateProps {
 	options: { key?: number; value: string }[]
-	onCreateOption: (option: { key: number; value: string }) => void
+	onCreateOption: (value: string) => void
 	placeholderText?: string
 	itemName?: string
 	onChange?: (selected: { key?: number; value: string }) => void
@@ -39,14 +39,14 @@ export function ComboboxCreate({
 	const handleSelect = (currentValue: string) => {
 		setValue(currentValue === value ? "" : currentValue)
 		setOpen(false)
-		onChange && onChange({ value: currentValue })
+
+		const keyValue = options.find((option) => option.value === currentValue)?.key
+		onChange && onChange({ value: currentValue, key: keyValue })
 	}
 
 	const handleCreateOption = () => {
-		const newOption = { key: Date.now(), value: inputValue }
-		onCreateOption(newOption)
-		setValue(newOption.value === value ? "" : newOption.value)
-		onChange && onChange({ value: newOption.value })
+		onCreateOption(inputValue)
+		setValue(inputValue)
 		setOpen(false)
 	}
 

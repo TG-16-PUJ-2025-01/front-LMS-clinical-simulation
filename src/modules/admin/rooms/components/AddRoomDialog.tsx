@@ -20,11 +20,12 @@ import {
 	FormMessage,
 } from "@/modules/core/components/ui/form"
 import { useEffect, useState } from "react"
-import Room from "@/modules/core/models/room"
 import { getRoomsTypes, createRoom, addRoomType } from "../services/roomService"
 import RoomType from "@/modules/core/models/roomType"
 import { toast } from "sonner"
 import { ComboboxCreate } from "../../../core/components/Combobox/ComboboxCreate"
+import RoomTypeDto from "../dtos/roomTypeDto"
+import RoomDto from "../dtos/RoomDto"
 
 interface Props {
 	open: boolean
@@ -61,10 +62,13 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 		},
 	})
 
-	const handleOnCreateOption = async (option: { key: number; value: string }) => {
-		await addRoomType(option.value)
-		fetchRoomTypes()
-	}
+	const handleOnCreateOption = async (value: string) => {
+			const newRoomType: RoomTypeDto = { name: value }
+			const response = await addRoomType(newRoomType)
+			const createdRoomType = response.data
+			form.setValue("type", { id: createdRoomType.id, name: createdRoomType.name })
+			fetchRoomTypes()
+		}
 
 	const fetchRoomTypes = async () => {
 		const res = await getRoomsTypes()
@@ -80,14 +84,10 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			const newRoom: Room = {
-				id: undefined,
+			const newRoom: RoomDto = {
 				name: values.name,
 				capacity: values.capacity,
-				type: {
-					id: values.type.id!,
-					name: values.type.name,
-				},
+				typeId: values.type.id!,
 			}
 
 			await createRoom(newRoom)
@@ -98,11 +98,8 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 
 			form.reset()
 		} catch (error: any) {
-			if (error.response && error.response.data && error.response.data.message) {
-				toast.error("El nombre de la sala ya existe")
-			} else {
-				toast.error("Error al crear la sala")
-			}
+			toast.error("El nombre de la sala ya existe")
+			
 		}
 	}
 
@@ -173,6 +170,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 												className="col-span-3 m-0"
 												{...field}
 												onChange={(e) => field.onChange(Number(e.target.value))}
+												min={0}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

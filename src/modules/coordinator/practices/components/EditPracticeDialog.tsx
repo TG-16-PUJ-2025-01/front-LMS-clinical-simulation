@@ -24,6 +24,7 @@ import { useEffect } from "react"
 import { toast } from "sonner"
 import { updatePractice } from "../services/PracticeService"
 import { Checkbox } from "@/modules/core/components/ui/checkbox"
+import PracticeDto from "../dto/practiceDto"
 
 interface Props {
 	open: boolean
@@ -39,6 +40,12 @@ const formSchema = z.object({
 		message: "La descripción no puede estar vacía",
 	}),
 	gradeable: z.boolean(),
+	simulationDuration: z.number().min(1, {
+		message: "La duración debe ser mayor a 0",
+	}),
+	numberOfGroups: z.number().nullable().optional(),
+	maxStudentsGroup: z.number().nullable().optional(),
+	type: z.string(),
 })
 
 export default function EditPracticeDialog({ open, onClose, practice }: Props) {
@@ -48,6 +55,10 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 			name: practice?.name || "",
 			description: practice?.description || "",
 			gradeable: practice?.gradeable || false,
+			simulationDuration: practice?.simulationDuration || 0,
+			numberOfGroups: practice?.numberOfGroups || null,
+			maxStudentsGroup: practice?.maxStudentsGroup || null,
+			type: practice?.type || "",
 		},
 	})
 
@@ -57,25 +68,33 @@ export default function EditPracticeDialog({ open, onClose, practice }: Props) {
 				name: practice.name,
 				description: practice.description,
 				gradeable: practice.gradeable,
+				simulationDuration: practice.simulationDuration,
+				numberOfGroups: practice.numberOfGroups,
+				maxStudentsGroup: practice.maxStudentsGroup,
+				type: practice.type,
 			})
 		}
 	}, [form, practice])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			const updatedPractice: Practice = {
-				...practice,
+			const practiceDto: PracticeDto = {
 				name: values.name,
 				description: values.description,
 				gradeable: values.gradeable,
+				simulationDuration: values.simulationDuration,
+				numberOfGroups: values.numberOfGroups,
+				maxStudentsGroup: values.maxStudentsGroup,
+				type: values.type,
 			}
 
-			await updatePractice(practice!.id, updatedPractice)
+			await updatePractice(practice!.id, practiceDto)
 
 			toast.success("Práctica actualizada exitosamente.")
 
 			onClose(false)
-		} catch (error: any) {
+		} catch (error) {
+			console.error(error)
 			toast.error("Error al actualizar la práctica")
 		}
 	}
