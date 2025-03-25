@@ -19,6 +19,7 @@ import CoordinatorPracticesPage from "@/modules/coordinator/practices/pages/Prac
 import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/BookingPage"
 import CalendarPage from "@/modules/shared/calendar/pages/CalendarPage"
 import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
+import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
 
 export default function Router() {
 	return (
@@ -33,7 +34,9 @@ export default function Router() {
 				<Route element={<StudentRoute />}></Route>
 
 				{/* Teacher Routes */}
-				<Route element={<TeacherRoute />}></Route>
+				<Route element={<TeacherRoute />}>
+					<Route path="/profesor/menu-principal" element={<TeacherMainMenuPage />}></Route>
+				</Route>
 
 				{/* Coordinator Routes */}
 				<Route element={<CoordinatorRoute />}>
