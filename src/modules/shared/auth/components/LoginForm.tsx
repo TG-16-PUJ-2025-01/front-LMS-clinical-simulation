@@ -19,17 +19,22 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
 
 	const handleLogin = async (email: string, password: string) => {
 		try {
-			const roles = await login(email, password)
+			const { roles, preferredRole } = await login(email, password)
 			setError(null)
 
+			if (preferredRole) {
+				navigate(`${preferredRole.toLowerCase()}`)
+				return
+			}
+
 			if (roles.includes(Role.ADMIN)) {
-				navigate("/admin/asignaturas")
+				navigate("/admin")
 			} else if (roles.includes(Role.COORDINADOR)) {
-				navigate("/calendario") //FIXME
+				navigate("/coordinador")
 			} else if (roles.includes(Role.PROFESOR)) {
-				navigate("/docente/asignaturas") // FIXME
+				navigate("/profesor")
 			} else if (roles.includes(Role.ESTUDIANTE)) {
-				navigate("/estudiante/asignaturas") // FIXME
+				navigate("/estudiante")
 			}
 		} catch (error) {
 			setError("Credenciales incorrectas. Por favor, inténtalo de nuevo.")

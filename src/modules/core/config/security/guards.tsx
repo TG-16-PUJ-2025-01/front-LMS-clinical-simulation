@@ -9,6 +9,7 @@ import { isValidToken, getRolesByToken } from "@/modules/shared/auth/services/au
 import { useEffect, useState } from "react"
 import Loader from "@/modules/shared/others/Loader/Loader"
 import Role from "../../models/role"
+import { usePreferencesStore } from "../../stores/preferencesStore"
 
 interface PrivateRouteProps {
 	checkIsAuthenticated?: boolean
@@ -46,6 +47,7 @@ export function PrivateRoute({ checkIsAuthenticated = false }: PrivateRouteProps
 
 export function StudentRoute() {
 	const [isStudent, setIsStudent] = useState<boolean | null>(null)
+	const setPreferredRole = usePreferencesStore((state) => state.setPreferredRole);
 
 	useEffect(() => {
 		const checkPermissions = async () => {
@@ -71,6 +73,8 @@ export function StudentRoute() {
 		return <Navigate to="/login" />
 	}
 
+	setPreferredRole(Role.ESTUDIANTE)
+
 	return (
 		<StudentLayout>
 			<Outlet />
@@ -80,6 +84,7 @@ export function StudentRoute() {
 
 export function TeacherRoute() {
 	const [isTeacher, setIsTeacher] = useState<boolean | null>(null)
+	const setPreferredRole = usePreferencesStore((state) => state.setPreferredRole);
 
 	useEffect(() => {
 		const checkPermissions = async () => {
@@ -105,6 +110,8 @@ export function TeacherRoute() {
 		return <Navigate to="/login" />
 	}
 
+	setPreferredRole(Role.PROFESOR)
+
 	return (
 		<TeacherLayout>
 			<Outlet />
@@ -114,6 +121,7 @@ export function TeacherRoute() {
 
 export function CoordinatorRoute() {
 	const [isCoordinator, setIsCoordinator] = useState<boolean | null>(null)
+	const setPreferredRole = usePreferencesStore((state) => state.setPreferredRole);
 
 	useEffect(() => {
 		const checkPermissions = async () => {
@@ -139,6 +147,8 @@ export function CoordinatorRoute() {
 		return <Navigate to="/login" />
 	}
 
+	setPreferredRole(Role.COORDINADOR)
+
 	return (
 		<CoordinatorLayout>
 			<Outlet />
@@ -148,6 +158,7 @@ export function CoordinatorRoute() {
 
 export function AdminRoute() {
 	const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
+	const setPreferredRole = usePreferencesStore((state) => state.setPreferredRole);
 
 	useEffect(() => {
 		const checkPermissions = async () => {
@@ -168,6 +179,8 @@ export function AdminRoute() {
 			</div>
 		)
 	}
+
+	setPreferredRole(Role.ADMIN)
 
 	if (!isAdmin) {
 		return <Navigate to="/login" />

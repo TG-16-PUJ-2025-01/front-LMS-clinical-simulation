@@ -3,6 +3,7 @@ import { API_URL } from "@/modules/core/config/env";
 import { CreateUserDTO } from "../dtos/createUserDTO";
 import ApiResponse from "@/modules/core/models/apiResponse";
 import User from "@/modules/core/models/user";
+import Role from "@/modules/core/models/role";
 
 export async function getUsers(
     page: number,
@@ -45,4 +46,13 @@ export async function getAllCoordinators(): Promise<ApiResponse<User[]>> {
 export async function getAllProfessors(): Promise<ApiResponse<User[]>> {
     const { data } = await axios.get(`${API_URL}/user/all/professor`);
     return data;
+}
+
+export const setPreferredRole = async (role: Role) => {
+	try {
+		await axios.put(`${API_URL}/user/preferred-role`, { role })
+	} catch (error) {
+		console.error("Error al establecer el rol determinado:", error)
+		throw new Error("Error al establecer el rol determinado")
+	}
 }

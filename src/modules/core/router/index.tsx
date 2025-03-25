@@ -30,13 +30,21 @@ export default function Router() {
 			{/* Private Routes */}
 			<Route element={<PrivateRoute />}>
 				{/* Student Routes */}
-				<Route element={<StudentRoute />}></Route>
+				<Route element={<StudentRoute />}>
+					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
+					{/*FIXME: Redirect to main page*/}
+				</Route>
 
 				{/* Teacher Routes */}
-				<Route element={<TeacherRoute />}></Route>
+				<Route element={<TeacherRoute />}>
+					<Route path="/profesor" element={<Navigate to="/profesor/asignaturas" />}></Route>
+					{/*FIXME: Redirect to main page*/}
+				</Route>
 
 				{/* Coordinator Routes */}
 				<Route element={<CoordinatorRoute />}>
+					<Route path="/coordinador" element={<Navigate to="/calendario" />}></Route>
+					{/*FIXME: Redirect to main page*/}
 					<Route path="/calendario" element={<CalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
 					<Route path="/coordinador/practica/:id" element={<CoordinatorBookingPage />}></Route>
@@ -50,6 +58,7 @@ export default function Router() {
 
 				{/* Admin Routes */}
 				<Route element={<AdminRoute />}>
+					<Route path="/admin" element={<Navigate to="/admin/asignaturas" />}></Route>
 					<Route path="/admin/asignaturas" element={<AdminCoursesPage />}></Route>
 					<Route path="/admin/videos" element={<AdminVideosPage />}></Route>
 					<Route path="/admin/clases" element={<AdminClassesPage />}></Route>

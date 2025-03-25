@@ -15,7 +15,13 @@ interface ChangePasswordData {
 	newPassword: string
 }
 
-export const login = async (email: string, password: string): Promise<Role[]> => {
+export const login = async (
+	email: string,
+	password: string
+): Promise<{
+	roles: Role[]
+	preferredRole?: Role
+}> => {
 	try {
 		const loginData: LoginData = { email, password }
 		const { data } = await axios.post<ApiResponse<LoginResponseDto>>(
@@ -23,7 +29,12 @@ export const login = async (email: string, password: string): Promise<Role[]> =>
 			loginData
 		)
 		setToken(data.data.token)
-		return data.data.roles.map((role) => Role[role as keyof typeof Role])
+		return {
+			roles: data.data.roles.map((role) => Role[role as keyof typeof Role]),
+			preferredRole: data.data.preferredRole
+				? Role[data.data.preferredRole as keyof typeof Role]
+				: undefined,
+		}
 	} catch (error) {
 		console.error("Error durante el login:", error)
 		throw new Error("Error durante el login")
