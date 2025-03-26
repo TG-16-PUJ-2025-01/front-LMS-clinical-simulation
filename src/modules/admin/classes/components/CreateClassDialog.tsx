@@ -57,6 +57,9 @@ const formSchema = z.object({
 	yearPeriod: z.string({
 		required_error: "El periodo academico es requerido",
 	}),
+	numberOfParticipants: z.number({
+		required_error: "La cantidad de estudiantes es requerido",
+	}),
 })
 
 //lista de trings
@@ -80,6 +83,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 			},
 			year: new Date().getFullYear(),
 			yearPeriod: "10",
+			numberOfParticipants: 0,
 		},
 	})
 
@@ -113,6 +117,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 				professorsIds: [values.professor.id!],
 				courseId: values.course.courseid!,
 				period: values.year.toString() + "-" + values.yearPeriod,
+				numberOfParticipants: Number(values.numberOfParticipants),
 			})
 
 			onClose(false)
@@ -241,6 +246,19 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 									/>
 								</div>
 							</div>
+							<FormField
+								control={form.control}
+								name="numberOfParticipants"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">No. participantes</FormLabel>
+										<FormControl>
+											<Input type="number" id="id" placeholder="Cant de participantes" className="col-span-3 m-0" {...field} onChange={(e) => field.onChange(e.target.valueAsNumber)}  />
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
 						</div>
 						<DialogFooter>
 							<Button type="submit">Crear</Button>

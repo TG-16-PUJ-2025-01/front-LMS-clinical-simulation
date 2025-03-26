@@ -3,4 +3,5 @@ export default interface CreateClassDTO {
 	professorsIds: number[]
     courseId: number
     period: string
+    numberOfParticipants: number
 }
