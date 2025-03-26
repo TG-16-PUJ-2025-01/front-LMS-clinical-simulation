@@ -33,14 +33,20 @@ export function CoursesDataTable() {
 			// Here we should fetch the courses and classes
 			// using the filter and pagination values
 			// and update the UI with the results
-			const res = await getCoordinatorCourses(searchByKey, filter, true)
+
+			let searchPeriod = ""
+			if(year != "" || period != ""){
+				searchPeriod = year
+			}
+
+			const res = await getCoordinatorCourses(searchByKey, filter, searchPeriod,true)
 
 			setData(res.data)
 			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
 		}
 
 		fetchCoursesAndClasses()
-	}, [filter, searchByKey])
+	}, [filter, searchByKey, period, year])
 
 	return (
 		<>

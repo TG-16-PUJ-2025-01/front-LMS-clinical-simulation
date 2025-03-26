@@ -6,12 +6,14 @@ import ApiResponse from "@/modules/core/models/apiResponse"
 export async function getCoordinatorCourses(
 	searchByKey: string,
 	filter: string,
+	period: string,
 	asc: boolean
 ): Promise<ApiResponse<CourseDto[]>> {
 	const { data } = await axios.get(`${API_URL}/course/all/coordinator`, {
 		params: {
 			asc,
 			filter,
+			period,
 			searchByKey,
 		},
 	})
