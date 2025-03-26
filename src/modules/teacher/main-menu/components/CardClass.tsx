@@ -18,7 +18,7 @@ export function CardClass({ classData, onClick }: CardProps) {
 		<Card
 			onClick={onClick}
 			className={cn(
-				"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden transition-transform hover:scale-105 shadow-md"
+				"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden shadow-md transition-transform hover:scale-105"
 			)}
 		>
 			<CardHeader className="bg-blue-javeriana h-3/5 p-0" />
@@ -28,12 +28,12 @@ export function CardClass({ classData, onClick }: CardProps) {
 						{classData.course.name} - {classData.course.javerianaId} - {classData.period}
 					</CardTitle>
 					<CardDescription>
-							<p>
-								<strong>Profesores:</strong> {classData.professors.map((p) => p.name).join(", ")}
-							</p>
-							<p>
-								<strong>Número de Clase:</strong> {classData.javerianaId}
-							</p>
+						<p>
+							<strong>Profesores:</strong> {classData.professors.map((p) => p.name).join(", ")}
+						</p>
+						<p>
+							<strong>Número de Clase:</strong> {classData.javerianaId}
+						</p>
 					</CardDescription>
 				</div>
 			</CardContent>
