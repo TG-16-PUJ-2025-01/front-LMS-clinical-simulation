@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/modules/core/components/ui/dialog";
 import { ScheduleXCalendar, useNextCalendarApp } from "@schedule-x/react";
-import { createViewWeek } from "@schedule-x/calendar";
+import { createViewDay, createViewWeek } from "@schedule-x/calendar";
 import { createEventsServicePlugin } from "@schedule-x/events-service";
 import '@schedule-x/theme-shadcn/dist/index.css';
 
@@ -27,7 +27,7 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
 
   const calendarApp = useNextCalendarApp(
     { 
-      views: [createViewWeek()], 
+      views: [createViewDay()], 
       theme: "shadcn blue", 
       locale: "es-ES",
       dayBoundaries: {

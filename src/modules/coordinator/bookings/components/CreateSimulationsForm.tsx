@@ -46,10 +46,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
     const fetchRooms = async () => {
       try {
         const roomsData = await getAllRooms();
-        const formattedRooms = roomsData.map((room: Room) => ({
-          value: room.id,
-          label: room.name,
-        }));
+        const formattedRooms = roomsData.map((room) => ({ value: room.id, label: room.name }));
         setRooms(formattedRooms);
       } catch (error) {
         console.error("Error cargando salas:", error);
@@ -161,7 +158,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
       <h3 className="text-lg font-semibold">Reserva de salas</h3>
 
       <p className="text-sm text-gray-500">
-        Reserva los espacios para las simulaciones de los estudiantes. El sistema asigna automáticamente un espacio a cada estudiante o grupo según la duración de la práctica. No es necesario reservar cada evaluación por separado.
+        Se debe reservar el total de minutos indicado, el sistema los dividirá en bloques de acuerdo a la duración de la práctica.
       </p>
 
       <ul className="text-sm text-gray-500 list-disc list-inside">

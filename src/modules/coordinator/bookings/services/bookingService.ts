@@ -22,10 +22,10 @@ export async function getSimulationsByPracticeId(
 
 
 interface SimulationRequest {
-	practiceId: number;
-	roomId: number;
-	startDateTime: string;
-	endDateTime: string;
+  practiceId: number;
+  roomIds: number[];
+  startDateTime: string;
+  endDateTime: string;
 }
 
 interface CreateSimulationRequest {
