@@ -51,6 +51,13 @@ export function CoursesDataTable() {
 
 			const res = await getCoordinatorCourses(searchByKey, filter, searchPeriod, true)
 
+			//revisar si se deberia incluir la lista de res.data. quitar del array la info de los courses con clases en 0
+			if(year != "" || period != "" || searchByKey != "") 
+			{
+				res.data = res.data.filter((element) => element.classes.length > 0);
+			}
+			
+			
 			setData(res.data)
 			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
 		}
