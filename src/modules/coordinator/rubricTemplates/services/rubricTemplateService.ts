@@ -15,7 +15,7 @@ export async function getRubricTemplates(
 	filter: string,
 	sort: string,
 	asc: boolean,
-	archived: boolean = true,
+	archived: boolean = false,
 	mine: boolean = false
 ): Promise<ApiResponse<RubricTemplate[]>> {
 	const { data } = await axios.get(`${API_URL}/rubric/template/all`, {
