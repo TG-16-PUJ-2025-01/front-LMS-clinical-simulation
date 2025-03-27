@@ -22,9 +22,8 @@ export function CoursesDataTable() {
 	const [year, setYear] = useState<string>("")
 	const [period, setPeriod] = useState<string>("")
 
-
 	const searchBy = ["Asignaturas", "Clases", "Profesores"]
-	const periodList = ["10", "20", "30",""]
+	const periodList = ["1", "2", "3", ""]
 	const currentYear = new Date().getFullYear()
 	const yearList = Array.from({ length: 21 }, (_, i) => currentYear - i)
 
@@ -35,11 +34,22 @@ export function CoursesDataTable() {
 			// and update the UI with the results
 
 			let searchPeriod = ""
-			if(year != "" || period != ""){
+			if (year != "" && period === "") {
 				searchPeriod = year
 			}
+			else if (year === "" && period != "") {
+				searchPeriod = "-"+period
+			}
+			else if (year != "" && period != "")
+			{
+				searchPeriod = year +"-"+period
+			}
+			else
+			{
+				searchPeriod = ""
+			}
 
-			const res = await getCoordinatorCourses(searchByKey, filter, searchPeriod,true)
+			const res = await getCoordinatorCourses(searchByKey, filter, searchPeriod, true)
 
 			setData(res.data)
 			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
@@ -59,9 +69,12 @@ export function CoursesDataTable() {
 					}))}
 					itemName="por"
 					onChange={(selected) => {
-						console.log("Selected option:", selected) // Debug log
-						setYear(selected.value.toString())
-						console.log("Selected option:", year) // Debug log
+						
+						if (selected?.value === year) {
+							setYear("") // Deselecciona si se selecciona lo mismo dos veces
+						} else {
+							setYear(selected.value.toString())// Actualiza el valor
+						}
 					}}
 				/>
 
@@ -73,9 +86,13 @@ export function CoursesDataTable() {
 					}))}
 					itemName="por"
 					onChange={(selected) => {
-						console.log("Selected option:", selected) // Debug log
-						setPeriod(selected.value.toString())
-						console.log("Selected option:", period) // Debug log
+						if (selected?.value === period) {
+							console.log("Deselecciona si se selecciona lo mismo dos veces")
+							setPeriod("") // Deselecciona si se selecciona lo mismo dos veces
+						} else {
+							setPeriod(selected.value.toString())// Actualiza el valor
+						}
+						
 					}}
 				/>
 
@@ -87,9 +104,12 @@ export function CoursesDataTable() {
 					}))}
 					itemName="por"
 					onChange={(selected) => {
-						console.log("Selected option:", selected) // Debug log
-						setSearchByKey(selected.value.toString())
-						console.log("Selected option:", searchByKey) // Debug log
+						if (selected?.value === searchByKey) {
+							console.log("Deselecciona si se selecciona lo mismo dos veces")
+							setSearchByKey("") // Deselecciona si se selecciona lo mismo dos veces
+						} else {
+							setSearchByKey(selected?.value || "") // Actualiza el valor
+						}
 					}}
 				/>
 
@@ -98,10 +118,9 @@ export function CoursesDataTable() {
 					<Input
 						placeholder="Buscar..."
 						value={filter}
-						onChange={(event) => {
-							setFilter(event.target.value)
-						}}
+						onChange={(event) => setFilter(event.target.value)}
 						className="w-full pl-8"
+						disabled={searchByKey === ""}
 					/>
 				</div>
 			</div>
