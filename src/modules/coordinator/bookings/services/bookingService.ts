@@ -48,6 +48,7 @@ interface Room {
 }
 
 interface Reservation {
+  room: string;
   startDateTime: string;
   endDateTime: string;
 }
@@ -65,18 +66,14 @@ export async function getAllRooms(): Promise<Room[]> {
   }
 }
 
-export async function getReservationsByRoom(roomId: string): Promise<Reservation[]> {
-  if (!roomId) {
-    console.warn("No se puede hacer la petición: sala o fecha no seleccionada");
-    return [];
-  }
+export async function getSchedule(): Promise<Reservation[]> {
+
 
   try {
-    const response = await axios.get(`${API_URL}/simulation/room`, {
-      params: { roomId },
-    });
+    const response = await axios.get(`${API_URL}/simulation/schedule`);
 
-    return response.data.data.map((res: { startDateTime: string; endDateTime: string }) => ({
+    return response.data.data.map((res: { room: string; startDateTime: string; endDateTime: string }) => ({
+      room: res.room,
       startDateTime: res.startDateTime,
       endDateTime: res.endDateTime,
     }));

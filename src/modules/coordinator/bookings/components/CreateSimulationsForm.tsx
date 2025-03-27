@@ -230,7 +230,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
         {reservations.length > 0 ? (
           reservations.map((res, index) => (
             <div key={index} className="border-b p-1 flex justify-between items-center">
-              <p>{res.date} ({res.startTime} - {res.endTime}) - Sala {res.room}</p>
+              <p>{res.date} ({res.startTime} - {res.endTime}) - Sala {res.roomIds}</p>
               <Button variant="ghost" size="sm" onClick={() => setReservations((prev) => prev.filter((_, i) => i !== index))}>
                 <Trash2 className="h-4 w-4 text-red-500" />
               </Button>
