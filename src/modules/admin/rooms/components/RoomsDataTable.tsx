@@ -247,7 +247,11 @@ export function RoomsDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 pt-4">
+				<div className="flex items-center justify-between space-x-2 pt-4">
+					<span className="text-sm text-gray-600">
+						Página {paginationInfo.totalPages === 0 ? 0 : pagination.pageIndex + 1} de{" "}
+						{paginationInfo.totalPages}
+					</span>
 					<div className="space-x-2">
 						<Button
 							variant="outline"
@@ -276,7 +280,7 @@ export function RoomsDataTable() {
 			<DeleteRoomDialog
 				open={openDialog === "delete"}
 				onClose={handleCloseDialog}
-				roomId={selectedRoom?.id!}
+				roomId={selectedRoom?.id ?? 0}
 			/>
 			<AddRoomDialog open={openDialog === "add"} onClose={handleCloseDialog} />
 		</>

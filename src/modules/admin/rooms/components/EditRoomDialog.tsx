@@ -25,6 +25,8 @@ import { getRoomsTypes, updateRoom, addRoomType } from "../services/roomService"
 import RoomType from "@/modules/core/models/roomType"
 import { toast } from "sonner"
 import { ComboboxCreate } from "../../../core/components/Combobox/ComboboxCreate"
+import RoomDto from "../dtos/RoomDto"
+import RoomTypeDto from "../dtos/roomTypeDto"
 
 interface Props {
 	open: boolean
@@ -56,13 +58,17 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 			name: "",
 			capacity: 0,
 			type: {
+				id: undefined,
 				name: "",
 			},
 		},
 	})
 
-	const handleOnCreateOption = async (option: { key: number; value: string }) => {
-		await addRoomType(option.value)
+	const handleOnCreateOption = async (value: string) => {
+		const newRoomType: RoomTypeDto = { name: value }
+		const response = await addRoomType(newRoomType)
+		const createdRoomType = response.data
+		form.setValue("type", { id: createdRoomType.id, name: createdRoomType.name })
 		fetchRoomTypes()
 	}
 
@@ -78,8 +84,8 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 				name: room.name,
 				capacity: room.capacity,
 				type: {
-					name: room.type.name,
 					id: room.type.id,
+					name: room.type.name,
 				},
 			})
 		}
@@ -87,27 +93,20 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			const updatedRoom: Room = {
-				id: room?.id!,
+			const updatedRoom: RoomDto = {
 				name: values.name,
 				capacity: values.capacity,
-				type: {
-					id: values.type.id!,
-					name: values.type.name,
-				},
+				typeId: values.type.id!,
 			}
 
-			await updateRoom(updatedRoom)
+			await updateRoom(room?.id!, updatedRoom)
 
 			toast.success("Sala actualizada exitosamente")
 
 			onClose(false)
 		} catch (error: any) {
-			if (error.response && error.response.data && error.response.data.message) {
-				toast.error(error.response.data.message)
-			} else {
-				toast.error("Error al actualizar la sala")
-			}
+			toast.error("El nombre de la sala ya existe")
+			
 		}
 	}
 
@@ -176,6 +175,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 												className="col-span-3 m-0"
 												{...field}
 												onChange={(e) => field.onChange(Number(e.target.value))}
+												min={0}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

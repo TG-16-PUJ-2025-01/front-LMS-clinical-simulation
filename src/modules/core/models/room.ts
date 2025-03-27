@@ -1,7 +1,7 @@
 import RoomType from "./roomType";
 
 export default interface Room {
-    id?: number;
+    id: number;
     name: string;
     capacity: number;
     type: RoomType;

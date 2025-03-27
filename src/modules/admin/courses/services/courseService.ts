@@ -23,7 +23,6 @@ export async function getCourses(
 		},
 	})
 
-  console.log(data)
 	return {
 		...data,
 		data: data.data,

@@ -18,6 +18,7 @@ import {
 import { ChangePasswordDialog } from "@/modules/shared/auth/components/ChangePasswordDialog";
 import { clearToken } from "../../lib/tokenHandler";
 import { getEmailByToken, getNameByToken } from "@/modules/shared/auth/services/authService";
+import { useNavigate } from "react-router-dom";
 
 
 export function UserNav() {
@@ -25,11 +26,12 @@ export function UserNav() {
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [avatar, setAvatar] = useState<string>("");
+  const navigate = useNavigate()
 
   function handleLogout(event: Event): void {
     event.preventDefault();
     clearToken();
-    window.location.href = "/login";
+    navigate("/login");
   }
 
   function getInitials(name: string): string {
@@ -57,7 +59,7 @@ export function UserNav() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-            <Avatar className="h-8 w-8">
+            <Avatar className="h-8 w-8 uppercase">
               <AvatarFallback>{avatar}</AvatarFallback>
             </Avatar>
           </Button>

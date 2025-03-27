@@ -124,6 +124,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 
 			toast.success("Clase creada correctamente")
 		} catch (error) {
+			console.error(error)
 			toast.error("Error al crear la clase")
 		}
 	}
