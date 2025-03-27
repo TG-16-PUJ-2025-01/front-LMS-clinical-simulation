@@ -116,7 +116,7 @@ export function SimulationDataTable() {
 			},
 		},
 		{
-			accessorKey: "grade",
+			accessorKey: "gradeStatus",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -124,13 +124,14 @@ export function SimulationDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						Calificación
+						Estado de Calificación
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				return <div className="text-center capitalize">{row.getValue("grade")}</div>
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
+				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
 			},
 		},
 		{
@@ -148,12 +149,16 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("gradeDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+				const date = row.getValue("gradeDateTime");
+				return (
+					<div className="text-center capitalize">
+						{date ? format(new Date(row.getValue("gradeDateTime")), 'dd/MM/yyyy HH:mm') : ""}
+					</div>
+				);
 			},
 		},
 		{
-			accessorKey: "gradeStatus",
+			accessorKey: "grade",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -161,14 +166,13 @@ export function SimulationDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						Estado de Calificación
+						Calificación
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
-				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
+				return <div className="text-center capitalize">{row.getValue("grade")}</div>
 			},
 		},
 		{

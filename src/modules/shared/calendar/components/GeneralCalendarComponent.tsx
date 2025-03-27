@@ -21,6 +21,10 @@ export default function CalendarComponent() {
 		views: [createViewMonthGrid(), createViewMonthAgenda(), createViewWeek(), createViewDay()],
 		theme: "shadcn",
 		locale: "es-ES",
+		dayBoundaries: {
+			start: "06:00",
+			end: "20:00",
+		},
 		defaultView: viewWeek.name,
 		calendars: {
 			Reserva: {
@@ -37,6 +41,20 @@ export default function CalendarComponent() {
 					onContainer: "#DDE6F2",
 				},
 			},
+			Supervisor: {
+				label: "Supervisor",
+				colorName: "custom-green",
+				lightColors: {
+					main: "#28a745",
+					container: "#d4edda",
+					onContainer: "#155724",
+				},
+				darkColors: {
+					main: "#6c9d6e",
+					container: "#1e3b1e",
+					onContainer: "#d8f3d8",
+				},
+			},
 		},
 		plugins: [eventsServicePlugin, eventModal],
 	})
@@ -46,6 +64,7 @@ export default function CalendarComponent() {
 			const res = await getEvents()
 			eventsServicePlugin.set(res.data)
 		} catch (error) {
+			console.error("Error loading events:", error)
 			toast.error("Error trying to find events")
 		}
 	}
@@ -56,4 +75,3 @@ export default function CalendarComponent() {
 
 	return <ScheduleXCalendar calendarApp={calendarApp} />
 }
-
