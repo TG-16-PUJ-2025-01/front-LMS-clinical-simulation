@@ -71,21 +71,25 @@ export default function PracticesPage() {
 				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
 			</div>
 			<div className="flex justify-center">
-				<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-					{data.map((practice) => (
-						<CardPractice
-							key={practice.id}
-							title={practice.name}
-							description={practice.description}
-							numberOfGroups={practice.numberOfGroups ?? null}
-							maxStudentsGroup={practice.maxStudentsGroup ?? null}
-							type={practice.type}
-							onClick={() => handlePracticeNavigation(practice)}
-							onEdit={() => handleOpenDialog("edit", practice)}
-							onDelete={() => handleOpenDialog("delete", practice)}
-						/>
-					))}
-				</div>
+				{data.length === 0 ? (
+					<p className="text-gray-500">No se encontraron clases</p>
+				) : (
+					<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+						{data.map((practice) => (
+							<CardPractice
+								key={practice.id}
+								title={practice.name}
+								description={practice.description}
+								numberOfGroups={practice.numberOfGroups ?? null}
+								maxStudentsGroup={practice.maxStudentsGroup ?? null}
+								type={practice.type}
+								onClick={() => handlePracticeNavigation(practice)}
+								onEdit={() => handleOpenDialog("edit", practice)}
+								onDelete={() => handleOpenDialog("delete", practice)}
+							/>
+						))}
+					</div>
+				)}
 			</div>
 			<DeletePracticeDialog
 				open={openDialog === "delete"}
