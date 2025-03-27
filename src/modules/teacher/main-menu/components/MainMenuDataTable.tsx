@@ -36,7 +36,7 @@ export function MainMenuDataTable({ selectedYear, selectedPeriod }: MainMenuData
 				) : data.length === 0 ? (
 					<p className="text-gray-500">No se encontraron clases</p>
 				) : (
-					<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+					<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
 						{data.map((classItem) => (
 							<CardClass key={classItem.classId} classData={classItem} onClick={() => {}} />
 						))}
