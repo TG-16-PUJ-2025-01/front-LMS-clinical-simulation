@@ -37,6 +37,8 @@ import Role from "@/modules/core/models/role"
 import { useParams } from "react-router-dom"
 import AddMembersDialog from "./AddMembersDialog"
 import DeleteStudentClassDialog from "./deleteStudentDialog"
+import { toast } from "sonner"
+import * as XLSX from "xlsx"
 
 export function StudentsClassDataTable() {
 	const fileInputRef = useRef<HTMLInputElement>(null)
@@ -66,8 +68,7 @@ export function StudentsClassDataTable() {
 
 	//PARA HOJAS DE EXCEL
 	const [excelFile, setExcelFile] = useState<string | ArrayBuffer | File | null>(null)
-	const [typeError, setTypeError] = useState<string>("")
-	const [excelData, setExcelData] = useState(null)
+	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
 	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let fileTypes = [
@@ -79,9 +80,9 @@ export function StudentsClassDataTable() {
 		if (files && files.length > 0) {
 			const selectedFile = files[0]
 			console.log(selectedFile.type)
+
 			if (fileTypes.includes(selectedFile.type)) {
 				setExcelFile(selectedFile)
-				setTypeError("")
 				let reader = new FileReader()
 				reader.readAsArrayBuffer(selectedFile)
 				reader.onload = (e) => {
@@ -90,11 +91,68 @@ export function StudentsClassDataTable() {
 					}
 				}
 			} else {
-				setTypeError("Tipo de archivo no permitido")
+				toast.error("Tipo de archivo no permitido")
 				setExcelFile(null)
 			}
 		}
 	}
+
+	useEffect(() => {
+		if (excelFile !== null && typeof excelFile !== "string") {
+			console.log("Leyendo archivo Excel...")
+
+			const workbook = XLSX.read(excelFile, { type: "buffer" })
+			const workbookSheetName = workbook.SheetNames[0]
+			const worksheet = workbook.Sheets[workbookSheetName]
+			const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
+
+			setExcelData(data)
+
+			//processar datos
+			//coger data iterar sobre ella y evaluar con el atributo rol si es profesor o estudiante
+			//si es profesor añadir a la clase como profesor
+			//si es estudiante añadir a la clase como estudiante
+			//si no es ni profesor ni estudiante no hacer nada
+			// Validar formato esperado del archivo Excel
+			const validFormat = data.every(
+				(item) => "institutionalId" in item && "rol" in item && typeof item.rol === "string"
+			)
+
+			if (!validFormat) {
+				toast.error("El formato del archivo Excel no es el esperado.")
+				setExcelData(null)
+				return
+			}
+
+			// Crear arrays separados para profesores y estudiantes
+			const profesores: Record<string, any>[] = []
+			const estudiantes: Record<string, any>[] = []
+
+			data.forEach((item) => {
+				if (item.rol.toLowerCase() === "profesor") {
+					//pedir en el service guardar la infomacion en el back
+					profesores.push(item)
+				} else if (item.rol.toLowerCase() === "estudiante") {
+					//pedir en el service guardar la infomacion en el back
+					estudiantes.push(item)
+				}
+			})
+
+			setExcelData(data) // Guardar datos si todo es correcto
+
+			// Procesar arrays por separado (aquí podrías hacer algo con los arrays de profesores y estudiantes)
+			console.log("Profesores:", profesores)
+			console.log("Estudiantes:", estudiantes)
+
+			if (profesores.length === 0 && estudiantes.length === 0) {
+				toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
+			} else {
+				toast.success("Archivo Excel procesado exitosamente.")
+			}
+
+			//console.log("Datos leídos del Excel:", data)
+		}
+	}, [excelFile])
 
 	useEffect(() => {
 		if (openDialog) return
@@ -169,7 +227,7 @@ export function StudentsClassDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
-			accessorKey: "lastName", // ✅ Cambiado de id a accessorKey
+			accessorKey: "lastName",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -185,7 +243,7 @@ export function StudentsClassDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
 		},
 		{
-			accessorKey: "email", // ✅ Cambiado de id a accessorKey
+			accessorKey: "email",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -301,7 +359,7 @@ export function StudentsClassDataTable() {
 						<div>
 							{/* Botón que abre el input de archivo */}
 							<Button
-								className="bg-green-800"
+								className="bg-green-800 hover:bg-green-500"
 								onClick={() => fileInputRef.current?.click()} // Abre el input al hacer clic
 							>
 								<Sheet className="h-4 w-4 text-white" />
