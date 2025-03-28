@@ -32,7 +32,7 @@ import {
 } from "@/modules/core/components/ui/table"
 import { useEffect, useRef, useState } from "react"
 import UserModel from "@/modules/core/models/user"
-import { getClassMembers } from "../services/membersService"
+import { getClassMembers, updateClassProfessorMember, updateClassStudentMember } from "../services/membersService"
 import Role from "@/modules/core/models/role"
 import { useParams } from "react-router-dom"
 import AddMembersDialog from "./AddMembersDialog"
@@ -131,18 +131,22 @@ export function StudentsClassDataTable() {
 			data.forEach((item) => {
 				if (item.rol.toLowerCase() === "profesor") {
 					//pedir en el service guardar la infomacion en el back
-					profesores.push(item)
+					const addProfessor= async () => {
+						await updateClassProfessorMember(Number(id), item.institutionalId)
+					}
+
+					addProfessor()
+
 				} else if (item.rol.toLowerCase() === "estudiante") {
 					//pedir en el service guardar la infomacion en el back
-					estudiantes.push(item)
+					const addStudent= async () => {
+						await updateClassStudentMember(Number(id), item.institutionalId)
+					}
+					addStudent()
 				}
 			})
 
 			setExcelData(data) // Guardar datos si todo es correcto
-
-			// Procesar arrays por separado (aquí podrías hacer algo con los arrays de profesores y estudiantes)
-			console.log("Profesores:", profesores)
-			console.log("Estudiantes:", estudiantes)
 
 			if (profesores.length === 0 && estudiantes.length === 0) {
 				toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
@@ -176,7 +180,7 @@ export function StudentsClassDataTable() {
 		}
 
 		fetchMembers()
-	}, [pagination, filter, sorting, openDialog, id])
+	}, [pagination, filter, sorting, openDialog, id, excelData])
 
 	const handleOpenDialog = (type: "delete" | "students" | "professors", Usermodel?: UserModel) => {
 		setOpenDialog(type)
