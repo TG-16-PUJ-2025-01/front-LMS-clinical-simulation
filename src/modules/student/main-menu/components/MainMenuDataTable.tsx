@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
-import { CardClass } from "./CardClass"
-import { getProfesorMenuInfo } from "../services/MainMenuService"
 import Class from "@/modules/core/models/class"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { Button } from "@/modules/core/components/ui/button"
 import { Search } from "lucide-react"
 import { Input } from "@/modules/core/components/ui/input"
+import { getStudentMenuInfo } from "../services/MainMenuService"
+import { CardClass } from "@/modules/teacher/main-menu/components/CardClass"
 
 export function MainMenuDataTable() {
 	const currentYear = new Date().getFullYear()
@@ -32,7 +32,7 @@ export function MainMenuDataTable() {
 	useEffect(() => {
 		const fetchClasses = async () => {
 			try {
-				const res = await getProfesorMenuInfo(
+				const res = await getStudentMenuInfo(
 					selectedYear ?? undefined,
 					selectedPeriod ?? undefined,
 					filter

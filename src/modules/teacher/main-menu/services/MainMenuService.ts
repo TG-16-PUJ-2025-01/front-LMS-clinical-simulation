@@ -3,7 +3,7 @@ import ApiResponse from "@/modules/core/models/apiResponse"
 import Class from "@/modules/core/models/class"
 import axios from "axios"
 
-export async function getMenuInfo(
+export async function getProfesorMenuInfo(
 	year?: number,
 	period?: number,
 	filter: string = ""

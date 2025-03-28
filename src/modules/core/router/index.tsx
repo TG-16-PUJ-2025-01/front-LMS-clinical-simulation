@@ -21,6 +21,7 @@ import CalendarPage from "@/modules/shared/calendar/pages/CalendarPage"
 import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesPage"
 import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
 import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
+import StudentMainMenuPage from "@/modules/student/main-menu/pages/MainMenuPage"
 
 export default function Router() {
 	return (
@@ -33,7 +34,9 @@ export default function Router() {
 			<Route element={<PrivateRoute />}>
 				{/* Student Routes */}
 				<Route element={<StudentRoute />}>
-					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
+					<Route path="/estudiante/menu-principal" element={<StudentMainMenuPage />}></Route>
+
+					<Route path="/estudiante" element={<Navigate to="/estudiante/menu-principal" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
@@ -41,7 +44,7 @@ export default function Router() {
 				<Route element={<TeacherRoute />}>
 					<Route path="/profesor/menu-principal" element={<TeacherMainMenuPage />}></Route>
 				
-					<Route path="/profesor" element={<Navigate to="/profesor/asignaturas" />}></Route>
+					<Route path="/profesor" element={<Navigate to="/profesor/menu-principal" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
