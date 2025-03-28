@@ -30,7 +30,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import UserModel from "@/modules/core/models/user"
 import { getClassMembers } from "../services/membersService"
 import Role from "@/modules/core/models/role"
@@ -39,6 +39,8 @@ import AddMembersDialog from "./AddMembersDialog"
 import DeleteStudentClassDialog from "./deleteStudentDialog"
 
 export function StudentsClassDataTable() {
+	const fileInputRef = useRef<HTMLInputElement>(null)
+
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -46,7 +48,7 @@ export function StudentsClassDataTable() {
 	const [rowSelection, setRowSelection] = useState({})
 	const { id } = useParams()
 
-	const [openDialog, setOpenDialog] = useState<"delete" | "students" | "professors" |null>(null)
+	const [openDialog, setOpenDialog] = useState<"delete" | "students" | "professors" | null>(null)
 	const [selectedStudent, setSelectedStudent] = useState<UserModel | undefined>(undefined)
 	const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
 
@@ -61,6 +63,38 @@ export function StudentsClassDataTable() {
 		total: 0, //total number of records
 		totalPages: 0, //total number of pages
 	})
+
+	//PARA HOJAS DE EXCEL
+	const [excelFile, setExcelFile] = useState<string | ArrayBuffer | File | null>(null)
+	const [typeError, setTypeError] = useState<string>("")
+	const [excelData, setExcelData] = useState(null)
+
+	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+		let fileTypes = [
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"application/vnd.ms-excel",
+			"text/csv",
+		]
+		const files = e.target.files
+		if (files && files.length > 0) {
+			const selectedFile = files[0]
+			console.log(selectedFile.type)
+			if (fileTypes.includes(selectedFile.type)) {
+				setExcelFile(selectedFile)
+				setTypeError("")
+				let reader = new FileReader()
+				reader.readAsArrayBuffer(selectedFile)
+				reader.onload = (e) => {
+					if (e.target?.result) {
+						setExcelFile(e.target.result)
+					}
+				}
+			} else {
+				setTypeError("Tipo de archivo no permitido")
+				setExcelFile(null)
+			}
+		}
+	}
 
 	useEffect(() => {
 		if (openDialog) return
@@ -184,15 +218,15 @@ export function StudentsClassDataTable() {
 			},
 			cell: ({ row }) => {
 				const roles = row.getValue("roles") as Role[]
-				
-				let displayRole = "Sin rol"; 
+
+				let displayRole = "Sin rol"
 				if (roles.includes(Role.PROFESOR)) {
-					displayRole = Role.PROFESOR.toLowerCase();
+					displayRole = Role.PROFESOR.toLowerCase()
 				} else if (roles.includes(Role.ESTUDIANTE)) {
-					displayRole = Role.ESTUDIANTE.toLowerCase();
+					displayRole = Role.ESTUDIANTE.toLowerCase()
 				}
-			
-				return <div className="text-center">{displayRole}</div>;
+
+				return <div className="text-center">{displayRole}</div>
 			},
 		},
 		{
@@ -264,9 +298,24 @@ export function StudentsClassDataTable() {
 					<div className="flex items-center space-x-2">
 						<Button onClick={() => handleOpenDialog("students")}>Añadir estudiantes</Button>
 						<Button onClick={() => handleOpenDialog("professors")}>Añadir profesores</Button>
-						<Button  className="bg-green-800">
-							<Sheet className="h-4 w-4 text-white" />
-						</Button>
+						<div>
+							{/* Botón que abre el input de archivo */}
+							<Button
+								className="bg-green-800"
+								onClick={() => fileInputRef.current?.click()} // Abre el input al hacer clic
+							>
+								<Sheet className="h-4 w-4 text-white" />
+								Cargar archivo
+							</Button>
+
+							{/* Input de archivo oculto */}
+							<input
+								type="file"
+								ref={fileInputRef}
+								onChange={handleFile}
+								style={{ display: "none" }} // Ocultar el input visualmente
+							/>
+						</div>
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">

@@ -10,11 +10,16 @@ import {
 import { Input } from "@/modules/core/components/ui/input"
 import { useEffect, useState } from "react"
 import { Search, X, Sheet } from "lucide-react"
-import { getStudentsNotInClass, updateClassMembers, getProfessorsNotInClass } from "../services/membersService"
+import {
+	getStudentsNotInClass,
+	updateClassMembers,
+	getProfessorsNotInClass,
+} from "../services/membersService"
 import Role from "../../../core/models/role"
 import { ScrollArea } from "@/modules/core/components/ui/scroll-area"
 import { Separator } from "@/modules/core/components/ui/separator"
 import { toast } from "sonner"
+import { Avatar, AvatarFallback } from "@/modules/core/components/ui/avatar"
 
 interface User {
 	id: number
@@ -29,7 +34,7 @@ interface User {
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
-	classId: number,
+	classId: number
 	isStudent: boolean
 }
 
@@ -41,8 +46,7 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 	const [selectedStudents, setSelectedStudents] = useState<User[]>([])
 
 	useEffect(() => {
-		if(isStudent) 
-		{
+		if (isStudent) {
 			const fetchNonMembers = async () => {
 				const res = await getStudentsNotInClass(Number(classId), filter)
 				setStudents(res.data) // Guardamos los estudiantes en el estado\
@@ -53,10 +57,7 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 				)
 			}
 			fetchNonMembers()
-
-		}
-		else
-		{
+		} else {
 			const fetchNonMembers = async () => {
 				const res = await getProfessorsNotInClass(Number(classId), filter)
 				setStudents(res.data) // Guardamos los estudiantes en el estado\
@@ -69,7 +70,6 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 			}
 			fetchNonMembers()
 		}
-
 	}, [filter, classId, open])
 
 	const handleConfirm = async () => {
@@ -100,6 +100,10 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 		setSelectedStudents(selectedStudents.filter((s) => s.id !== id))
 	}
 
+	function getInitials(firstName: string, lastName: string): string {
+		return `${firstName.charAt(0)}${lastName.charAt(0)}`
+	}
+
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[425px]">
@@ -128,13 +132,20 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 									filteredStudents.map((student) => (
 										<div key={student.id} onClick={() => handleSelectStudent(student)}>
 											<div className="flex cursor-pointer items-center gap-3 rounded-lg bg-white p-4 shadow-md transition-colors hover:bg-gray-100">
-												<div className="text-xs text-gray-900">
-													<h3 className="font-semibold">
-														{student.name} {student.lastName}
-													</h3>
-													<p className="text-gray-600">
-														{student.roles.length > 0 ? student.roles[0].toLowerCase() : "Sin rol"}
-													</p>
+												<div className="text-xs text-gray-900 flex items-center gap-4">
+													<Avatar className="h-8 w-8">
+														<AvatarFallback className="capitalize">
+															{getInitials(student.name, student.lastName)}
+														</AvatarFallback>
+													</Avatar>
+													<div>
+														<p className="text-gray-600">{student.institutionalId}</p>
+														<h3 className="font-semibold">
+															{student.name} {student.lastName}
+														</h3>
+														<p className="text-gray-600">{student.email}</p>
+													</div>
+
 												</div>
 											</div>
 											<Separator className="my-2" />
@@ -160,12 +171,11 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 								>
 									<div className="flex items-center gap-3">
 										<div>
-											<h3 className="text-sm font-semibold">
+											<p className="text-gray-600">{student.institutionalId}</p>
+											<h3 className="font-semibold">
 												{student.name} {student.lastName}
 											</h3>
-											<p className="text-xs text-gray-600">
-												{student.roles.length > 0 ? student.roles[0] : "Sin rol"}
-											</p>
+											<p className="text-gray-600">{student.email}</p>
 										</div>
 									</div>
 									<Button

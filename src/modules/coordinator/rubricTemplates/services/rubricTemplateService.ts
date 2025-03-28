@@ -51,3 +51,11 @@ export async function updateRubricTemplate(rubricTemplateId: number, data: Rubri
 export async function deleteRubricTemplate(rubricTemplateId: number) {
 	return axios.delete(`${API_URL}/rubric/template/${rubricTemplateId}`)
 }
+
+export async function archiveRubricTemplate(rubricTemplateId: number) {
+	return axios.put(`${API_URL}/rubric/template/archive/${rubricTemplateId}`)
+}
+
+export async function unarchiveRubricTemplate(rubricTemplateId: number) {
+	return axios.put(`${API_URL}/rubric/template/unarchive/${rubricTemplateId}`)
+}

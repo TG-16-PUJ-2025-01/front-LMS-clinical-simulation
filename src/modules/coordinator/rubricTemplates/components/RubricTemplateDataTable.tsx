@@ -36,6 +36,7 @@ import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import { getRubricTemplates } from "../services/rubricTemplateService"
 import { RadioGroup, RadioGroupItem } from "@/modules/core/components/ui/radio-group"
 import { Label } from "@/modules/core/components/ui/label"
+import ArchiveRubricTemplateDialog from "./ArchiveRubricTemplateDialog"
 
 export function RubricTemplateDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -158,7 +159,7 @@ export function RubricTemplateDataTable() {
 								<Pencil /> Editar
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("archive", rubric)}>
-								<Inbox /> Archivar
+								<Inbox /> {rubric.archived ? "Desarchivar": "Archivar"}
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("delete", rubric)}>
 								<Trash2 /> Borrar
@@ -222,7 +223,7 @@ export function RubricTemplateDataTable() {
 							</div>
 							<div className="flex items-center space-x-1">
 								<RadioGroupItem value="archived" id="r2" />
-								<Label htmlFor="r2">Archivadas</Label>
+								<Label htmlFor="r2">Mis Archivadas</Label>
 							</div>
 						</RadioGroup>
 					</div>
@@ -300,6 +301,11 @@ export function RubricTemplateDataTable() {
 				open={openDialog === "delete"}
 				onClose={handleCloseDialog}
 				rubricTemplateToDelete={selectedRubric ?? undefined}
+			/>
+			<ArchiveRubricTemplateDialog
+				open={openDialog === "archive"}
+				onClose={handleCloseDialog}
+				rubricTemplateToArchive={selectedRubric ?? undefined}
 			/>
 			<CreateRubricTemplateDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>
