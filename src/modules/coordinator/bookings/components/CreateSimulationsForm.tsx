@@ -154,7 +154,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
   }
 
   return (
-    <div className="w-1/3 border rounded-lg p-4 flex flex-col space-y-4">
+    <div className="w-2/5 border rounded-lg p-4 flex flex-col space-y-4">
       <h3 className="text-lg font-semibold">Reserva de salas</h3>
 
       <p className="text-sm text-gray-500">
@@ -226,7 +226,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
         Añadir reserva al carrito
       </Button>
 
-      <div className="border p-2 rounded h-32 overflow-auto">
+      <div className="border p-2 rounded h-full overflow-auto">
         {reservations.length > 0 ? (
           reservations.map((res, index) => (
             <div key={index} className="border-b p-1 flex justify-between items-center">

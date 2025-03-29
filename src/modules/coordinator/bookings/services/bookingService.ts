@@ -66,11 +66,14 @@ export async function getAllRooms(): Promise<Room[]> {
   }
 }
 
-export async function getSchedule(): Promise<Reservation[]> {
-
+export async function getSchedule(date: string): Promise<Reservation[]> {
 
   try {
-    const response = await axios.get(`${API_URL}/simulation/schedule`);
+    const response = await axios.get(`${API_URL}/simulation/schedule`, {
+      params: {
+        date: date,
+      },
+    });
 
     return response.data.data.map((res: { room: string; startDateTime: string; endDateTime: string }) => ({
       room: res.room,
