@@ -42,11 +42,31 @@ const formSchema = z.object({
 		name: z.string().nonempty({
 			message: "Debe seleccionar un coordinador",
 		}),
-	})
+	}),
+	semester: z.number().int().positive({
+		message: "El semestre debe ser un número entero positivo",
+	}),
+	program: z.string().min(2, {
+		message: "El programa debe tener al menos 2 caracteres",
+	}),
+	department: z.string().min(2, {
+		message: "El departamento debe tener al menos 2 caracteres",
+	}),
+	faculty: z.string().min(2, {
+		message: "La facultad debe tener al menos 2 caracteres",
+	}),
 })
 
 export default function CreateCourseDialog({ open, onClose }: Props) {
 	const [coordinators, setCoordinators] = useState<User[]>([])
+	//un for del 1 hasta el 14
+	const semesters = Array.from({ length: 14 }, (_, i) => i + 1)
+
+	const programs = [{key: 1, value:"pregrado"}, {key: 2, value:"maestria"}, {key: 3, value:"doctorado"}]
+
+	const departments = [{key: 1, value:"enfermeria clinica"}, {key: 2, value:"medicina interna"}, {key: 3, value:"medicina familiar"}, {key: 4, value:"medicina critica"}]
+
+	const faculties = [{key: 1, value:"medicina"}, {key: 2, value:"enfermeria"},{key: 3, value: "odontologia"}]
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -56,7 +76,12 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 			coordinator: {
 				coordinatorId: 0,
 				name: "",
-			}
+			},
+			semester: 1,
+			program: "",
+			department: "",
+			faculty: "",
+
 		},
 	})
 
@@ -78,6 +103,10 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 				javerianaId: values.id,
 				name: values.name,
 				coordinatorId: values.coordinator.coordinatorId!,
+				semester: values.semester,
+				program: values.program,
+				department: values.department,
+				faculty: values.faculty,
 			})
 	
 			onClose(false)
@@ -138,6 +167,90 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 												onChange={(selected) => {
 													field.onChange(selected.value)
 													form.setValue("coordinator.coordinatorId", selected.key)
+												}}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="semester"
+								render={({field}) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Semestre</FormLabel>
+										<FormControl>
+											<Combobox
+												placeholderText="Semestre"
+												options={semesters.map((val) => ({ key: val, value: `${val}` }))}
+												itemName="semester"
+												onChange={(selected) => {
+													field.onChange(selected.value)
+													form.setValue("semester", selected.key ?? 0)
+												}}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="faculty"
+								render={({field}) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Facultad</FormLabel>
+										<FormControl>
+											<Combobox
+												placeholderText="Facultad"
+												options={faculties.map((val) => ({ key: val.key, value: `${val.value}` }))}
+												itemName="faculty"
+												onChange={(selected) => {
+													field.onChange(selected.value)
+													form.setValue("faculty", selected.value )
+												}}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="department"
+								render={({field}) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Departamento</FormLabel>
+										<FormControl>
+											<Combobox
+												placeholderText="Facultad"
+												options={departments.map((val) => ({ key: val.key, value: `${val.value}` }))}
+												itemName="department"
+												onChange={(selected) => {
+													field.onChange(selected.value)
+													form.setValue("department", selected.value )
+												}}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="program"
+								render={({field}) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Programa</FormLabel>
+										<FormControl>
+											<Combobox
+												placeholderText="Programa"
+												options={programs.map((val) => ({ key: val.key, value: `${val.value}` }))}
+												itemName="program"
+												onChange={(selected) => {
+													field.onChange(selected.value)
+													form.setValue("program", selected.value )
 												}}
 											/>
 										</FormControl>
