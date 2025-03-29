@@ -126,7 +126,7 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 
 	useEffect(() => {
 		form.reset()
-	}, [open])
+	}, [open, form])
 
 	useEffect(() => {
 		const fetchCourses = async () => {

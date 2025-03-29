@@ -45,7 +45,7 @@ export function CommentForm({ timestamp, onFocus, videoId, onSubmit: onSubmitCal
 		toast.success("Comentario publicado correctamente")
 		await addCommentToVideo(videoId, {
 			message: data.description,
-			timestamp
+			timestamp,
 		})
 		onSubmitCallback?.()
 		form.reset()

@@ -9,6 +9,7 @@ import { Button } from "@/modules/core/components/ui/button"
 import Simulation from "@/modules/core/models/simulation"
 import { useParams } from "react-router-dom"
 import { getSimulationById } from "../services/simulationService"
+import { RubricForm } from "../components/RubricForm"
 
 export default function SimulationPage() {
 	const params = useParams()
@@ -16,7 +17,7 @@ export default function SimulationPage() {
 	const [currentTime, setCurrentTime] = useState(0)
 	const [simulation, setSimulation] = useState<Simulation>()
 	const [isSync, setIsSync] = useState(false)
-	
+
 	useEffect(() => {
 		if (isSync) return
 
@@ -58,7 +59,7 @@ export default function SimulationPage() {
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">Práctica (Grupo X)</LayoutSlot>
-			<div className="grid grid-cols-2">
+			<div className="grid grid-cols-2 gap-8">
 				<section>
 					<video
 						ref={videoRef}
@@ -86,7 +87,7 @@ export default function SimulationPage() {
 									<Button
 										type="button"
 										variant="link"
-										className="cursor-pointer p-0 text-xs text-gray-400 h-fit pb-2 w-14"
+										className="h-fit w-14 cursor-pointer p-0 pb-2 text-xs text-gray-400"
 										onClick={() => {
 											if (videoRef.current) videoRef.current.currentTime = comment.timestamp
 										}}
@@ -101,6 +102,57 @@ export default function SimulationPage() {
 							))}
 						</ul>
 					)}
+				</section>
+				<section>
+					<RubricForm
+						rubricTemplate={{
+							courses: [],
+							archived: false,
+							creationDate: new Date(),
+							creator: {
+								id: 1,
+								email: "",
+								name: "",
+								lastName: "",
+								institutionalId: 1,
+								roles: [],
+								username: "",
+							},
+							title: "Mi rúbrica",
+							columns: [
+								{
+									rubricColumnId: Date.now() + 1,
+									title: "No aprobado",
+									scoringScale: {
+										lowerValue: 0,
+										upperValue: 3,
+									},
+								},
+								{
+									rubricColumnId: Date.now() + 2,
+									title: "Aprobado",
+									scoringScale: {
+										lowerValue: 3,
+										upperValue: 5,
+									},
+								},
+							],
+							criteria: [
+								{
+									criteriaId: Date.now() + 1,
+									name: "A",
+									weight: 50,
+									scoringScaleDescription: ["Descripción", "Descripción"],
+								},
+								{
+									criteriaId: Date.now() + 2,
+									name: "B",
+									weight: 50,
+									scoringScaleDescription: ["Descripción", "Descripción"],
+								},
+							],
+						}}
+					/>
 				</section>
 			</div>
 		</>
