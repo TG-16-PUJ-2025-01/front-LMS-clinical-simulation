@@ -32,13 +32,18 @@ import {
 } from "@/modules/core/components/ui/table"
 import { useEffect, useRef, useState } from "react"
 import UserModel from "@/modules/core/models/user"
-import { getClassMembers, updateClassProfessorMember, updateClassStudentMember } from "../services/membersService"
+import {
+	getClassMembers,
+	updateClassProfessorMember,
+	updateClassStudentMember,
+} from "../services/membersService"
 import Role from "@/modules/core/models/role"
 import { useParams } from "react-router-dom"
 import AddMembersDialog from "./AddMembersDialog"
 import DeleteStudentClassDialog from "./deleteStudentDialog"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
+import Class from "@/modules/core/models/class"
 
 export function StudentsClassDataTable() {
 	const fileInputRef = useRef<HTMLInputElement>(null)
@@ -83,11 +88,13 @@ export function StudentsClassDataTable() {
 
 			if (fileTypes.includes(selectedFile.type)) {
 				setExcelFile(selectedFile)
+				e.target.value = ''  // Aquí forzamos el cambio del input
 				let reader = new FileReader()
 				reader.readAsArrayBuffer(selectedFile)
 				reader.onload = (e) => {
 					if (e.target?.result) {
 						setExcelFile(e.target.result)
+						
 					}
 				}
 			} else {
@@ -106,13 +113,7 @@ export function StudentsClassDataTable() {
 			const worksheet = workbook.Sheets[workbookSheetName]
 			const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
 
-			setExcelData(data)
-
 			//processar datos
-			//coger data iterar sobre ella y evaluar con el atributo rol si es profesor o estudiante
-			//si es profesor añadir a la clase como profesor
-			//si es estudiante añadir a la clase como estudiante
-			//si no es ni profesor ni estudiante no hacer nada
 			// Validar formato esperado del archivo Excel
 			const validFormat = data.every(
 				(item) => "institutionalId" in item && "rol" in item && typeof item.rol === "string"
@@ -124,41 +125,44 @@ export function StudentsClassDataTable() {
 				return
 			}
 
-			// Crear arrays separados para profesores y estudiantes
-			const profesores: Record<string, any>[] = []
-			const estudiantes: Record<string, any>[] = []
+			let results: Class[] = []
 
-			data.forEach((item) => {
-				if (item.rol.toLowerCase() === "profesor") {
-					//pedir en el service guardar la infomacion en el back
-					const addProfessor= async () => {
-						await updateClassProfessorMember(Number(id), item.institutionalId)
+			const processData = async () => {
+				const promises = data.map(async (item) => {
+					if (item.rol.toLowerCase() === "profesor") {
+						// Llama al servicio y agrega al resultado
+						const updatedClass = await updateClassProfessorMember(Number(id), item.institutionalId)
+						results.push(updatedClass)
+					} else if (item.rol.toLowerCase() === "estudiante") {
+						// Llama al servicio y agrega al resultado
+						const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
+						results.push(updatedClass)
 					}
+				})
 
-					addProfessor()
+				// Esperar a que todas las promesas se resuelvan
+				await Promise.all(promises)
 
-				} else if (item.rol.toLowerCase() === "estudiante") {
-					//pedir en el service guardar la infomacion en el back
-					const addStudent= async () => {
-						await updateClassStudentMember(Number(id), item.institutionalId)
-					}
-					addStudent()
+				// Evaluar después de que todos los await se hayan completado
+				setExcelData(data)
+
+				console.log("Datos leídos del Excel:", results.length)
+
+				if (results.length === 0) {
+					//toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
+				} else 
+				{
+					toast.success("Archivo Excel procesado exitosamente.")
 				}
-			})
-
-			setExcelData(data) // Guardar datos si todo es correcto
-
-			if (profesores.length === 0 && estudiantes.length === 0) {
-				toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
-			} else {
-				toast.success("Archivo Excel procesado exitosamente.")
 			}
 
-			//console.log("Datos leídos del Excel:", data)
+			// Ejecutar la función asíncrona principal
+			processData()
 		}
 	}, [excelFile])
 
 	useEffect(() => {
+		
 		if (openDialog) return
 
 		const fetchMembers = async () => {
