@@ -228,7 +228,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 										<FormControl>
 											<Combobox
 												placeholderText={field.value.toString()}
-												options={semesters.map((val) => ({ key: val, value: `${val}` }))}
+												options={faculties.map((val) => ({ key: val.key, value: `${val.value}` }))}
 												itemName="faculty"
 												onChange={(selected) => {
 													field.onChange(selected.value)
