@@ -10,7 +10,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Sheet, Trash2, User } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -32,12 +32,16 @@ import {
 import Class from "@/modules/core/models/class"
 import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import CreateClassDialog from "./CreateClassDialog"
 import { getClasses } from "../services/classService"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
+import * as XLSX from "xlsx"
 
 export function ClassesDataTable() {
+	const fileInputRef = useRef<HTMLInputElement>(null)
+
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -91,6 +95,37 @@ export function ClassesDataTable() {
 	const handleCloseDialog = () => {
 		setOpenDialog(null)
 		setSelectedClass(null)
+	}
+
+	const [excelFile, setExcelFile] = useState<string | ArrayBuffer | File | null>(null)
+	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
+
+	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+		let fileTypes = [
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"application/vnd.ms-excel",
+			"text/csv",
+		]
+		const files = e.target.files
+		if (files && files.length > 0) {
+			const selectedFile = files[0]
+			console.log(selectedFile.type)
+
+			if (fileTypes.includes(selectedFile.type)) {
+				setExcelFile(selectedFile)
+				e.target.value = "" // Aquí forzamos el cambio del input
+				let reader = new FileReader()
+				reader.readAsArrayBuffer(selectedFile)
+				reader.onload = (e) => {
+					if (e.target?.result) {
+						setExcelFile(e.target.result)
+					}
+				}
+			} else {
+				toast.error("Tipo de archivo no permitido")
+				setExcelFile(null)
+			}
+		}
 	}
 
 	const columns: ColumnDef<Class>[] = [
@@ -244,7 +279,27 @@ export function ClassesDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => handleOpenDialog("create")}>Nueva clase</Button>
+					<div className="flex items-center gap-4">
+						<Button onClick={() => handleOpenDialog("create")}>Nueva clase</Button>
+						<div>
+							{/* Botón que abre el input de archivo */}
+							<Button
+								className="bg-green-800 hover:bg-green-500"
+								onClick={() => fileInputRef.current?.click()} // Abre el input al hacer clic
+							>
+								<Sheet className="h-4 w-4 text-white" />
+								Cargar archivo
+							</Button>
+
+							{/* Input de archivo oculto */}
+							<input
+								type="file"
+								ref={fileInputRef}
+								onChange={handleFile}
+								style={{ display: "none" }} // Ocultar el input visualmente
+							/>
+						</div>
+					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
 					<Table>

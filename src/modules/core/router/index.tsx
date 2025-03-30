@@ -18,7 +18,9 @@ import MembersPage from "@/modules/shared/members/pages/MembersPage"
 import CoordinatorPracticesPage from "@/modules/coordinator/practices/pages/PracticesPage"
 import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/BookingPage"
 import CalendarPage from "@/modules/shared/calendar/pages/CalendarPage"
+import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesPage"
 import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
+
 
 export default function Router() {
 	return (
@@ -47,11 +49,13 @@ export default function Router() {
 					{/*FIXME: Redirect to main page*/}
 					<Route path="/calendario" element={<CalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
+					<Route path="/coordinador/asignaturas" element={<CoordinatorCoursesPage />}></Route>
 					<Route path="/coordinador/practica/:id" element={<CoordinatorBookingPage />}></Route>
 					<Route
 						path="/coordinador/clases/:id/practicas"
 						element={<CoordinatorPracticesPage />}
 					></Route>
+					<Route path="/coordinador/clases/:id/miembros" element={<MembersPage />}></Route>
 					<Route path="/coordinador/practicas" element={<CoordinatorPracticesPage />}></Route>
 					<Route path="/coordinador/rubricas" element={<RubricTemplatePage />}></Route>
 				</Route>

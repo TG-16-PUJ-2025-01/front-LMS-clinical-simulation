@@ -127,3 +127,21 @@ export async function updateClassMembers(classId: number, selectecMembers: User[
     }
 }
 
+export async function updateClassProfessorMember(classId: number, professorId: number): Promise<Class> {
+    const { data } = await axios.put(`${API_URL}/class/update/${classId}/members/professor/${professorId}`)
+
+    return {
+        ...data,
+        data: (data.data),
+    }
+}
+
+export async function updateClassStudentMember(classId: number, studentId: number): Promise<Class> {
+    const { data } = await axios.put(`${API_URL}/class/update/${classId}/members/student/${studentId}`)
+
+    return {
+        ...data,
+        data: (data.data),
+    }
+}
+

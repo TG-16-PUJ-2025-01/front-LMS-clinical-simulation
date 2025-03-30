@@ -30,15 +30,25 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import UserModel from "@/modules/core/models/user"
-import { getClassMembers } from "../services/membersService"
+import {
+	getClassMembers,
+	updateClassProfessorMember,
+	updateClassStudentMember,
+} from "../services/membersService"
 import Role from "@/modules/core/models/role"
 import { useParams } from "react-router-dom"
 import AddMembersDialog from "./AddMembersDialog"
 import DeleteStudentClassDialog from "./deleteStudentDialog"
+import { toast } from "sonner"
+import * as XLSX from "xlsx"
+import Class from "@/modules/core/models/class"
+import { all, AxiosError } from "axios"
 
 export function StudentsClassDataTable() {
+	const fileInputRef = useRef<HTMLInputElement>(null)
+
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -46,7 +56,7 @@ export function StudentsClassDataTable() {
 	const [rowSelection, setRowSelection] = useState({})
 	const { id } = useParams()
 
-	const [openDialog, setOpenDialog] = useState<"delete" | "students" | "professors" |null>(null)
+	const [openDialog, setOpenDialog] = useState<"delete" | "students" | "professors" | null>(null)
 	const [selectedStudent, setSelectedStudent] = useState<UserModel | undefined>(undefined)
 	const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
 
@@ -61,6 +71,114 @@ export function StudentsClassDataTable() {
 		total: 0, //total number of records
 		totalPages: 0, //total number of pages
 	})
+
+	//PARA HOJAS DE EXCEL
+	const [excelFile, setExcelFile] = useState<string | ArrayBuffer | File | null>(null)
+	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
+
+	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+		let fileTypes = [
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"application/vnd.ms-excel",
+			"text/csv",
+		]
+		const files = e.target.files
+		if (files && files.length > 0) {
+			const selectedFile = files[0]
+			console.log(selectedFile.type)
+
+			if (fileTypes.includes(selectedFile.type)) {
+				//setExcelFile(selectedFile)
+				e.target.value = "" // Aquí forzamos el cambio del input
+				let reader = new FileReader()
+				reader.readAsArrayBuffer(selectedFile)
+				reader.onload = (e) => {
+					if (e.target?.result) {
+						setExcelFile(e.target.result)
+					}
+				}
+			} else {
+				toast.error("Tipo de archivo no permitido")
+				setExcelFile(null)
+			}
+		}
+	}
+
+	useEffect(() => {
+		if (excelFile !== null && typeof excelFile !== "string") {
+			console.log("Leyendo archivo Excel...")
+
+			const workbook = XLSX.read(excelFile, { type: "buffer" })
+			const workbookSheetName = workbook.SheetNames[0]
+			const worksheet = workbook.Sheets[workbookSheetName]
+			const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
+
+			//processar datos
+			// Validar formato esperado del archivo Excel
+			const validFormat = data.every(
+				(item) => "institutionalId" in item && "rol" in item && typeof item.rol === "string"
+			)
+
+			if (!validFormat) {
+				toast.error("El formato del archivo Excel no es el esperado.")
+				setExcelData(null)
+				return
+			}
+
+			let results: Class[] = []
+
+			let allCorrect = true
+
+			const processData = async () => {
+				const promises = data.map(async (item) => {
+					if (item.rol.toLowerCase() === "profesor") {
+						// Llama al servicio y agrega al resultado
+						try {
+							const updatedClass = await updateClassProfessorMember(
+								Number(id),
+								item.institutionalId
+							)
+							results.push(updatedClass)
+						} catch (error) {
+							console.log(error)
+							toast.error(error instanceof AxiosError ? error.response?.data.data : "Error desconocido")
+							allCorrect = false
+						}
+					} else if (item.rol.toLowerCase() === "estudiante") {
+						// Llama al servicio y agrega al resultado
+						try {
+							const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
+							results.push(updatedClass)
+						} catch (error) {
+
+							toast.error(error instanceof AxiosError ? error.response?.data.data : "Error desconocido")
+							allCorrect = false
+						}
+					} else {
+						toast.error(`El rol ${item.rol.toLowerCase()} no es válido`)
+						allCorrect = false
+					}
+				})
+
+				// Esperar a que todas las promesas se resuelvan
+				await Promise.all(promises)
+
+				// Evaluar después de que todos los await se hayan completado
+				setExcelData(data)
+
+				console.log("Datos leídos del Excel:", results.length)
+
+				if (!allCorrect) {
+					toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
+				} else {
+					toast.success("Archivo Excel procesado exitosamente.")
+				}
+			}
+
+			// Ejecutar la función asíncrona principal
+			processData()
+		}
+	}, [excelFile])
 
 	useEffect(() => {
 		if (openDialog) return
@@ -84,7 +202,7 @@ export function StudentsClassDataTable() {
 		}
 
 		fetchMembers()
-	}, [pagination, filter, sorting, openDialog, id])
+	}, [pagination, filter, sorting, openDialog, id, excelData])
 
 	const handleOpenDialog = (type: "delete" | "students" | "professors", Usermodel?: UserModel) => {
 		setOpenDialog(type)
@@ -135,7 +253,7 @@ export function StudentsClassDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
 		},
 		{
-			accessorKey: "lastName", // ✅ Cambiado de id a accessorKey
+			accessorKey: "lastName",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -151,7 +269,7 @@ export function StudentsClassDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
 		},
 		{
-			accessorKey: "email", // ✅ Cambiado de id a accessorKey
+			accessorKey: "email",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -184,15 +302,15 @@ export function StudentsClassDataTable() {
 			},
 			cell: ({ row }) => {
 				const roles = row.getValue("roles") as Role[]
-				
-				let displayRole = "Sin rol"; 
+
+				let displayRole = "Sin rol"
 				if (roles.includes(Role.PROFESOR)) {
-					displayRole = Role.PROFESOR.toLowerCase();
+					displayRole = Role.PROFESOR.toLowerCase()
 				} else if (roles.includes(Role.ESTUDIANTE)) {
-					displayRole = Role.ESTUDIANTE.toLowerCase();
+					displayRole = Role.ESTUDIANTE.toLowerCase()
 				}
-			
-				return <div className="text-center">{displayRole}</div>;
+
+				return <div className="text-center">{displayRole}</div>
 			},
 		},
 		{
@@ -264,9 +382,24 @@ export function StudentsClassDataTable() {
 					<div className="flex items-center space-x-2">
 						<Button onClick={() => handleOpenDialog("students")}>Añadir estudiantes</Button>
 						<Button onClick={() => handleOpenDialog("professors")}>Añadir profesores</Button>
-						<Button  className="bg-green-800">
-							<Sheet className="h-4 w-4 text-white" />
-						</Button>
+						<div>
+							{/* Botón que abre el input de archivo */}
+							<Button
+								className="bg-green-800 hover:bg-green-500"
+								onClick={() => fileInputRef.current?.click()} // Abre el input al hacer clic
+							>
+								<Sheet className="h-4 w-4 text-white" />
+								Cargar archivo
+							</Button>
+
+							{/* Input de archivo oculto */}
+							<input
+								type="file"
+								ref={fileInputRef}
+								onChange={handleFile}
+								style={{ display: "none" }} // Ocultar el input visualmente
+							/>
+						</div>
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
