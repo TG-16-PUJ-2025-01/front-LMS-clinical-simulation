@@ -20,7 +20,8 @@ import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/Booking
 import CalendarPage from "@/modules/shared/calendar/pages/CalendarPage"
 import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesPage"
 import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
-
+import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
+import StudentMainMenuPage from "@/modules/student/main-menu/pages/MainMenuPage"
 
 export default function Router() {
 	return (
@@ -33,21 +34,27 @@ export default function Router() {
 			<Route element={<PrivateRoute />}>
 				{/* Student Routes */}
 				<Route element={<StudentRoute />}>
+					<Route path="/estudiante/asignaturas" element={<StudentMainMenuPage />}></Route>
+
+					<Route path="estudiante/calendario" element={<CalendarPage />}></Route>
 					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
 				{/* Teacher Routes */}
 				<Route element={<TeacherRoute />}>
+					<Route path="/profesor/asignaturas" element={<TeacherMainMenuPage />}></Route>
+
+					<Route path="/profesor/calendario" element={<CalendarPage />}></Route>
 					<Route path="/profesor" element={<Navigate to="/profesor/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
 				{/* Coordinator Routes */}
 				<Route element={<CoordinatorRoute />}>
-					<Route path="/coordinador" element={<Navigate to="/calendario" />}></Route>
+					<Route path="/coordinador" element={<Navigate to="/coordinador/calendario" />}></Route>
 					{/*FIXME: Redirect to main page*/}
-					<Route path="/calendario" element={<CalendarPage />}></Route>
+					<Route path="/coordinador/calendario" element={<CalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
 					<Route path="/coordinador/asignaturas" element={<CoordinatorCoursesPage />}></Route>
 					<Route path="/coordinador/practica/:id" element={<CoordinatorBookingPage />}></Route>

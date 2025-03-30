@@ -50,7 +50,7 @@ export function CardPractice({
 			<Card
 				onClick={onClick}
 				className={cn(
-					"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden transition-transform hover:scale-105",
+					"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden shadow-md transition-transform hover:scale-105",
 					className
 				)}
 			>
