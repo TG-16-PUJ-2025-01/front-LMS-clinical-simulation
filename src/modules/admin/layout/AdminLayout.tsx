@@ -13,6 +13,7 @@ export default function AdminLayout({ children }: Props) {
 		{ label: "Listado de cuentas", href: "/admin/usuarios" },
 		{ label: "Listado de salas", href: "/admin/salas" },
 		{ label: "Listado de videos", href: "/admin/videos" },
+		{ label: "Calendario", href: "/admin/calendario" },
 	]
 
 	return (

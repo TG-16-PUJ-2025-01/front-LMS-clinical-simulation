@@ -5,5 +5,6 @@ import { EventDTO } from "../dto/eventDto"
 
 export async function getEvents(): Promise<ApiResponse<EventDTO[]>> {
 	const { data } = await axios.get(`${API_URL}/calendar`)
+	console.log("Holra")
 	return data
 }

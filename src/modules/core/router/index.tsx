@@ -76,6 +76,7 @@ export default function Router() {
 					<Route path="/admin/salas" element={<AdminRoomsPage />}></Route>
 					<Route path="/admin/usuarios" element={<AdminUsersPage />}></Route>
 					<Route path="/admin/clases/:id/miembros" element={<MembersPage />}></Route>
+					<Route path="/admin/calendario" element={<CalendarPage />}></Route>
 				</Route>
 
 				{/* Default Route */}

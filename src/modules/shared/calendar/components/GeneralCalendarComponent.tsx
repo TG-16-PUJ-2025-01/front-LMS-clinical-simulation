@@ -46,6 +46,7 @@ export default function CalendarComponent() {
 			const res = await getEvents()
 			eventsServicePlugin.set(res.data)
 		} catch (error) {
+			console.error(error)
 			toast.error("Error trying to find events")
 		}
 	}
