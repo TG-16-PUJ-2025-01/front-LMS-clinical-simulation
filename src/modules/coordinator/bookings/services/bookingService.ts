@@ -8,12 +8,18 @@ import Practice from "@/modules/core/models/practice"
 export async function getSimulationsByPracticeId(
 	practiceId: number,
 	page: number,
-	size: number
+	size: number,
+	filter: string,
+	sort: string,
+	asc: boolean
 ): Promise<ApiResponse<Simulation[]>> {
 	const { data } = await axios.get(`${API_URL}/simulation/practice/${practiceId}`, {
 		params: {
 			page,
 			size,
+			sort,
+			asc,
+			groupNumber: filter ? parseInt(filter) : undefined,
 		},
 	})
 
@@ -88,7 +94,6 @@ export async function getSchedule(date: string): Promise<Reservation[]> {
 
 export async function getSimulationStudents(simulationId: number): Promise<ApiResponse<User[]>> {
 	const { data } = await axios.get(`${API_URL}/simulation/${simulationId}/users`)
-	console.log(data)
 	return data
 }
 

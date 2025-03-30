@@ -66,7 +66,10 @@ export function SimulationDataTable() {
 			const res = await getSimulationsByPracticeId(
 				Number(id),
 				pagination.pageIndex,
-				pagination.pageSize
+				pagination.pageSize,
+				filter,
+				sorting[0]?.id || "simulationId",
+				!(sorting[0]?.desc ?? false)
 			)
 			setData(res.data)
 			setPaginationInfo({
@@ -258,7 +261,7 @@ export function SimulationDataTable() {
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
-							placeholder="Buscar..."
+							placeholder="Buscar por número de grupo..."
 							value={filter}
 							onChange={(event) => {
 								setFilter(event.target.value)
@@ -307,7 +310,11 @@ export function SimulationDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 pt-4">
+				<div className="flex items-center justify-between space-x-2 pt-4">
+					<span className="text-sm text-gray-600">
+						Página {paginationInfo.totalPages === 0 ? 0 : pagination.pageIndex + 1} de{" "}
+						{paginationInfo.totalPages}
+					</span>
 					<div className="space-x-2">
 						<Button
 							variant="outline"
