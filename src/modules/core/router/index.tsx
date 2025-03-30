@@ -52,7 +52,7 @@ export default function Router() {
 
 				{/* Coordinator Routes */}
 				<Route element={<CoordinatorRoute />}>
-					<Route path="/coordinador" element={<Navigate to="/calendario" />}></Route>
+					<Route path="/coordinador" element={<Navigate to="/coordinador/calendario" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 					<Route path="/coordinador/calendario" element={<CalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
