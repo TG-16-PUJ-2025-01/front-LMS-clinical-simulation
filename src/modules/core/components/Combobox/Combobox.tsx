@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/modules/core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
@@ -11,14 +10,17 @@ import {
 	CommandList,
 } from "@/modules/core/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/modules/core/components/ui/popover"
+import { useEffect, useState } from "react"
 
 interface ComboboxSelectProps {
 	options: { key?: number; value: string }[]
 	placeholderText?: string
 	itemName?: string
-	onChange?: (selected: { key?: number; value: string }) => void
+	onChange?: (selected?: { key?: number; value: string }) => void
 	selectedValue?: string
 	className?: string
+	filter?: string
+	setFilter?: (filter: string) => void
 }
 
 export function Combobox({
@@ -28,31 +30,36 @@ export function Combobox({
 	onChange,
 	selectedValue = "",
 	className,
+	filter = "",
+	setFilter,
 }: ComboboxSelectProps) {
-	const [open, setOpen] = React.useState(false)
-	const [value, setValue] = React.useState(selectedValue)
-	const [inputValue, setInputValue] = React.useState("")
-	const [filteredOptions, setFilteredOptions] = React.useState(options)
+	const [open, setOpen] = useState(false)
+	const [value, setValue] = useState<string | null>(selectedValue)
+	const [inputValue, setInputValue] = useState("")
+	const [filteredOptions, setFilteredOptions] = useState(options)
 
-	const handleSelect = (currentValue: string) => {
-		setValue(currentValue === value ? "" : currentValue)
+	const handleSelect = (current: { value: string; key?: number }) => {
+		setValue(current.value === value ? "" : current.value)
 		setOpen(false)
 
-		const keyValue = options.find((option) => option.value === currentValue)?.key
 		if (onChange) {
-			onChange({ value: currentValue, key: keyValue })
+			onChange(current.value === value ? undefined : current)
 		}
 	}
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setFilteredOptions(
 			options.filter((option) => option.value.toLowerCase().includes(inputValue.toLowerCase()))
 		)
 	}, [inputValue, options])
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setValue(selectedValue)
 	}, [selectedValue])
+
+	useEffect(() => {
+		setInputValue(filter)
+	}, [filter])
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -75,7 +82,13 @@ export function Combobox({
 						placeholder={`Buscar ${itemName}...`}
 						className="h-9"
 						value={inputValue}
-						onValueChange={(val) => setInputValue(val)}
+						onValueChange={(val) => {
+							if (setFilter) {
+								setFilter(val)
+							} else {
+								setInputValue(val)
+							}
+						}}
 					/>
 					<CommandList>
 						{filteredOptions.length === 0 && (
@@ -86,7 +99,7 @@ export function Combobox({
 								<CommandItem
 									key={option.key}
 									value={option.value}
-									onSelect={() => handleSelect(option.value)}
+									onSelect={() => handleSelect(option)}
 								>
 									{option.value}
 									<Check
