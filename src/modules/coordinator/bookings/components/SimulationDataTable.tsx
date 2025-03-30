@@ -34,8 +34,9 @@ import {
 	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
 import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
-import { format } from 'date-fns'
+import { format } from "date-fns"
 import CreateSimulationsDialog from "./CreateSimulationsDialog"
+import ViewMembersDialog from "./ViewMembersDialog"
 
 export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -45,21 +46,22 @@ export function SimulationDataTable() {
 	const { id } = useParams()
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
+	const [isViewMembersOpen, setIsViewMembersOpen] = useState(false)
+	const [selectedSimulation, setSelectedSimulation] = useState<Simulation | null>(null)
 
 	const [data, setData] = useState<Simulation[]>([])
 
 	const [pagination, setPagination] = useState({
-		pageIndex: 0, //initial page index
-		pageSize: 10, //default page size
+		pageIndex: 0,
+		pageSize: 10,
 	})
 
 	const [paginationInfo, setPaginationInfo] = useState({
-		total: 0, //total number of records
-		totalPages: 0, //total number of pages
+		total: 0,
+		totalPages: 0,
 	})
 
 	useEffect(() => {
-
 		const fetchSimulations = async () => {
 			const res = await getSimulationsByPracticeId(
 				Number(id),
@@ -78,12 +80,30 @@ export function SimulationDataTable() {
 
 	const columns: ColumnDef<Simulation>[] = [
 		{
+			accessorKey: "groupNumber",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="flex w-full items-center justify-center"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Número de Grupo
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				return <div className="text-center">{row.getValue("groupNumber")}</div>
+			},
+		},
+		{
 			accessorKey: "startDateTime",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="flex w-full items-center justify-center"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Hora de Inicio
@@ -92,8 +112,8 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("startDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+				const date = new Date(row.getValue("startDateTime"))
+				return <div className="text-center capitalize">{format(date, "dd/MM/yyyy HH:mm")}</div>
 			},
 		},
 		{
@@ -102,7 +122,7 @@ export function SimulationDataTable() {
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="flex w-full items-center justify-center"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Hora de Finalización
@@ -111,8 +131,8 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("endDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+				const date = new Date(row.getValue("endDateTime"))
+				return <div className="text-center capitalize">{format(date, "dd/MM/yyyy HH:mm")}</div>
 			},
 		},
 		{
@@ -121,7 +141,7 @@ export function SimulationDataTable() {
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="flex w-full items-center justify-center"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Estado de Calificación
@@ -130,7 +150,7 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels
 				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
 			},
 		},
@@ -140,7 +160,7 @@ export function SimulationDataTable() {
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="flex w-full items-center justify-center"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Hora de Calificación
@@ -149,12 +169,12 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = row.getValue("gradeDateTime");
+				const date = row.getValue("gradeDateTime")
 				return (
 					<div className="text-center capitalize">
-						{date ? format(new Date(row.getValue("gradeDateTime")), 'dd/MM/yyyy HH:mm') : ""}
+						{date ? format(new Date(row.getValue("gradeDateTime")), "dd/MM/yyyy HH:mm") : ""}
 					</div>
-				);
+				)
 			},
 		},
 		{
@@ -163,7 +183,7 @@ export function SimulationDataTable() {
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="flex w-full items-center justify-center"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Calificación
@@ -178,7 +198,8 @@ export function SimulationDataTable() {
 		{
 			id: "actions",
 			enableHiding: false,
-			cell: () => {
+			cell: ({ row }) => {
+				const simulation = row.original
 
 				return (
 					<DropdownMenu>
@@ -190,7 +211,12 @@ export function SimulationDataTable() {
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => {
+									setSelectedSimulation(simulation)
+									setIsViewMembersOpen(true)
+								}}
+							>
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
 							<DropdownMenuItem>
@@ -303,6 +329,11 @@ export function SimulationDataTable() {
 				</div>
 			</div>
 			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+			<ViewMembersDialog
+				open={isViewMembersOpen}
+				onClose={() => setIsViewMembersOpen(false)}
+				simulationId={selectedSimulation?.simulationId!}
+			/>
 		</>
 	)
 }
