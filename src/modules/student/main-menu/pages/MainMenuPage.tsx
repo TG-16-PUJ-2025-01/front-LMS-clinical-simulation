@@ -10,7 +10,7 @@ export default function MainMenuPage(){
                     navLinks={[
                         {
                             label: "Calendario",
-                            href: "/calendario",
+                            href: "/estudiante/calendario",
                         },
                     ]}
                 />

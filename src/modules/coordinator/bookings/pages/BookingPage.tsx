@@ -30,7 +30,7 @@ export default function PracticeDetailsPage() {
 					navLinks={[
 						{
 							label: "Calendario",
-							href: "/calendario",
+							href: "/coordinador/calendario",
 						},
 					]}
 				/>

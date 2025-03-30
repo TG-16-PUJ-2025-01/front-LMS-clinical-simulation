@@ -34,17 +34,19 @@ export default function Router() {
 			<Route element={<PrivateRoute />}>
 				{/* Student Routes */}
 				<Route element={<StudentRoute />}>
-					<Route path="/estudiante/menu-principal" element={<StudentMainMenuPage />}></Route>
+					<Route path="/estudiante/asignaturas" element={<StudentMainMenuPage />}></Route>
 
-					<Route path="/estudiante" element={<Navigate to="/estudiante/menu-principal" />}></Route>
+					<Route path="estudiante/calendario" element={<CalendarPage />}></Route>
+					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
 				{/* Teacher Routes */}
 				<Route element={<TeacherRoute />}>
-					<Route path="/profesor/menu-principal" element={<TeacherMainMenuPage />}></Route>
-				
-					<Route path="/profesor" element={<Navigate to="/profesor/menu-principal" />}></Route>
+					<Route path="/profesor/asignaturas" element={<TeacherMainMenuPage />}></Route>
+
+					<Route path="/profesor/calendario" element={<CalendarPage />}></Route>
+					<Route path="/profesor" element={<Navigate to="/profesor/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
@@ -52,7 +54,7 @@ export default function Router() {
 				<Route element={<CoordinatorRoute />}>
 					<Route path="/coordinador" element={<Navigate to="/calendario" />}></Route>
 					{/*FIXME: Redirect to main page*/}
-					<Route path="/calendario" element={<CalendarPage />}></Route>
+					<Route path="/coordinador/calendario" element={<CalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
 					<Route path="/coordinador/asignaturas" element={<CoordinatorCoursesPage />}></Route>
 					<Route path="/coordinador/practica/:id" element={<CoordinatorBookingPage />}></Route>

@@ -10,7 +10,7 @@ export default function coursesPage() {
                                 navLinks={[
                                     {
                                         label: "Calendario",
-                                        href: "/calendario",
+                                        href: "/coordinador/calendario",
                                     },
                                     {
                                         label: "Página de inicio de la clase",

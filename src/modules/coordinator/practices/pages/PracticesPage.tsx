@@ -57,7 +57,7 @@ export default function PracticesPage() {
 					navLinks={[
 						{
 							label: "Calendario",
-							href: "/calendario",
+							href: "/coordinador/calendario",
 						},
 						{
 							label: "Página de inicio de la clase",
