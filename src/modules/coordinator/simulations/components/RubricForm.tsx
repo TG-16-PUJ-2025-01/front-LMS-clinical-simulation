@@ -1,5 +1,4 @@
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
-
 import {
 	Table,
 	TableBody,
@@ -9,98 +8,201 @@ import {
 	TableRow,
 } from "@/modules/core/components/ui/table"
 import { Button } from "@/modules/core/components/ui/button"
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from "@/modules/core/components/ui/form"
+import { Eye } from "lucide-react"
+import { Textarea } from "@/modules/core/components/ui/textarea"
+import { Input } from "@/modules/core/components/ui/input"
+import ViewRubricTemplateDialog from "../../rubricTemplates/components/ViewRubricTemplateDialog"
+import { useState } from "react"
 
 interface Props {
 	rubricTemplate: RubricTemplate
 }
 
-// const FormSchema = z.object({
-// 	criteria: z.array(
-// 		z.object({
-// 			score: z.coerce.number(),
-// 			description: z.string(),
-// 		})
-// 	),
-// })
+const FormSchema = z.object({
+	criteria: z.array(
+		z.object({
+			score: z.coerce.number(),
+			description: z.string(),
+		})
+	),
+	total: z.object({
+		score: z.coerce.number(),
+		description: z.string(),
+	}),
+})
 
 export function RubricForm({ rubricTemplate }: Props) {
+	const [openDialog, setOpenDialog] = useState(false)
+
+	const form = useForm<z.infer<typeof FormSchema>>({
+		resolver: zodResolver(FormSchema),
+		defaultValues: {
+			criteria: [
+				{
+					score: 0,
+					description: "",
+				},
+				{
+					score: 0,
+					description: "",
+				},
+			],
+			total: {
+				score: 0,
+				description: "",
+			},
+		},
+	})
+
+	async function onSubmit(data: z.infer<typeof FormSchema>) {
+		toast.success("Comentario publicado correctamente")
+	}
+
 	return (
-		<div className="flex flex-col gap-8">
-			<article className="max-h-[60vh] flex-1 overflow-auto rounded-md border">
-				{/* <Form {...form}>
+		<>
+			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
 					<FormField
 						control={form.control}
 						name="criteria"
-						render={({ field }) => (
+						render={() => (
 							<FormItem>
-								<Table className="h-full w-full">
-									<TableHeader>
-										<TableRow>
-											<TableHead className="border py-1 align-top">Criterios</TableHead>
-											{rubricTemplate.columns.map((column) => (
-												<TableHead key={column.title} className="border py-1 align-top">
-													{column.title}
-													<p className="text-blue-javeriana text-xs font-bold italic">{`${column.scoringScale.lowerValue} - ${column.scoringScale.upperValue} puntos`}</p>
-												</TableHead>
-											))}
-										</TableRow>
-									</TableHeader>
-									<TableBody>
-										{rubricTemplate.criteria.map((criteria) => (
-											<TableRow>
-												<TableCell className="border font-medium">
-													{criteria.name}
-													<p className="text-blue-javeriana text-xs font-bold italic">{`${criteria.weight}%`}</p>
-												</TableCell>
-												{criteria.scoringScaleDescription.map((criteriaDescription) => (
-													<TableCell className="border font-medium">{criteriaDescription}</TableCell>
-												))}
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
+								<FormControl>
+									<div className="flex flex-col gap-6">
+										<article className="max-h-[60vh] flex-1 overflow-auto rounded-md border">
+											<Table className="h-full w-full">
+												<TableHeader>
+													<TableRow>
+														<TableHead className="w-28 border py-1 align-top md:w-32 lg:w-40">
+															Criterios
+														</TableHead>
+														<TableHead className="border py-1 align-top">Comentarios</TableHead>
+														<TableHead className="w-16 border py-1 align-top">Nota</TableHead>
+													</TableRow>
+												</TableHeader>
+												<TableBody>
+													{rubricTemplate.criteria.map((criteria, index) => (
+														<TableRow>
+															<TableCell className="border font-medium">
+																{criteria.name}
+																<p className="text-blue-javeriana text-xs font-bold italic">{`${criteria.weight}%`}</p>
+															</TableCell>
+															<TableCell className="border py-1 font-medium">
+																<FormField
+																	control={form.control}
+																	name={`criteria.${index}.description`}
+																	render={({ field }) => (
+																		<FormItem className="h-full">
+																			<FormControl>
+																				<Textarea
+																					className="h-full min-h-min min-w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																					{...field}
+																				/>
+																			</FormControl>
+																		</FormItem>
+																	)}
+																/>
+															</TableCell>
+															<TableCell className="border text-right font-medium">
+																<FormField
+																	control={form.control}
+																	name={`criteria.${index}.score`}
+																	render={({ field }) => (
+																		<FormItem className="inline-flex items-center">
+																			<FormControl>
+																				<Input
+																					type="number"
+																					min={0}
+																					max={5}
+																					className="m-0 h-full min-h-min w-full max-w-[100px] resize-none rounded-none border-0 p-0 pl-2 text-wrap shadow-none focus-visible:ring-0"
+																					{...field}
+																				/>
+																			</FormControl>
+																			<p className="text-blue-javeriana font-bold italic">/5</p>
+																		</FormItem>
+																	)}
+																/>
+															</TableCell>
+														</TableRow>
+													))}
+													<TableRow>
+														<TableCell className="border font-medium">
+															Total
+															<p className="text-blue-javeriana text-xs font-bold italic">100%</p>
+														</TableCell>
+														<TableCell className="border py-1 font-medium">
+															<FormField
+																control={form.control}
+																name="total.description"
+																render={({ field }) => (
+																	<FormItem className="h-full">
+																		<FormControl>
+																			<Textarea
+																				className="h-full min-h-min min-w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																				{...field}
+																			/>
+																		</FormControl>
+																	</FormItem>
+																)}
+															/>
+														</TableCell>
+														<TableCell className="border text-right font-medium">
+															<FormField
+																control={form.control}
+																name="total.score"
+																render={({ field }) => (
+																	<FormItem className="inline-flex items-center">
+																		<FormControl>
+																			<Input
+																				type="number"
+																				min={0}
+																				max={5}
+																				className="m-0 h-full min-h-min w-full max-w-[100px] resize-none rounded-none border-0 p-0 pl-2 text-wrap shadow-none focus-visible:ring-0"
+																				{...field}
+																			/>
+																		</FormControl>
+																		<p className="text-blue-javeriana font-bold italic">/5</p>
+																	</FormItem>
+																)}
+															/>
+														</TableCell>
+													</TableRow>
+												</TableBody>
+											</Table>
+										</article>
+										<div className="flex w-full items-center justify-end gap-4">
+											<Button type="button" onClick={() => setOpenDialog(true)} variant="outline">
+												<Eye />
+												Ver rúbrica
+											</Button>
+											<Button type="submit" variant="default">
+												Guardar
+											</Button>
+										</div>
+									</div>
+								</FormControl>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
 				</form>
-			</Form> */}
-				<Table className="h-full w-full">
-					<TableHeader>
-						<TableRow>
-							<TableHead className="w-48 border py-1 align-top">Criterios</TableHead>
-							<TableHead className="border py-1 align-top">Comentarios</TableHead>
-							<TableHead className="w-14 border py-1 align-top">Nota</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{rubricTemplate.criteria.map((criteria) => (
-							<TableRow>
-								<TableCell className="border font-medium">
-									{criteria.name}
-									<p className="text-blue-javeriana text-xs font-bold italic">{`${criteria.weight}%`}</p>
-								</TableCell>
-								<TableCell className="border font-medium"></TableCell>
-								<TableCell className="border text-right font-medium">
-									<p className="text-blue-javeriana font-bold italic">/5</p>
-								</TableCell>
-							</TableRow>
-						))}
-						<TableRow>
-							<TableCell className="border font-medium">
-								Total
-								<p className="text-blue-javeriana text-xs font-bold italic">100%</p>
-							</TableCell>
-							<TableCell className="border font-medium"></TableCell>
-							<TableCell className="border text-right font-medium">
-								<p className="text-blue-javeriana font-bold italic">/5</p>
-							</TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			</article>
-			<Button className="ml-auto w-fit">Calificar</Button>
-		</div>
+			</Form>
+			<ViewRubricTemplateDialog
+				open={openDialog}
+				onClose={() => setOpenDialog(false)}
+				rubricTemplateData={rubricTemplate}
+			/>
+		</>
 	)
 }

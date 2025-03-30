@@ -59,7 +59,7 @@ export default function SimulationPage() {
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">Práctica (Grupo X)</LayoutSlot>
-			<div className="grid grid-cols-2 gap-8">
+			<div className="grid grid-cols-2 gap-6">
 				<section>
 					<video
 						ref={videoRef}
