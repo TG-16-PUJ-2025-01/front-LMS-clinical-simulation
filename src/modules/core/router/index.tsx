@@ -17,7 +17,7 @@ import CoordinatorSimulationPage from "@/modules/coordinator/simulations/pages/S
 import MembersPage from "@/modules/shared/members/pages/MembersPage"
 import CoordinatorPracticesPage from "@/modules/coordinator/practices/pages/PracticesPage"
 import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/BookingPage"
-import CalendarPage from "@/modules/shared/calendar/pages/CalendarPage"
+import CalendarPage from "@/modules/coordinator/calendar/pages/CalendarPage"
 import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesPage"
 import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
 import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
@@ -52,7 +52,7 @@ export default function Router() {
 
 				{/* Coordinator Routes */}
 				<Route element={<CoordinatorRoute />}>
-					<Route path="/coordinador" element={<Navigate to="/coordinador/calendario" />}></Route>
+					<Route path="/coordinador" element={<Navigate to="/coordinador/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 					<Route path="/coordinador/calendario" element={<CalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>

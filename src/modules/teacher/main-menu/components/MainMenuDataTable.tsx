@@ -66,7 +66,7 @@ export function MainMenuDataTable() {
 							itemName="año"
 							selectedValue={selectedYear ? selectedYear.toString() : ""}
 							onChange={(selected) =>
-								setSelectedYear(selected.value ? Number(selected.value) : null)
+								setSelectedYear(selected?.value ? Number(selected.value) : null)
 							}
 						/>
 						<span className="text-xl font-bold">-</span>
@@ -76,7 +76,7 @@ export function MainMenuDataTable() {
 							itemName="periodo"
 							selectedValue={selectedPeriod ? selectedPeriod.toString() : ""}
 							onChange={(selected) =>
-								setSelectedPeriod(selected.value ? Number(selected.value) : null)
+								setSelectedPeriod(selected?.value ? Number(selected.value) : null)
 							}
 						/>
 						<Button variant="default" onClick={resetFilters}>
