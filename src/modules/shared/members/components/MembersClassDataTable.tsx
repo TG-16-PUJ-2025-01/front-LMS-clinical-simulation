@@ -88,13 +88,12 @@ export function StudentsClassDataTable() {
 
 			if (fileTypes.includes(selectedFile.type)) {
 				setExcelFile(selectedFile)
-				e.target.value = ''  // Aquí forzamos el cambio del input
+				e.target.value = "" // Aquí forzamos el cambio del input
 				let reader = new FileReader()
 				reader.readAsArrayBuffer(selectedFile)
 				reader.onload = (e) => {
 					if (e.target?.result) {
 						setExcelFile(e.target.result)
-						
 					}
 				}
 			} else {
@@ -138,6 +137,10 @@ export function StudentsClassDataTable() {
 						const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
 						results.push(updatedClass)
 					}
+					else
+					{
+						toast.error(`El rol ${item.rol.toLowerCase()} no es válido`)
+					}
 				})
 
 				// Esperar a que todas las promesas se resuelvan
@@ -150,8 +153,7 @@ export function StudentsClassDataTable() {
 
 				if (results.length === 0) {
 					//toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
-				} else 
-				{
+				} else {
 					toast.success("Archivo Excel procesado exitosamente.")
 				}
 			}
@@ -162,7 +164,6 @@ export function StudentsClassDataTable() {
 	}, [excelFile])
 
 	useEffect(() => {
-		
 		if (openDialog) return
 
 		const fetchMembers = async () => {
