@@ -44,6 +44,7 @@ import DeleteStudentClassDialog from "./deleteStudentDialog"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Class from "@/modules/core/models/class"
+import { all, AxiosError } from "axios"
 
 export function StudentsClassDataTable() {
 	const fileInputRef = useRef<HTMLInputElement>(null)
@@ -87,7 +88,7 @@ export function StudentsClassDataTable() {
 			console.log(selectedFile.type)
 
 			if (fileTypes.includes(selectedFile.type)) {
-				setExcelFile(selectedFile)
+				//setExcelFile(selectedFile)
 				e.target.value = "" // Aquí forzamos el cambio del input
 				let reader = new FileReader()
 				reader.readAsArrayBuffer(selectedFile)
@@ -126,20 +127,36 @@ export function StudentsClassDataTable() {
 
 			let results: Class[] = []
 
+			let allCorrect = true
+
 			const processData = async () => {
 				const promises = data.map(async (item) => {
 					if (item.rol.toLowerCase() === "profesor") {
 						// Llama al servicio y agrega al resultado
-						const updatedClass = await updateClassProfessorMember(Number(id), item.institutionalId)
-						results.push(updatedClass)
+						try {
+							const updatedClass = await updateClassProfessorMember(
+								Number(id),
+								item.institutionalId
+							)
+							results.push(updatedClass)
+						} catch (error) {
+							console.log(error)
+							toast.error(error instanceof AxiosError ? error.response?.data.data : "Error desconocido")
+							allCorrect = false
+						}
 					} else if (item.rol.toLowerCase() === "estudiante") {
 						// Llama al servicio y agrega al resultado
-						const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
-						results.push(updatedClass)
-					}
-					else
-					{
+						try {
+							const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
+							results.push(updatedClass)
+						} catch (error) {
+
+							toast.error(error instanceof AxiosError ? error.response?.data.data : "Error desconocido")
+							allCorrect = false
+						}
+					} else {
 						toast.error(`El rol ${item.rol.toLowerCase()} no es válido`)
+						allCorrect = false
 					}
 				})
 
@@ -151,8 +168,8 @@ export function StudentsClassDataTable() {
 
 				console.log("Datos leídos del Excel:", results.length)
 
-				if (results.length === 0) {
-					//toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
+				if (!allCorrect) {
+					toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
 				} else {
 					toast.success("Archivo Excel procesado exitosamente.")
 				}
