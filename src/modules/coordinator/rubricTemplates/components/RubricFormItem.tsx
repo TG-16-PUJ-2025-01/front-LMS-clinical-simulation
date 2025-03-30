@@ -178,7 +178,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 			<FormControl>
 				<section className="flex max-w-[92vw] flex-col gap-2 xl:max-w-[1152px]">
 					<div className="flex h-full w-full gap-2">
-						<article className="[&>div]:max-h-[60vh] flex-1 overflow-hidden rounded-md border [&>div]:-m-px [&>div]:w-[calc(100%+2px)]">
+						<article className="flex-1 overflow-hidden rounded-md border [&>div]:-m-px [&>div]:max-h-[60vh] [&>div]:w-[calc(100%+2px)]">
 							<Table className="h-full w-full">
 								<TableHeader>
 									<TableRow>

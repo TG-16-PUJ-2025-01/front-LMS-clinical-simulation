@@ -25,18 +25,18 @@ export default function ViewRubricTemplateDialog({ open, onClose, rubricTemplate
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="max-h-screen sm:max-w-[1200px]" onSubmit={() => {}}>
 				<DialogHeader>
-					<DialogTitle>Visualizar Rúbrica</DialogTitle>
+					<DialogTitle>Rúbrica: {rubricTemplateData?.title}</DialogTitle>
 				</DialogHeader>
 				{rubricTemplateData && (
-          <article className="bg-background rounded-md border overflow-hidden [&>div]:-m-px [&>div]:w-[calc(100%+2px)]">
+					<article className="bg-background overflow-hidden rounded-md border [&>div]:-m-px [&>div]:w-[calc(100%+2px)]">
 						<Table className="h-full">
 							<TableHeader>
 								<TableRow>
 									<TableHead className="w-[100px] border py-1 align-top">Criterios</TableHead>
-									<TableHead className="w-20 min-w-20 border py-1 align-top">Peso</TableHead>
 									{rubricTemplateData.columns.map((column, index) => (
-										<TableHead key={index} className="text-accent-foreground border py-1">
+										<TableHead key={index} className="border py-1">
 											{column.title}
+											<p className="text-blue-javeriana text-xs font-bold italic">{`${column.scoringScale.lowerValue} - ${column.scoringScale.upperValue} puntos`}</p>
 										</TableHead>
 									))}
 								</TableRow>
@@ -44,8 +44,10 @@ export default function ViewRubricTemplateDialog({ open, onClose, rubricTemplate
 							<TableBody>
 								{rubricTemplateData.criteria.map((criteria, index) => (
 									<TableRow key={index}>
-										<TableCell className="border font-medium"></TableCell>
-										<TableCell className="border font-medium"></TableCell>
+										<TableCell className="border font-medium">
+											{criteria.name}
+											<p className="text-blue-javeriana text-xs font-bold italic">{`${criteria.weight}%`}</p>
+										</TableCell>
 										{criteria.scoringScaleDescription.map((description, index2) => (
 											<TableCell key={index2} className="border">
 												{description}

@@ -80,7 +80,7 @@ export function RubricForm({ rubricTemplate }: Props) {
 							<FormItem>
 								<FormControl>
 									<div className="flex flex-col gap-6">
-										<article className="max-h-[60vh] flex-1 overflow-auto rounded-md border">
+										<article className="flex-1 overflow-hidden rounded-md border [&>div]:-m-px [&>div]:max-h-[60vh] [&>div]:w-[calc(100%+2px)]">
 											<Table className="h-full w-full">
 												<TableHeader>
 													<TableRow>
@@ -125,7 +125,7 @@ export function RubricForm({ rubricTemplate }: Props) {
 																					type="number"
 																					min={0}
 																					max={5}
-																					className="m-0 h-full min-h-min w-full max-w-[100px] resize-none rounded-none border-0 p-0 pl-2 text-wrap shadow-none focus-visible:ring-0"
+																					className="m-0 h-full min-h-min w-full field-sizing-content resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
 																					{...field}
 																				/>
 																			</FormControl>
@@ -168,7 +168,7 @@ export function RubricForm({ rubricTemplate }: Props) {
 																				type="number"
 																				min={0}
 																				max={5}
-																				className="m-0 h-full min-h-min w-full max-w-[100px] resize-none rounded-none border-0 p-0 pl-2 text-wrap shadow-none focus-visible:ring-0"
+																				className="m-0 h-full min-h-min w-full field-sizing-content resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
 																				{...field}
 																			/>
 																		</FormControl>
