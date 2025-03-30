@@ -10,7 +10,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Eye, Inbox, MoreHorizontal, Pencil, Search, Trash2, View } from "lucide-react"
+import { ArrowUpDown, Eye, Inbox, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
