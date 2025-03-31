@@ -10,7 +10,7 @@ import {
 	createViewMonthAgenda,
 	viewWeek,
 } from "@schedule-x/calendar"
-import { getEvents } from "../service/calendarService"
+import { getAllEvents, getEvents } from "../service/calendarService"
 import { toast } from "sonner"
 
 export default function CalendarComponent() {
@@ -61,8 +61,14 @@ export default function CalendarComponent() {
 
 	const loadEvents = async () => {
 		try {
-			const res = await getEvents()
-			eventsServicePlugin.set(res.data)
+			if (location.pathname === "/admin/calendario") {
+				//TODO: Fix to use prefered role
+				const adminRes = await getAllEvents()
+				eventsServicePlugin.set(adminRes.data)
+			} else {
+				const res = await getEvents()
+				eventsServicePlugin.set(res.data)
+			}
 		} catch (error) {
 			console.error("Error loading events:", error)
 			toast.error("Error trying to find events")
