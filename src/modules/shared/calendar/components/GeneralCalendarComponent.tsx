@@ -26,7 +26,7 @@ export default function CalendarComponent() {
 				const adminRes = await getAllEvents(start, end)
 				eventsServicePlugin.set(adminRes.data)
 			} else {
-				const res = await getEvents()
+				const res = await getEvents(start, end)
 				eventsServicePlugin.set(res.data)
 			}
 		} catch (error) {
