@@ -8,7 +8,15 @@ export async function getEvents(): Promise<ApiResponse<EventDTO[]>> {
 	return data
 }
 
-export async function getAllEvents(): Promise<ApiResponse<EventDTO[]>> {
-	const { data } = await axios.get(`${API_URL}/calendar/all`)
+export async function getAllEvents(
+	start: string,
+	end: string
+): Promise<ApiResponse<EventDTO[]>> {
+	const { data } = await axios.get(`${API_URL}/calendar/all`, {
+		params: {
+			start,
+			end,
+		},
+	})
 	return data
 }
