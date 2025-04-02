@@ -96,3 +96,8 @@ export async function getPracticeById(practiceId: number): Promise<ApiResponse<P
 	const { data } = await axios.get(`${API_URL}/practice/${practiceId}`);
 	return data;
 }
+
+export async function editSimulationById(simulationId: number, simulationData: SimulationRequest): Promise<ApiResponse<Simulation>> {
+  const { data } = await axios.put(`${API_URL}/simulation/${simulationId}`, simulationData);
+  return data;
+}

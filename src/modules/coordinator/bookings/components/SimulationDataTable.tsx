@@ -23,7 +23,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
+import { ArrowUpDown, Calendar, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
 
 import {
 	DropdownMenu,
@@ -36,6 +36,7 @@ import {
 import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
 import { format } from 'date-fns'
 import CreateSimulationsDialog from "./CreateSimulationsDialog"
+import EditSimulationsDialog from "./EditSimulationsDialog"
 
 export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -45,8 +46,9 @@ export function SimulationDataTable() {
 	const { id } = useParams()
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
-
+	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 	const [data, setData] = useState<Simulation[]>([])
+	const [selectedSimulation, setSelectedSimulation] = useState<Simulation | null>(null)
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
@@ -178,8 +180,8 @@ export function SimulationDataTable() {
 		{
 			id: "actions",
 			enableHiding: false,
-			cell: () => {
-
+			cell: ({row}) => {
+				const simulation = row.original;
 				return (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -196,6 +198,15 @@ export function SimulationDataTable() {
 							<DropdownMenuItem>
 								<Pencil /> Calificar
 							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => {
+									setSelectedSimulation(simulation);
+									setIsEditDialogOpen(true);
+								}}
+							>
+								<Calendar /> Editar Reserva
+							</DropdownMenuItem>
+
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
@@ -303,6 +314,8 @@ export function SimulationDataTable() {
 				</div>
 			</div>
 			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+			<EditSimulationsDialog open={isEditDialogOpen} onClose={() => setIsEditDialogOpen(false)} simulation={selectedSimulation} />
+
 		</>
 	)
 }
