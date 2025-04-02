@@ -21,6 +21,7 @@ export function CoursesDataTable() {
 	const [searchByKey, setSearchByKey] = useState<string>("")
 	const [year, setYear] = useState<string>("")
 	const [period, setPeriod] = useState<string>("")
+	const navigate = useNavigate()
 
 	const searchBy = ["Asignaturas", "Clases", "Profesores"]
 	const periodList = ["1", "2", "3", ""]
@@ -36,28 +37,21 @@ export function CoursesDataTable() {
 			let searchPeriod = ""
 			if (year != "" && period === "") {
 				searchPeriod = year
-			}
-			else if (year === "" && period != "") {
-				searchPeriod = "-"+period
-			}
-			else if (year != "" && period != "")
-			{
-				searchPeriod = year +"-"+period
-			}
-			else
-			{
+			} else if (year === "" && period != "") {
+				searchPeriod = "-" + period
+			} else if (year != "" && period != "") {
+				searchPeriod = year + "-" + period
+			} else {
 				searchPeriod = ""
 			}
 
 			const res = await getCoordinatorCourses(searchByKey, filter, searchPeriod, true)
 
 			//revisar si se deberia incluir la lista de res.data. quitar del array la info de los courses con clases en 0
-			if(year != "" || period != "" || searchByKey != "") 
-			{
-				res.data = res.data.filter((element) => element.classes.length > 0);
+			if (year != "" || period != "" || searchByKey != "") {
+				res.data = res.data.filter((element) => element.classes.length > 0)
 			}
-			
-			
+
 			setData(res.data)
 			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
 		}
@@ -76,11 +70,10 @@ export function CoursesDataTable() {
 					}))}
 					itemName="por"
 					onChange={(selected) => {
-						
 						if (selected?.value === year) {
 							setYear("") // Deselecciona si se selecciona lo mismo dos veces
 						} else {
-							setYear(selected.value.toString())// Actualiza el valor
+							setYear(selected?.value.toString() ?? "") // Actualiza el valor
 						}
 					}}
 				/>
@@ -97,9 +90,8 @@ export function CoursesDataTable() {
 							console.log("Deselecciona si se selecciona lo mismo dos veces")
 							setPeriod("") // Deselecciona si se selecciona lo mismo dos veces
 						} else {
-							setPeriod(selected.value.toString())// Actualiza el valor
+							setPeriod(selected?.value.toString() ?? "") // Actualiza el valor
 						}
-						
 					}}
 				/>
 
@@ -150,6 +142,7 @@ export function CoursesDataTable() {
 													<CardClass
 														title={`(${classItem.javerianaId.toString()}) ${classItem.period}`} // Nombre de la clase
 														professor={classItem.professors.map((prof) => prof.name).join(", ")} // Lista de profesores separados por comas
+														onClick={() => navigate(`/coordinador/clases/${classItem.classId}/practicas`)} // Navega a la página de prácticas
 													/>
 												</CarouselItem>
 											))}
