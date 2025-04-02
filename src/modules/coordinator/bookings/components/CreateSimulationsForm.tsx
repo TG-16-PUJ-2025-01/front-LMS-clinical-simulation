@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { createSimulations, getAllRooms } from "../services/bookingService";
 import { useParams } from "react-router-dom";
 import Practice from "@/modules/core/models/practice";
-import { getPracticeById } from "../../practices/services/PracticeService";
+import { getPracticeById } from "../../../shared/practices/services/PracticeService";
 
 interface CreateSimulationsFormProps {
   onClose: () => void;
