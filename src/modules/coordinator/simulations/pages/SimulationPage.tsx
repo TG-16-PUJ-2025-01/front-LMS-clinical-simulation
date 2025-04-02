@@ -1,4 +1,3 @@
-import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { API_URL } from "@/modules/core/config/env"
 import { useRef, useEffect, useState } from "react"
@@ -48,16 +47,6 @@ export default function SimulationPage() {
 
 	return (
 		<>
-			<LayoutSlot name="header">
-				<NavBar
-					navLinks={[
-						{
-							label: "aqui",
-							href: "/coordinador/simulacion/1",
-						},
-					]}
-				/>
-			</LayoutSlot>
 			<LayoutSlot name="title">Práctica (Grupo X)</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>

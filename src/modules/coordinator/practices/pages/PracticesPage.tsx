@@ -52,20 +52,6 @@ export default function PracticesPage() {
 
 	return (
 		<>
-			<LayoutSlot name="header">
-				<NavBar
-					navLinks={[
-						{
-							label: "Calendario",
-							href: "/coordinador/calendario",
-						},
-						{
-							label: "Página de inicio de la clase",
-							href: `/coordinador/clases/${id}/practicas`,
-						},
-					]}
-			/>
-			</LayoutSlot>
 			<LayoutSlot name="title">Prácticas</LayoutSlot>
 			<div className="mb-4 flex justify-end">
 				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>

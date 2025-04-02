@@ -25,16 +25,6 @@ export default function PracticeDetailsPage() {
 
 	return (
 		<>
-			<LayoutSlot name="header">
-				<NavBar
-					navLinks={[
-						{
-							label: "Calendario",
-							href: "/coordinador/calendario",
-						},
-					]}
-				/>
-			</LayoutSlot>
 			<LayoutSlot name="title">{practice.name}</LayoutSlot>
 			<SimulationDataTable />
 		</>
