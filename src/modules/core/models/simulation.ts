@@ -3,7 +3,6 @@ import Video from "./video"
 
 export default interface Simulation {
 	simulationId: number
-	simulationId: number
 	startDateTime: Date
 	endDateTime: Date
   grade: number
