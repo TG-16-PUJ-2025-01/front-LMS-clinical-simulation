@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { CardPractice } from "../../../shared/practices/components/CardPractice"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { getPracticeByClassId } from "../../../shared/practices/services/PracticeService"
@@ -10,6 +9,7 @@ import EditPracticeDialog from "../../../shared/practices/components/EditPractic
 import AddPracticeDialog from "../../../shared/practices/components/AddPracticeDialog"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
+import { CardPractice } from "../component/CardPractice"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
