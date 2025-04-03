@@ -94,9 +94,9 @@ export default function CreateUserDialog({ open, onClose, onSuccess }: Props) {
                 email: values.email,
                 roles: values.roles,
             });
-                onClose(false);
-                toast.success("Usuario creado exitosamente");
-                onSuccess?.(); // Notifica al componente padre que hubo éxito
+            onClose(false);
+            toast.success("Usuario creado exitosamente");
+            onSuccess?.(); // Notifica al componente padre que hubo éxito
         } catch (error) {
             console.error("Error creating user:", error);
             toast.error("Error al crear el usuario");
@@ -104,8 +104,8 @@ export default function CreateUserDialog({ open, onClose, onSuccess }: Props) {
             setIsSubmitting(false);
         }
     }
-    
-    
+
+
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
@@ -187,8 +187,8 @@ export default function CreateUserDialog({ open, onClose, onSuccess }: Props) {
                                                 options={roleOptions}
                                                 value={roleOptions.filter((r) => field.value.includes(r.value))}
                                                 onChange={(selected) => field.onChange(selected.map((r) => r.value))}
-                                                placeholder="Selecciona los roles..."
-                                                className="w-full"
+                                                placeholder="Selecciona los roles"
+                                                className="w-full md:text-sm"
                                             />
                                         </FormControl>
                                         <FormMessage className="col-span-4 m-0 -mt-2 text-right" />

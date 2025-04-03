@@ -5,18 +5,21 @@ import { createViewDay } from "@schedule-x/calendar";
 import { createEventsServicePlugin } from "@schedule-x/events-service";
 import '@schedule-x/theme-shadcn/dist/index.css';
 
-import CreateSimulationsForm from "./CreateSimulationsForm";
 import { getSchedule } from "../services/bookingService";
+import Simulation from "@/modules/core/models/simulation";
+import EditSimulationsForm from "./EditSimulationsForm";
 
-interface BookingDialogProps {
+interface EditSimulationsDialogProps {
   open: boolean;
   onClose: () => void;
+  simulation: Simulation | null;
 }
 
-export default function CreateSimulationsDialog({ open, onClose }: BookingDialogProps) {
+export default function EditSimulationsDialog({ open, onClose, simulation }: EditSimulationsDialogProps) {
 
   const eventsServicePlugin = useMemo(() => createEventsServicePlugin(), []);
   const [selectedDate, setSelectedDate] = useState<string | undefined>(new Date().toISOString().split('T')[0]);
+
 
   const calendarApp = useNextCalendarApp(
     {
@@ -68,8 +71,10 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
       <DialogContent className="max-w-[90vw] h-[90vh] flex flex-row gap-4">
         <div className="flex-1 overflow-y-auto">
           {calendarApp && <ScheduleXCalendar calendarApp={calendarApp} />}
+
         </div>
-        <CreateSimulationsForm onClose={onClose} />
+        <EditSimulationsForm onClose={onClose} simulation={simulation}
+        />
       </DialogContent>
     </Dialog>
   );

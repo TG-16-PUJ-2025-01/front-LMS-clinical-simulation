@@ -25,6 +25,7 @@ export default function PracticesPage() {
 			const res = await getPracticeByClassId(Number(id))
 			setData(res.data)
 		} catch (error) {
+            console.error(error)
 			toast.error("No se encuentra la clase")
 		}
 	}
@@ -46,36 +47,34 @@ export default function PracticesPage() {
 	}
 
 	const handlePracticeNavigation = (practice: Practice) => {
-		setSelectedPractice(practice)
-		navigate(`/coordinador/practica/${practice.id}`)
+        navigate(`/profesor/practicas/${practice.id}`)
 	}
 
 	return (
 		<>
+			<LayoutSlot name="header">
+				<NavBar />
+			</LayoutSlot>
 			<LayoutSlot name="title">Prácticas</LayoutSlot>
 			<div className="mb-4 flex justify-end">
 				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
 			</div>
 			<div className="flex justify-center">
-				{data.length === 0 ? (
-					<p className="text-gray-500">No se encontraron prácticas</p>
-				) : (
-					<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
-						{data.map((practice) => (
-							<CardPractice
-								key={practice.id}
-								title={practice.name}
-								description={practice.description}
-								numberOfGroups={practice.numberOfGroups ?? null}
-								maxStudentsGroup={practice.maxStudentsGroup ?? null}
-								type={practice.type}
-								onClick={() => handlePracticeNavigation(practice)}
-								onEdit={() => handleOpenDialog("edit", practice)}
-								onDelete={() => handleOpenDialog("delete", practice)}
-							/>
-						))}
-					</div>
-				)}
+				<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+					{data.map((practice) => (
+						<CardPractice
+							key={practice.id}
+							title={practice.name}
+							description={practice.description}
+							numberOfGroups={practice.numberOfGroups ?? null}
+							maxStudentsGroup={practice.maxStudentsGroup ?? null}
+							type={practice.type}
+							onClick={() => handlePracticeNavigation(practice)}
+							onEdit={() => handleOpenDialog("edit", practice)}
+							onDelete={() => handleOpenDialog("delete", practice)}
+						/>
+					))}
+				</div>
 			</div>
 			<DeletePracticeDialog
 				open={openDialog === "delete"}

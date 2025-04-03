@@ -23,7 +23,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
+import { ArrowUpDown, Calendar, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
 
 import {
 	DropdownMenu,
@@ -34,8 +34,10 @@ import {
 	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
 import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
-import { format } from 'date-fns'
+import { format } from "date-fns"
 import CreateSimulationsDialog from "./CreateSimulationsDialog"
+import EditSimulationsDialog from "./EditSimulationsDialog"
+import ViewMembersDialog from "./ViewMembersDialog"
 
 export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -46,26 +48,31 @@ export function SimulationDataTable() {
 	const navigate = useNavigate()
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
+	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+	const [isViewMembersOpen, setIsViewMembersOpen] = useState(false)
+	const [selectedSimulation, setSelectedSimulation] = useState<Simulation | null>(null)
 
 	const [data, setData] = useState<Simulation[]>([])
 
 	const [pagination, setPagination] = useState({
-		pageIndex: 0, //initial page index
-		pageSize: 10, //default page size
+		pageIndex: 0,
+		pageSize: 10,
 	})
 
 	const [paginationInfo, setPaginationInfo] = useState({
-		total: 0, //total number of records
-		totalPages: 0, //total number of pages
+		total: 0,
+		totalPages: 0,
 	})
 
 	useEffect(() => {
-
 		const fetchSimulations = async () => {
 			const res = await getSimulationsByPracticeId(
 				Number(id),
 				pagination.pageIndex,
-				pagination.pageSize
+				pagination.pageSize,
+				filter,
+				sorting[0]?.id || "simulationId",
+				!(sorting[0]?.desc ?? false)
 			)
 			setData(res.data)
 			setPaginationInfo({
@@ -79,12 +86,30 @@ export function SimulationDataTable() {
 
 	const columns: ColumnDef<Simulation>[] = [
 		{
+			accessorKey: "groupNumber",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="flex w-full items-center justify-center"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Número de Grupo
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				return <div className="text-center">{row.getValue("groupNumber")}</div>
+			},
+		},
+		{
 			accessorKey: "startDateTime",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="flex w-full items-center justify-center"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Hora de Inicio
@@ -93,8 +118,8 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("startDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+				const date = new Date(row.getValue("startDateTime"))
+				return <div className="text-center capitalize">{format(date, "dd/MM/yyyy HH:mm")}</div>
 			},
 		},
 		{
@@ -103,7 +128,7 @@ export function SimulationDataTable() {
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="flex w-full items-center justify-center"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Hora de Finalización
@@ -112,8 +137,50 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("endDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+				const date = new Date(row.getValue("endDateTime"))
+				return <div className="text-center capitalize">{format(date, "dd/MM/yyyy HH:mm")}</div>
+			},
+		},
+		{
+			accessorKey: "gradeStatus",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="flex w-full items-center justify-center"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Estado de Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels
+				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
+			},
+		},
+		{
+			accessorKey: "gradeDateTime",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="flex w-full items-center justify-center"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Hora de Calificación
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const date = row.getValue("gradeDateTime")
+				return (
+					<div className="text-center capitalize">
+						{date ? format(new Date(row.getValue("gradeDateTime")), "dd/MM/yyyy HH:mm") : ""}
+					</div>
+				)
 			},
 		},
 		{
@@ -122,7 +189,7 @@ export function SimulationDataTable() {
 				<div className="relative w-full">
 					<Button
 						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						className="flex w-full items-center justify-center"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
 						Calificación
@@ -135,49 +202,10 @@ export function SimulationDataTable() {
 			},
 		},
 		{
-			accessorKey: "gradeDateTime",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Hora de Calificación
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				const date = new Date(row.getValue("gradeDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
-			},
-		},
-		{
-			accessorKey: "gradeStatus",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Estado de Calificación
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
-				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
-			},
-		},
-		{
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {
 				const simulation = row.original
-
 				return (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -188,12 +216,26 @@ export function SimulationDataTable() {
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => {
+									setSelectedSimulation(simulation)
+									setIsViewMembersOpen(true)
+								}}
+							>
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => navigate(`/coordinador/simulacion/${simulation.id}`)}>
+							<DropdownMenuItem onClick={() => navigate(`/coordinador/simulacion/${simulation.simulationId}`)}>
 								<Pencil /> Calificar
 							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => {
+									setSelectedSimulation(simulation);
+									setIsEditDialogOpen(true);
+								}}
+							>
+								<Calendar /> Editar Reserva
+							</DropdownMenuItem>
+
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
@@ -230,7 +272,7 @@ export function SimulationDataTable() {
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
-							placeholder="Buscar..."
+							placeholder="Buscar por número de grupo..."
 							value={filter}
 							onChange={(event) => {
 								setFilter(event.target.value)
@@ -279,7 +321,11 @@ export function SimulationDataTable() {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 pt-4">
+				<div className="flex items-center justify-between space-x-2 pt-4">
+					<span className="text-sm text-gray-600">
+						Página {paginationInfo.totalPages === 0 ? 0 : pagination.pageIndex + 1} de{" "}
+						{paginationInfo.totalPages}
+					</span>
 					<div className="space-x-2">
 						<Button
 							variant="outline"
@@ -301,6 +347,13 @@ export function SimulationDataTable() {
 				</div>
 			</div>
 			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+			<EditSimulationsDialog open={isEditDialogOpen} onClose={() => setIsEditDialogOpen(false)} simulation={selectedSimulation} />
+
+			<ViewMembersDialog
+				open={isViewMembersOpen}
+				onClose={() => setIsViewMembersOpen(false)}
+				simulationId={selectedSimulation?.simulationId ?? 0}
+			/>
 		</>
 	)
 }

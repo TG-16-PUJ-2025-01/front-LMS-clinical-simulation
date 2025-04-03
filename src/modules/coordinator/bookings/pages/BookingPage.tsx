@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import Practice from "@/modules/core/models/practice"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
-import { getPracticeById } from "../../practices/services/PracticeService"
+import { getPracticeById } from "../../../shared/practices/services/PracticeService"
 import { SimulationDataTable } from "../components/simulationDataTable"
 
 export default function PracticeDetailsPage() {

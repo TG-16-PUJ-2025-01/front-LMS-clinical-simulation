@@ -8,12 +8,18 @@ import Practice from "@/modules/core/models/practice"
 export async function getSimulationsByPracticeId(
 	practiceId: number,
 	page: number,
-	size: number
+	size: number,
+	filter: string,
+	sort: string,
+	asc: boolean
 ): Promise<ApiResponse<Simulation[]>> {
 	const { data } = await axios.get(`${API_URL}/simulation/practice/${practiceId}`, {
 		params: {
 			page,
 			size,
+			sort,
+			asc,
+			groupNumber: filter ? parseInt(filter) : undefined,
 		},
 	})
 
@@ -26,10 +32,9 @@ export async function getSimulationsByPracticeId(
 	}
 }
 
-// TODO esto debería ser un DTO
 interface SimulationRequest {
 	practiceId: number
-	roomId: number
+	roomIds: number[]
 	startDateTime: string
 	endDateTime: string
 }
@@ -54,6 +59,7 @@ interface Room {
 }
 
 interface Reservation {
+	room: string
 	startDateTime: string
 	endDateTime: string
 }
@@ -71,21 +77,21 @@ export async function getAllRooms(): Promise<Room[]> {
 	}
 }
 
-export async function getReservationsByRoom(roomId: string): Promise<Reservation[]> {
-	if (!roomId) {
-		console.warn("No se puede hacer la petición: sala o fecha no seleccionada")
-		return []
-	}
-
+export async function getSchedule(date: string): Promise<Reservation[]> {
 	try {
-		const response = await axios.get(`${API_URL}/simulation/room`, {
-			params: { roomId },
+		const response = await axios.get(`${API_URL}/simulation/schedule`, {
+			params: {
+				date: date,
+			},
 		})
 
-		return response.data.data.map((res: { startDateTime: string; endDateTime: string }) => ({
-			startDateTime: res.startDateTime,
-			endDateTime: res.endDateTime,
-		}))
+		return response.data.data.map(
+			(res: { room: string; startDateTime: string; endDateTime: string }) => ({
+				room: res.room,
+				startDateTime: res.startDateTime,
+				endDateTime: res.endDateTime,
+			})
+		)
 	} catch (error) {
 		console.error("Error fetching reservations:", error)
 		throw error
@@ -100,4 +106,9 @@ export async function getSimulationStudents(simulationId: number): Promise<ApiRe
 export async function getPracticeById(practiceId: number): Promise<ApiResponse<Practice>> {
 	const { data } = await axios.get(`${API_URL}/practice/${practiceId}`)
 	return data
+}
+
+export async function editSimulationById(simulationId: number, simulationData: SimulationRequest): Promise<ApiResponse<Simulation>> {
+  const { data } = await axios.put(`${API_URL}/simulation/${simulationId}`, simulationData);
+  return data;
 }

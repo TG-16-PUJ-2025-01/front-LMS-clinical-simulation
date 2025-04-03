@@ -22,6 +22,8 @@ import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesP
 import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
 import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
 import StudentMainMenuPage from "@/modules/student/main-menu/pages/MainMenuPage"
+import TeacherPracticesPage from "@/modules/teacher/practices/pages/PracticesPage"
+import StudentPracticesPage from "@/modules/student/practices/pages/PracticesPage"
 
 export default function Router() {
 	return (
@@ -37,6 +39,7 @@ export default function Router() {
 					<Route path="/estudiante/asignaturas" element={<StudentMainMenuPage />}></Route>
 
 					<Route path="estudiante/calendario" element={<CalendarPage />}></Route>
+					<Route path="/estudiante/clases/:id/practicas" element={<StudentPracticesPage />}></Route>
 					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
@@ -46,6 +49,7 @@ export default function Router() {
 					<Route path="/profesor/asignaturas" element={<TeacherMainMenuPage />}></Route>
 
 					<Route path="/profesor/calendario" element={<CalendarPage />}></Route>
+					<Route path="/profesor/clases/:id/practicas" element={<TeacherPracticesPage />}></Route>
 					<Route path="/profesor" element={<Navigate to="/profesor/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
@@ -76,6 +80,7 @@ export default function Router() {
 					<Route path="/admin/salas" element={<AdminRoomsPage />}></Route>
 					<Route path="/admin/usuarios" element={<AdminUsersPage />}></Route>
 					<Route path="/admin/clases/:id/miembros" element={<MembersPage />}></Route>
+					<Route path="/admin/calendario" element={<CalendarPage />}></Route>
 				</Route>
 
 				{/* Default Route */}
