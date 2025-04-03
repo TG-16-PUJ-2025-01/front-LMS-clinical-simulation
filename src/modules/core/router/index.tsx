@@ -23,6 +23,7 @@ import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubr
 import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
 import StudentMainMenuPage from "@/modules/student/main-menu/pages/MainMenuPage"
 import TeacherPracticesPage from "@/modules/teacher/practices/pages/PracticesPage"
+import StudentPracticesPage from "@/modules/student/practices/pages/PracticesPage"
 
 export default function Router() {
 	return (
@@ -38,6 +39,7 @@ export default function Router() {
 					<Route path="/estudiante/asignaturas" element={<StudentMainMenuPage />}></Route>
 
 					<Route path="estudiante/calendario" element={<CalendarPage />}></Route>
+					<Route path="/estudiante/clases/:id/practicas" element={<StudentPracticesPage />}></Route>
 					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>

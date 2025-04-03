@@ -6,8 +6,10 @@ import { Search } from "lucide-react"
 import { Input } from "@/modules/core/components/ui/input"
 import { getStudentMenuInfo } from "../services/MainMenuService"
 import { CardClass } from "@/modules/teacher/main-menu/components/CardClass"
+import { useNavigate } from "react-router-dom"
 
 export function MainMenuDataTable() {
+	const navigate = useNavigate()
 	const currentYear = new Date().getFullYear()
 	const yearOptions = Array.from({ length: 5 }, (_, i) => ({
 		key: currentYear - i,
@@ -45,6 +47,10 @@ export function MainMenuDataTable() {
 
 		fetchClasses()
 	}, [selectedYear, selectedPeriod, filter])
+
+	const handleClassNavigation = (classItem: Class) => {
+		navigate(`/estudiante/clases/${classItem.classId}/practicas`)
+	}
 
 	return (
 		<>
@@ -90,7 +96,7 @@ export function MainMenuDataTable() {
 					) : (
 						<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
 							{data.map((classItem) => (
-								<CardClass key={classItem.classId} classData={classItem} onClick={() => {}} />
+								<CardClass key={classItem.classId} classData={classItem} onClick={() => handleClassNavigation(classItem)} />
 							))}
 						</div>
 					)}
