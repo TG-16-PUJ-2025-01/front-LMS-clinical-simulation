@@ -47,6 +47,7 @@ export default function PracticesPage() {
 	}
 
 	const handlePracticeNavigation = (practice: Practice) => {
+		// TODO: Only redirect if the student is already in a group
         navigate(`/estudiante/practicas/${practice.id}`)
 	}
 
