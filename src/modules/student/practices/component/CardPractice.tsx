@@ -1,4 +1,4 @@
-import { MoreHorizontal, Pencil, Trash2, Users, User } from "lucide-react"
+import { MoreHorizontal, Users, User, Calendar, SquarePlus } from "lucide-react"
 import { cn } from "@/modules/core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
 import {
@@ -50,7 +50,7 @@ export function CardPractice({
 			<Card
 				onClick={onClick}
 				className={cn(
-					"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden transition-transform hover:scale-105",
+					"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden shadow-md transition-transform hover:scale-105",
 					className
 				)}
 			>
@@ -74,7 +74,7 @@ export function CardPractice({
 									onEdit()
 								}}
 							>
-								<Pencil className="mr-2 h-4 w-4" /> Editar
+								<Calendar className="mr-2 h-4 w-4" /> Reservar Horario
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={(e) => {
@@ -82,7 +82,7 @@ export function CardPractice({
 									onDelete()
 								}}
 							>
-								<Trash2 className="mr-2 h-4 w-4" /> Borrar
+								<SquarePlus className="mr-2 h-4 w-4" /> Unirse a Grupo
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>

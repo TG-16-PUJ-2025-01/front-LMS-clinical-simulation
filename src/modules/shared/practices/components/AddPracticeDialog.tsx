@@ -125,7 +125,8 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 
 			onClose(false)
 		} catch (error) {
-			toast.error(error.response?.data?.message || "Error al crear la práctica")
+			console.error(error)
+			toast.error("Error al crear la práctica")
 		}
 	}
 

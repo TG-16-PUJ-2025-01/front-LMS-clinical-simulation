@@ -8,4 +8,5 @@ export default interface Class {
     course: Course;
     professors: User[];
     period: string;
+    numberOfParticipants: number;
   }

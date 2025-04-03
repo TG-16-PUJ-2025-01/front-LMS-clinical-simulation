@@ -47,7 +47,7 @@ export default function DeleteRubricTemplateDialog({
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar la rubrica?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y debera volver a crear dicha rubrica
+						Esta acción no es reversible y deberá volver a crear dicha rubrica
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
