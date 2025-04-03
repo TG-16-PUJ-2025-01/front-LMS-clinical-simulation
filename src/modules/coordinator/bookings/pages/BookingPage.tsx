@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import Practice from "@/modules/core/models/practice"
-import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { getPracticeById } from "../../practices/services/PracticeService"
 import { SimulationDataTable } from "../components/simulationDataTable"

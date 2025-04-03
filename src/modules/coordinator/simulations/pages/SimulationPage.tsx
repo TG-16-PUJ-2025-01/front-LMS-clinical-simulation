@@ -9,6 +9,7 @@ import Simulation from "@/modules/core/models/simulation"
 import { useParams } from "react-router-dom"
 import { getSimulationById } from "../services/simulationService"
 import { RubricForm } from "../components/RubricForm"
+import { VideoOff } from "lucide-react"
 
 export default function SimulationPage() {
 	const params = useParams()
@@ -50,15 +51,23 @@ export default function SimulationPage() {
 			<LayoutSlot name="title">Práctica (Grupo X)</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>
-					<video
-						ref={videoRef}
-						src={`${API_URL}/streaming/video/${simulation?.video.name}`}
-						className="aspect-video w-full rounded-md"
-						controls
-					></video>
+					{simulation?.video?.name ? (
+						<video
+							ref={videoRef}
+							src={`${API_URL}/streaming/video/${simulation?.video?.name}`}
+							className="aspect-video w-full rounded-md"
+							controls
+						></video>
+					) : (
+						<div className="flex aspect-video w-full flex-col items-center justify-center gap-6">
+							<p>El video no está disponible para su visualización</p>
+							<VideoOff size={64} />
+							<div className="h-6"></div>
+						</div>
+					)}
 					<CommentForm
 						timestamp={currentTime}
-						videoId={simulation?.video.videoId ?? 0}
+						videoId={simulation?.video?.videoId ?? 0}
 						onFocus={() => videoRef.current?.pause()}
 						onSubmit={() => {
 							videoRef.current?.play()
@@ -67,11 +76,11 @@ export default function SimulationPage() {
 					/>
 					<Separator className="my-2" />
 					<h2 className="mb-2 font-semibold">Comentarios anteriores</h2>
-					{simulation?.video.comments.length === 0 ? (
+					{simulation?.video?.comments.length === 0 ? (
 						<p className="text-sm text-gray-400">No hay comentarios anteriores</p>
 					) : (
 						<ul>
-							{simulation?.video.comments.map((comment) => (
+							{simulation?.video?.comments.map((comment) => (
 								<li key={comment.timestamp} className="flex items-baseline gap-2">
 									<Button
 										type="button"

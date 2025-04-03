@@ -10,7 +10,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { getSimulationsByPracticeId } from "../services/bookingService"
 import Simulation from "@/modules/core/models/simulation"
 import { Button } from "@/modules/core/components/ui/button"
@@ -43,6 +43,7 @@ export function SimulationDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 	const { id } = useParams()
+	const navigate = useNavigate()
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -174,7 +175,8 @@ export function SimulationDataTable() {
 		{
 			id: "actions",
 			enableHiding: false,
-			cell: () => {
+			cell: ({ row }) => {
+				const simulation = row.original
 
 				return (
 					<DropdownMenu>
@@ -189,7 +191,7 @@ export function SimulationDataTable() {
 							<DropdownMenuItem>
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
-							<DropdownMenuItem>
+							<DropdownMenuItem onClick={() => navigate(`/coordinador/simulacion/${simulation.id}`)}>
 								<Pencil /> Calificar
 							</DropdownMenuItem>
 						</DropdownMenuContent>
