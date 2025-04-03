@@ -49,36 +49,36 @@ export default function ViewMembersDialog({ open, onClose, simulationId }: ViewM
 					<DialogTitle>Miembros de la Simulación</DialogTitle>
 					<DialogDescription>Estudiantes asociados</DialogDescription>
 				</DialogHeader>
-					<div className="rounded-md border">
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>ID</TableHead>
-									<TableHead>Nombre</TableHead>
-									<TableHead>Apellido</TableHead>
-									<TableHead>Correo</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{students.length ? (
-									students.map((student) => (
-										<TableRow key={student.id}>
-											<TableCell>{student.institutionalId}</TableCell>
-											<TableCell>{student.name}</TableCell>
-											<TableCell>{student.lastName}</TableCell>
-											<TableCell>{student.email}</TableCell>
-										</TableRow>
-									))
-								) : (
-									<TableRow>
-										<TableCell colSpan={4} className="text-center">
-											No hay estudiantes inscritos en este horario.
-										</TableCell>
+				<div className="rounded-md border">
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>ID</TableHead>
+								<TableHead>Nombre</TableHead>
+								<TableHead>Apellido</TableHead>
+								<TableHead>Correo</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{students.length ? (
+								students.map((student) => (
+									<TableRow key={student.id}>
+										<TableCell>{student.institutionalId}</TableCell>
+										<TableCell>{student.name}</TableCell>
+										<TableCell>{student.lastName}</TableCell>
+										<TableCell>{student.email}</TableCell>
 									</TableRow>
-								)}
-							</TableBody>
-						</Table>
-					</div>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={4} className="text-center">
+										No hay estudiantes inscritos en este horario.
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
+				</div>
 			</DialogContent>
 		</Dialog>
 	)
