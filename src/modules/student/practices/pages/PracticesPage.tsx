@@ -36,6 +36,7 @@ export default function PracticesPage() {
 	}, [])
 
 	const handleOpenDialog = (type: "edit" | "delete" | "add", practice?: Practice) => {
+		// TODO: Create new dialogs for student
 		setOpenDialog(type)
 		setSelectedPractice(practice ?? null)
 	}
