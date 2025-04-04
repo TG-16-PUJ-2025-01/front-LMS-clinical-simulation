@@ -4,6 +4,7 @@ import Practice from "@/modules/core/models/practice"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { getPracticeById } from "../../../shared/practices/services/PracticeService"
 import { SimulationDataTable } from "../components/SimulationDataTable"
+import NavBar from "@/modules/core/components/Headers/NavBar"
 
 export default function PracticeDetailsPage() {
 	const { id } = useParams()
@@ -24,6 +25,24 @@ export default function PracticeDetailsPage() {
 
 	return (
 		<>
+			<LayoutSlot name="header">
+				<NavBar
+					navLinks={[
+						{
+							label: "Asignaturas",
+							href: `/coordinador/asignaturas`,
+						},
+						{
+							label: "Calendario",
+							href: "/coordinador/calendario",
+						},
+						{
+							label: "Rúbricas",
+							href: "/coordinador/rubricas",
+						},
+					]}
+				/>
+			</LayoutSlot>
 			<LayoutSlot name="title">{practice.name}</LayoutSlot>
 			<SimulationDataTable />
 		</>
