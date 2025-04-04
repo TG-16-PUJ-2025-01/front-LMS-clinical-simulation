@@ -9,12 +9,15 @@ import EditPracticeDialog from "../../../shared/practices/components/EditPractic
 import AddPracticeDialog from "../../../shared/practices/components/AddPracticeDialog"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
+import Class from "@/modules/core/models/class"
+import { getClass } from "@/modules/admin/classes/services/classService"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
 	const { id } = useParams()
 	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "add" | null>(null)
 	const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
+	const [classData, setClassData] = useState<Class | null>(null)
 
 	const [data, setData] = useState<Practice[]>([])
 
@@ -34,6 +37,20 @@ export default function PracticesPage() {
 		fetchPractices()
 	}, [openDialog, fetchPractices])
 
+	useEffect(() => {
+		const fetchClass = async () => {
+			if (!id) return
+			try {
+				const res = await getClass(Number(id))
+				setClassData(res.data)
+			} catch (error) {
+				console.error(error)
+				toast.error("No se encuentra la clase")
+			}
+		}
+		fetchClass()
+	}, [id])
+
 	const handleOpenDialog = (type: "edit" | "delete" | "add", practice?: Practice) => {
 		setOpenDialog(type)
 		setSelectedPractice(practice ?? null)
@@ -52,7 +69,7 @@ export default function PracticesPage() {
 
 	return (
 		<>
-			<LayoutSlot name="title">Clase {id}</LayoutSlot>
+			<LayoutSlot name="title">({classData?.javerianaId}) {classData?.course.name}</LayoutSlot>
 			<div className="flex justify-end">
 				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
 			</div>
