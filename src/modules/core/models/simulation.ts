@@ -2,6 +2,7 @@ import Room from "./room"
 import Video from "./video"
 
 export default interface Simulation {
+  groupNumber: number
 	simulationId: number
 	startDateTime: Date
 	endDateTime: Date

@@ -48,7 +48,7 @@ export default function SimulationPage() {
 
 	return (
 		<>
-			<LayoutSlot name="title">Práctica (Grupo X)</LayoutSlot>
+			<LayoutSlot name="title">Práctica (Grupo {simulation?.groupNumber})</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>
 					{simulation?.video?.name ? (
