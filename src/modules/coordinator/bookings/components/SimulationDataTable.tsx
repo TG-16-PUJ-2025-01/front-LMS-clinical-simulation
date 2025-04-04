@@ -44,7 +44,7 @@ export function SimulationDataTable() {
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
-	const { id } = useParams()
+	const { practiceId } = useParams()
 	const navigate = useNavigate()
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -67,7 +67,7 @@ export function SimulationDataTable() {
 	useEffect(() => {
 		const fetchSimulations = async () => {
 			const res = await getSimulationsByPracticeId(
-				Number(id),
+				Number(practiceId),
 				pagination.pageIndex,
 				pagination.pageSize,
 				filter,
@@ -82,7 +82,7 @@ export function SimulationDataTable() {
 		}
 
 		fetchSimulations()
-	}, [pagination, filter, sorting, id])
+	}, [pagination, filter, sorting, practiceId])
 
 	const columns: ColumnDef<Simulation>[] = [
 		{
