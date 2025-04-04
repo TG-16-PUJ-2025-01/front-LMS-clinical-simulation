@@ -87,17 +87,17 @@ export default function MainMenuPage() {
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">Tus Clases</LayoutSlot>
-			<div className="mb-4 flex items-center justify-between gap-4">
-				<div className="relative w-1/2 max-w-sm">
-					<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
-					<Input
-						placeholder="Buscar por nombre..."
-						value={filter}
-						onChange={(event) => setFilter(event.target.value)}
-						className="w-full pl-8"
-					/>
-				</div>
+			<div className="mb-4 flex items-center justify-between">
 				<div className="flex items-center gap-4">
+					<div className="relative">
+						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
+						<Input
+							placeholder="Buscar por nombre..."
+							value={filter}
+							onChange={(event) => setFilter(event.target.value)}
+							className="pl-8"
+						/>
+					</div>
 					<Combobox
 						placeholderText="Año"
 						options={yearOptions}
@@ -119,6 +119,9 @@ export default function MainMenuPage() {
 						Resetear Filtros
 					</Button>
 				</div>
+				<Button variant="default" onClick={() => navigate("/profesor/clases/agregar")}>
+					Nueva Clase
+				</Button>
 			</div>
 			<div className="flex justify-center">
 				{data.length === 0 ? (
