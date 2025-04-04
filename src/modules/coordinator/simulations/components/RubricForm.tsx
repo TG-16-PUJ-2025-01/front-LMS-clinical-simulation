@@ -93,7 +93,7 @@ export function RubricForm({ rubricTemplate }: Props) {
 												</TableHeader>
 												<TableBody>
 													{rubricTemplate.criteria.map((criteria, index) => (
-														<TableRow>
+														<TableRow key={index}>
 															<TableCell className="border font-medium">
 																{criteria.name}
 																<p className="text-blue-javeriana text-xs font-bold italic">{`${criteria.weight}%`}</p>

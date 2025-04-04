@@ -5,7 +5,7 @@ export default function CalendarPage() {
 	return (
 		<>
 			<LayoutSlot name="title">Calendario</LayoutSlot>
-			<div className="mt-6 h-[75vh] overflow-y-auto min-h-[500px]">
+			<div className="h-[75vh] overflow-y-auto min-h-[500px]">
 				<CalendarComponent />
 			</div>
 		</>

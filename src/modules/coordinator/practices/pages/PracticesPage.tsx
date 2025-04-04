@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { CardPractice } from "../../../shared/practices/components/CardPractice"
-import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { getPracticeByClassId } from "../../../shared/practices/services/PracticeService"
 import Practice from "@/modules/core/models/practice"
@@ -19,20 +18,21 @@ export default function PracticesPage() {
 
 	const [data, setData] = useState<Practice[]>([])
 
-	const fetchPractices = async () => {
+	const fetchPractices = useCallback(async () => {
 		if (!id) return
 		try {
 			const res = await getPracticeByClassId(Number(id))
 			setData(res.data)
 		} catch (error) {
+			console.error(error)
 			toast.error("No se encuentra la clase")
 		}
-	}
+	}, [id]) 
 
 	useEffect(() => {
 		if (openDialog) return
 		fetchPractices()
-	}, [])
+	}, [openDialog, fetchPractices])
 
 	const handleOpenDialog = (type: "edit" | "delete" | "add", practice?: Practice) => {
 		setOpenDialog(type)
@@ -52,15 +52,15 @@ export default function PracticesPage() {
 
 	return (
 		<>
-			<LayoutSlot name="title">Prácticas</LayoutSlot>
-			<div className="mb-4 flex justify-end">
+			<LayoutSlot name="title">Clase {id}</LayoutSlot>
+			<div className="flex justify-end">
 				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
 			</div>
-			<div className="flex justify-center">
+			<div className="flex justify-center items-center min-h-32">
 				{data.length === 0 ? (
 					<p className="text-gray-500">No se encontraron prácticas</p>
 				) : (
-					<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+					<div className="mt-6 w-full grid grid-cols-[repeat(auto-fit,300px)] gap-y-6 justify-between">
 						{data.map((practice) => (
 							<CardPractice
 								key={practice.id}
