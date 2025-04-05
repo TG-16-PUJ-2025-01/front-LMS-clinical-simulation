@@ -54,15 +54,12 @@ const formSchema = z.object({
 			message: "La asignatura es requerida",
 		}),
 	}),
-	year: z
-		.number({
-			required_error: "El año es requerido",
-		}),
-	yearPeriod: z
-		.string()
-		.nonempty({
-			message: "El periodo académico es requerido",
-		}),
+	year: z.number({
+		required_error: "El año es requerido",
+	}),
+	yearPeriod: z.string().nonempty({
+		message: "El periodo académico es requerido",
+	}),
 	numberOfParticipants: z.number({
 		required_error: "La cantidad de estudiantes es requerida",
 	}),
@@ -246,7 +243,9 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel
 											className={`col-span-1 m-0 text-right ${
-												form.formState.errors.year || form.formState.errors.yearPeriod ? "text-red-500" : ""
+												form.formState.errors.year || form.formState.errors.yearPeriod
+													? "text-red-500"
+													: ""
 											}`}
 										>
 											Año y Periodo
@@ -256,13 +255,13 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 												<Combobox
 													placeholderText="Año"
 													options={[...Array(3)].map((_, i) => {
-														const year = new Date().getFullYear() + i;
-														return { key: year, value: year.toString() };
+														const year = new Date().getFullYear() + i
+														return { key: year, value: year.toString() }
 													})}
 													itemName="año"
 													onChange={(selected) => {
-														form.setValue("year", Number(selected.value));
-														form.trigger(["year", "yearPeriod"]);
+														form.setValue("year", Number(selected.value))
+														form.trigger(["year", "yearPeriod"])
 													}}
 												/>
 											</FormControl>
@@ -276,14 +275,15 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 													}))}
 													itemName="período"
 													onChange={(selected) => {
-														form.setValue("yearPeriod", selected.value.toString());
-														form.trigger(["year", "yearPeriod"]);
+														form.setValue("yearPeriod", selected.value.toString())
+														form.trigger(["year", "yearPeriod"])
 													}}
 												/>
 											</FormControl>
 										</div>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right">
-											{form.formState.errors.year?.message || form.formState.errors.yearPeriod?.message}
+											{form.formState.errors.year?.message ||
+												form.formState.errors.yearPeriod?.message}
 										</FormMessage>
 									</FormItem>
 								)}
