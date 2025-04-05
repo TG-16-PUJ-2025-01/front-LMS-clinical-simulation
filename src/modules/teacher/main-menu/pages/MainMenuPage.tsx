@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import Class from "@/modules/core/models/class"
 import { getMenuInfo } from "@/modules/shared/main-menu/services/MainMenuService"
-import { CardClass } from "../../../shared/main-menu/components/CardClass"
 import { Button } from "@/modules/core/components/ui/button"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { Input } from "@/modules/core/components/ui/input"
 import { Search } from "lucide-react"
 import CreateClassDialog from "@/modules/admin/classes/components/CreateClassDialog"
+import { CardClassTeacher } from "../components/CardClassTeacher"
+import EditClassDialog from "@/modules/admin/classes/components/EditClassDialog"
+import DeleteClassDialog from "@/modules/admin/classes/components/DeleteClassDialog"
 
 export default function MainMenuPage() {
 	const navigate = useNavigate()
@@ -21,10 +23,11 @@ export default function MainMenuPage() {
 
 	const [selectedYear, setSelectedYear] = useState<number | null>(null)
 	const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null)
+	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 	const [data, setData] = useState<Class[]>([])
 	const [filter, setFilter] = useState<string>("")
 
-	const [openDialog, setOpenDialog] = useState<"create" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
 
 	const resetFilters = () => {
 		setSelectedYear(null)
@@ -73,12 +76,14 @@ export default function MainMenuPage() {
 		fetchYearOptions()
 	}, [])
 
-	const handleOpenDialog = (type: "create") => {
+	const handleOpenDialog = (type: "edit" | "delete" | "create", classItem?: Class) => {
 		setOpenDialog(type)
+		setSelectedClass(classItem ?? null)
 	}
 
 	const handleCloseDialog = () => {
 		setOpenDialog(null)
+		setSelectedClass(null)
 	}
 
 	const handleClassNavigation = (classItem: Class) => {
@@ -136,16 +141,28 @@ export default function MainMenuPage() {
 				) : (
 					<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
 						{data.map((classItem) => (
-							<CardClass
+							<CardClassTeacher
 								key={classItem.classId}
 								classData={classItem}
 								onClick={() => handleClassNavigation(classItem)}
+								onEdit={() => handleOpenDialog("edit", classItem)}
+								onDelete={() => handleOpenDialog("delete", classItem)}
 							/>
 						))}
 					</div>
 				)}
 			</div>
 			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
+			<EditClassDialog
+				open={openDialog === "edit"}
+				onClose={handleCloseDialog}
+				classData={selectedClass ?? undefined}
+			/>
+			<DeleteClassDialog
+				open={openDialog === "delete"}
+				onClose={handleCloseDialog}
+				classId={selectedClass?.classId ?? null}
+			/>
 		</>
 	)
 }

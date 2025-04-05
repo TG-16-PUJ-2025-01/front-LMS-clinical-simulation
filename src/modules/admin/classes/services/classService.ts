@@ -51,7 +51,7 @@ export async function updateClass(id: number, updatedClass: CreateClassDTO): Pro
     }
 }
 
-export async function deleteClass(id: number, ): Promise<ApiResponse<Class>> {
+export async function deleteClass(id: number): Promise<ApiResponse<Class>> {
     const { data } = await axios.delete(`${API_URL}/class/delete/${id}`)
 
     return {
