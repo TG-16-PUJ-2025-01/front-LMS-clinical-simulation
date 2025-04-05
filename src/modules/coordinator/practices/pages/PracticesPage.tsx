@@ -69,7 +69,7 @@ export default function PracticesPage() {
 
 	return (
 		<>
-			<LayoutSlot name="title">({classData?.javerianaId}) {classData?.course.name}</LayoutSlot>
+			<LayoutSlot name="title">({classData?.javerianaId}) {classData?.course.name} - {classData?.period}</LayoutSlot>
 			<div className="flex justify-end">
 				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
 			</div>
