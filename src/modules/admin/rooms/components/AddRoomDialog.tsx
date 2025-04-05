@@ -26,6 +26,7 @@ import { toast } from "sonner"
 import { ComboboxCreate } from "../../../core/components/Combobox/ComboboxCreate"
 import RoomTypeDto from "../dtos/roomTypeDto"
 import RoomDto from "../dtos/roomDto"
+import { NumericFormat } from "react-number-format"
 
 interface Props {
 	open: boolean
@@ -63,12 +64,12 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 	})
 
 	const handleOnCreateOption = async (value: string) => {
-			const newRoomType: RoomTypeDto = { name: value }
-			const response = await addRoomType(newRoomType)
-			const createdRoomType = response.data
-			form.setValue("type", { id: createdRoomType.id, name: createdRoomType.name })
-			fetchRoomTypes()
-		}
+		const newRoomType: RoomTypeDto = { name: value }
+		const response = await addRoomType(newRoomType)
+		const createdRoomType = response.data
+		form.setValue("type", { id: createdRoomType.id, name: createdRoomType.name })
+		fetchRoomTypes()
+	}
 
 	const fetchRoomTypes = async () => {
 		const res = await getRoomsTypes()
@@ -80,7 +81,7 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 			fetchRoomTypes()
 			form.reset()
 		}
-	}, [open])
+	}, [form, open])
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
@@ -92,14 +93,12 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 
 			await createRoom(newRoom)
 
-			toast.success("Sala creada exitosamente")
-
 			onClose(false)
 
-			form.reset()
+			toast.success("Sala creada exitosamente")
+
 		} catch (error: any) {
 			toast.error("El nombre de la sala ya existe")
-			
 		}
 	}
 
@@ -163,14 +162,14 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Capacidad</FormLabel>
 										<FormControl>
-											<Input
-												id="capacity"
-												type="number"
+											<NumericFormat
+												value={field.value}
+												onValueChange={(e) => field.onChange(e.floatValue)}
+												thousandSeparator={false}
+												allowNegative={false}
+												customInput={Input}
 												placeholder="Capacidad"
 												className="col-span-3 m-0"
-												{...field}
-												onChange={(e) => field.onChange(Number(e.target.value))}
-												min={0}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

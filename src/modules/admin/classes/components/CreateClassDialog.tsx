@@ -30,7 +30,7 @@ import { getCourses } from "../../courses/services/courseService"
 import Select from "react-select"
 import makeAnimated from "react-select/animated"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
-import { NumericFormat } from "react-number-format";
+import { NumericFormat } from "react-number-format"
 
 interface Props {
 	open: boolean
@@ -39,33 +39,35 @@ interface Props {
 }
 
 const formSchema = z.object({
-	javerianaId: z.coerce.number().int().positive({
-		message: "El ID debe ser un número entero positivo",
+	javerianaId: z.number({
+		required_error: "El ID es requerido",
 	}),
 	professor: z.object({
 		id: z.array(z.number()).optional(),
 		name: z.string().nonempty({
-			message: "Debe seleccionar un profesor",
+			message: "El profesor es requerido",
 		}),
 	}),
 	course: z.object({
 		courseid: z.number().optional(),
 		name: z.string().nonempty({
-			message: "Debe seleccionar la asignatura asociada",
+			message: "La asignatura es requerida",
 		}),
 	}),
-	year: z.number({
-		required_error: "El año es requerido",
-	}),
-	yearPeriod: z.string({
-		required_error: "El periodo academico es requerido",
-	}),
+	year: z
+		.number({
+			required_error: "El año es requerido",
+		}),
+	yearPeriod: z
+		.string()
+		.nonempty({
+			message: "El periodo académico es requerido",
+		}),
 	numberOfParticipants: z.number({
-		required_error: "La cantidad de estudiantes es requerido",
+		required_error: "La cantidad de estudiantes es requerida",
 	}),
 })
 
-//lista de trings
 const periods = ["10", "20", "30"]
 
 const animatedComponents = makeAnimated()
@@ -237,57 +239,61 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 								)}
 							/>
 
-							<div className="flex w-full items-center justify-center gap-2">
-								<div className="w-24">
-									<FormField
-										control={form.control}
-										name="year"
-										render={({ field }) => (
-											<FormItem className="flex items-center">
-												<FormControl>
-													<Combobox
-														placeholderText="Año"
-														options={[...Array(3)].map((_, i) => {
-															const year = new Date().getFullYear() + i
-															return { key: year, value: year.toString() }
-														})}
-														itemName="año"
-														onChange={(selected) => field.onChange(Number(selected.value))}
-													/>
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-								</div>
-								<span className="text-xs">-</span>
-								<div className="w-16">
-									<FormField
-										control={form.control}
-										name="yearPeriod"
-										render={({ field }) => (
-											<FormItem className="flex items-center">
-												<FormControl>
-													<Combobox
-														placeholderText="Período"
-														options={periods.map((period) => ({
-															key: Number(period),
-															value: period,
-														}))}
-														itemName="período"
-														onChange={(selected) => field.onChange(selected.value.toString())}
-													/>
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-								</div>
-							</div>
+							<FormField
+								control={form.control}
+								name="year"
+								render={() => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel
+											className={`col-span-1 m-0 text-right ${
+												form.formState.errors.year || form.formState.errors.yearPeriod ? "text-red-500" : ""
+											}`}
+										>
+											Año y Periodo
+										</FormLabel>
+										<div className="col-span-3 flex items-center gap-2">
+											<FormControl>
+												<Combobox
+													placeholderText="Año"
+													options={[...Array(3)].map((_, i) => {
+														const year = new Date().getFullYear() + i;
+														return { key: year, value: year.toString() };
+													})}
+													itemName="año"
+													onChange={(selected) => {
+														form.setValue("year", Number(selected.value));
+														form.trigger(["year", "yearPeriod"]);
+													}}
+												/>
+											</FormControl>
+											<span className="text-xs">-</span>
+											<FormControl>
+												<Combobox
+													placeholderText="Período"
+													options={periods.map((period) => ({
+														key: Number(period),
+														value: period,
+													}))}
+													itemName="período"
+													onChange={(selected) => {
+														form.setValue("yearPeriod", selected.value.toString());
+														form.trigger(["year", "yearPeriod"]);
+													}}
+												/>
+											</FormControl>
+										</div>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right">
+											{form.formState.errors.year?.message || form.formState.errors.yearPeriod?.message}
+										</FormMessage>
+									</FormItem>
+								)}
+							/>
 							<FormField
 								control={form.control}
 								name="numberOfParticipants"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">No. participantes</FormLabel>
+										<FormLabel className="m-0 text-right">No. de Participantes</FormLabel>
 										<FormControl>
 											<NumericFormat
 												value={field.value}
@@ -295,7 +301,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 												thousandSeparator={false}
 												allowNegative={false}
 												customInput={Input}
-												placeholder="Cant de participantes"
+												placeholder="No. de participantes"
 												className="col-span-3 m-0"
 											/>
 										</FormControl>
