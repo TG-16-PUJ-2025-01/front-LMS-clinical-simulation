@@ -129,53 +129,8 @@ export default function SimulationPage() {
 				</section>
 				<section>
 					<RubricForm
-						rubricTemplate={{
-							courses: [],
-							archived: false,
-							creationDate: new Date(),
-							creator: {
-								id: 1,
-								email: "",
-								name: "",
-								lastName: "",
-								institutionalId: 1,
-								roles: [],
-								username: "",
-							},
-							title: "Mi rúbrica",
-							columns: [
-								{
-									rubricColumnId: Date.now() + 1,
-									title: "No aprobado",
-									scoringScale: {
-										lowerValue: 0,
-										upperValue: 3,
-									},
-								},
-								{
-									rubricColumnId: Date.now() + 2,
-									title: "Aprobado",
-									scoringScale: {
-										lowerValue: 3,
-										upperValue: 5,
-									},
-								},
-							],
-							criteria: [
-								{
-									criteriaId: Date.now() + 1,
-									name: "A",
-									weight: 50,
-									scoringScaleDescription: ["Descripción", "Descripción"],
-								},
-								{
-									criteriaId: Date.now() + 2,
-									name: "B",
-									weight: 50,
-									scoringScaleDescription: ["Descripción", "Descripción"],
-								},
-							],
-						}}
+						rubricTemplate={simulation?.practice.rubricTemplate ?? undefined}
+						gradable={simulation?.practice.gradeable ?? false}
 					/>
 				</section>
 			</div>

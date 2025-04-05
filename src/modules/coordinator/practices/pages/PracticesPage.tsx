@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 import Class from "@/modules/core/models/class"
 import { getClass } from "@/modules/admin/classes/services/classService"
+import NavBar from "@/modules/core/components/Headers/NavBar"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
@@ -30,7 +31,7 @@ export default function PracticesPage() {
 			console.error(error)
 			toast.error("No se encuentra la clase")
 		}
-	}, [id]) 
+	}, [id])
 
 	useEffect(() => {
 		if (openDialog) return
@@ -69,15 +70,39 @@ export default function PracticesPage() {
 
 	return (
 		<>
-			<LayoutSlot name="title">({classData?.javerianaId}) {classData?.course.name} - {classData?.period}</LayoutSlot>
+			<LayoutSlot name="header">
+				<NavBar
+					navLinks={[
+						{
+							label: "Asignaturas",
+							href: `/coordinador/asignaturas`,
+						},
+						{
+							label: "Calendario",
+							href: "/coordinador/calendario",
+						},
+						{
+							label: "Rúbricas",
+							href: "/coordinador/rubricas",
+						},
+						{
+							label: "Miembros de la Clase",
+							href: `/coordinador/clases/${id}/miembros`,
+						}
+					]}
+				/>
+			</LayoutSlot>
+			<LayoutSlot name="title">
+				({classData?.javerianaId}) {classData?.course.name} - {classData?.period}
+			</LayoutSlot>
 			<div className="flex justify-end">
 				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
 			</div>
-			<div className="flex justify-center items-center min-h-32">
+			<div className="flex min-h-32 items-center justify-center">
 				{data.length === 0 ? (
 					<p className="text-gray-500">No se encontraron prácticas</p>
 				) : (
-					<div className="mt-6 w-full grid grid-cols-[repeat(auto-fit,300px)] gap-y-6 justify-between">
+					<div className="mt-6 grid w-full grid-cols-[repeat(auto-fit,300px)] justify-between gap-y-6">
 						{data.map((practice) => (
 							<CardPractice
 								key={practice.id}

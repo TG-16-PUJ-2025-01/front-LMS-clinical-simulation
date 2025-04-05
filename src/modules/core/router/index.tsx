@@ -16,6 +16,7 @@ import AdminUsersPage from "@/modules/admin/users/pages/UsersPage"
 import CoordinatorSimulationPage from "@/modules/coordinator/simulations/pages/SimulationPage"
 import MembersPage from "@/modules/shared/members/pages/MembersPage"
 import CoordinatorPracticesPage from "@/modules/coordinator/practices/pages/PracticesPage"
+import CoordinatorMembersPage from "@/modules/coordinator/members/pages/MembersPage"
 import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/BookingPage"
 import CalendarPage from "@/modules/coordinator/calendar/pages/CalendarPage"
 import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesPage"
@@ -65,6 +66,10 @@ export default function Router() {
 					<Route
 						path="/coordinador/clases/:id/practicas"
 						element={<CoordinatorPracticesPage />}
+					></Route>
+					<Route
+						path="/coordinador/clases/:id/miembros"
+						element={<CoordinatorMembersPage />}
 					></Route>
 					<Route path="/coordinador/clases/:id/miembros" element={<MembersPage />}></Route>
 					<Route path="/coordinador/practicas" element={<CoordinatorPracticesPage />}></Route>

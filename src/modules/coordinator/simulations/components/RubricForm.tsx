@@ -26,7 +26,8 @@ import ViewRubricTemplateDialog from "../../rubricTemplates/components/ViewRubri
 import { useState } from "react"
 
 interface Props {
-	rubricTemplate: RubricTemplate
+	gradable?: boolean
+	rubricTemplate?: RubricTemplate
 }
 
 const FormSchema = z.object({
@@ -42,7 +43,7 @@ const FormSchema = z.object({
 	}),
 })
 
-export function RubricForm({ rubricTemplate }: Props) {
+export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 	const [openDialog, setOpenDialog] = useState(false)
 
 	const form = useForm<z.infer<typeof FormSchema>>({
@@ -67,6 +68,14 @@ export function RubricForm({ rubricTemplate }: Props) {
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
 		toast.success("Comentario publicado correctamente")
+	}
+
+	if (!gradable) {
+		return <div className="flex h-full items-center justify-center">La práctica no es calificable</div>
+	}
+
+	if (!rubricTemplate) {
+		return <div className="flex h-full items-center justify-center">La práctica no tiene rúbrica asignada</div>
 	}
 
 	return (

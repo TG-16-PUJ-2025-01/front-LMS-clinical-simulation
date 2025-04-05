@@ -1,5 +1,6 @@
 import Class from "./class"
 import Type from "./practiceType"
+import RubricTemplate from "./rubricTemplate"
 
 export default interface Practice {
 	id: number
@@ -11,4 +12,5 @@ export default interface Practice {
 	numberOfGroups: number | null
 	maxStudentsGroup: number | null
 	classModel: Class
+	rubricTemplate: RubricTemplate | null
 }
