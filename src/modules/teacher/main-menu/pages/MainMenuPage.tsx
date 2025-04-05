@@ -9,11 +9,12 @@ import { Button } from "@/modules/core/components/ui/button"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { Input } from "@/modules/core/components/ui/input"
 import { Search } from "lucide-react"
+import CreateClassDialog from "@/modules/admin/classes/components/CreateClassDialog"
 
 export default function MainMenuPage() {
 	const navigate = useNavigate()
 	const [yearOptions, setYearOptions] = useState<{ key: number; value: string }[]>([])
-	const periodOptions = ["1", "2", "3"].map((period) => ({
+	const periodOptions = ["10", "20", "30"].map((period) => ({
 		key: Number(period),
 		value: period,
 	}))
@@ -22,6 +23,8 @@ export default function MainMenuPage() {
 	const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null)
 	const [data, setData] = useState<Class[]>([])
 	const [filter, setFilter] = useState<string>("")
+
+	const [openDialog, setOpenDialog] = useState<"create" | null>(null)
 
 	const resetFilters = () => {
 		setSelectedYear(null)
@@ -45,7 +48,7 @@ export default function MainMenuPage() {
 		}
 
 		fetchClasses()
-	}, [selectedYear, selectedPeriod, filter])
+	}, [selectedYear, selectedPeriod, filter, openDialog])
 
 	useEffect(() => {
 		const fetchYearOptions = async () => {
@@ -69,6 +72,14 @@ export default function MainMenuPage() {
 
 		fetchYearOptions()
 	}, [])
+
+	const handleOpenDialog = (type: "create") => {
+		setOpenDialog(type)
+	}
+
+	const handleCloseDialog = () => {
+		setOpenDialog(null)
+	}
 
 	const handleClassNavigation = (classItem: Class) => {
 		navigate(`/profesor/clases/${classItem.classId}/practicas`)
@@ -115,13 +126,9 @@ export default function MainMenuPage() {
 							setSelectedPeriod(selected.value ? Number(selected.value) : null)
 						}
 					/>
-					<Button variant="default" onClick={resetFilters}>
-						Resetear Filtros
-					</Button>
+					<Button onClick={resetFilters}>Resetear Filtros</Button>
 				</div>
-				<Button variant="default" onClick={() => navigate("/profesor/clases/agregar")}>
-					Nueva Clase
-				</Button>
+				<Button onClick={() => handleOpenDialog("create")}>Nueva Clase</Button>
 			</div>
 			<div className="flex justify-center">
 				{data.length === 0 ? (
@@ -138,6 +145,7 @@ export default function MainMenuPage() {
 					</div>
 				)}
 			</div>
+			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>
 	)
 }

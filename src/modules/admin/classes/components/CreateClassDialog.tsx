@@ -90,7 +90,6 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 	useEffect(() => {
 		const fetchProfessors = async () => {
 			const res = await getAllProfessors()
-			//console.log(res.data)
 			setProfessors(res.data)
 		}
 
@@ -98,7 +97,6 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 
 		const fetchCourses = async () => {
 			const res = await getCourses(0, 10, "", "name", true)
-			//console.log(res.data)
 			setCourses(res.data)
 		}
 
@@ -109,9 +107,6 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-
-			//console.log(values)
-
 			await createClass({
 				javerianaId: values.javerianaId,
 				professorsIds: [values.professor.id!],
@@ -254,7 +249,14 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">No. participantes</FormLabel>
 										<FormControl>
-											<Input type="number" id="id" placeholder="Cant de participantes" className="col-span-3 m-0" {...field} onChange={(e) => field.onChange(e.target.valueAsNumber)}  />
+											<Input
+												type="number"
+												id="id"
+												placeholder="Cant de participantes"
+												className="col-span-3 m-0"
+												{...field}
+												onChange={(e) => field.onChange(e.target.valueAsNumber)}
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>

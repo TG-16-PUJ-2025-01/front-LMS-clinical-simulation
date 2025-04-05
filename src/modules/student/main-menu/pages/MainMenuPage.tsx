@@ -13,7 +13,7 @@ import { CardClass } from "@/modules/shared/main-menu/components/CardClass"
 export default function MainMenuPage() {
 	const navigate = useNavigate()
 	const [yearOptions, setYearOptions] = useState<{ key: number; value: string }[]>([])
-	const periodOptions = ["1", "2", "3"].map((period) => ({
+	const periodOptions = ["10", "20", "30"].map((period) => ({
 		key: Number(period),
 		value: period,
 	}))
