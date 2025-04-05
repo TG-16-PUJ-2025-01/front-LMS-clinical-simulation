@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom"
 import { getSimulationById } from "../services/simulationService"
 import { RubricForm } from "../components/RubricForm"
 import { VideoOff } from "lucide-react"
+import NavBar from "@/modules/core/components/Headers/NavBar"
 
 export default function SimulationPage() {
 	const params = useParams()
@@ -47,7 +48,33 @@ export default function SimulationPage() {
 
 	return (
 		<>
-			<LayoutSlot name="title">Práctica (Grupo {simulation?.groupNumber})</LayoutSlot>
+			<LayoutSlot name="header">
+				<NavBar
+					navLinks={[
+						{
+							label: "Asignaturas",
+							href: `/coordinador/asignaturas`,
+						},
+						{
+							label: "Calendario",
+							href: "/coordinador/calendario",
+						},
+						{
+							label: "Rúbricas",
+							href: "/coordinador/rubricas",
+						},
+						{
+							label: `(${simulation?.practice.classModel.javerianaId ?? ""}) ${simulation?.practice.classModel.course.name ?? ""}`,
+							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas`,
+						},
+						{
+							label: simulation?.practice.name ?? "",
+							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas/${simulation?.practice.id}`,
+						},
+					]}
+				/>
+			</LayoutSlot>
+			<LayoutSlot name="title">{simulation?.practice.name ?? ""} (Grupo {simulation?.groupNumber})</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>
 					{simulation?.video?.name ? (
