@@ -43,7 +43,7 @@ export default function SimulationPage() {
 				videoElement.removeEventListener("timeupdate", handleTimeUpdate)
 			}
 		}
-	}, [])
+	}, [simulation?.video])
 
 	return (
 		<>
