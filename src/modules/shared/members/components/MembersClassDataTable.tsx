@@ -44,7 +44,7 @@ import DeleteStudentClassDialog from "./deleteStudentDialog"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Class from "@/modules/core/models/class"
-import { all, AxiosError } from "axios"
+import { AxiosError } from "axios"
 
 export function StudentsClassDataTable() {
 	const fileInputRef = useRef<HTMLInputElement>(null)
@@ -77,7 +77,7 @@ export function StudentsClassDataTable() {
 	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
 	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-		let fileTypes = [
+		const fileTypes = [
 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			"application/vnd.ms-excel",
 			"text/csv",
@@ -90,7 +90,7 @@ export function StudentsClassDataTable() {
 			if (fileTypes.includes(selectedFile.type)) {
 				//setExcelFile(selectedFile)
 				e.target.value = "" // Aquí forzamos el cambio del input
-				let reader = new FileReader()
+				const reader = new FileReader()
 				reader.readAsArrayBuffer(selectedFile)
 				reader.onload = (e) => {
 					if (e.target?.result) {
@@ -125,7 +125,7 @@ export function StudentsClassDataTable() {
 				return
 			}
 
-			let results: Class[] = []
+			const results: Class[] = []
 
 			let allCorrect = true
 
@@ -141,7 +141,9 @@ export function StudentsClassDataTable() {
 							results.push(updatedClass)
 						} catch (error) {
 							console.log(error)
-							toast.error(error instanceof AxiosError ? error.response?.data.data : "Error desconocido")
+							toast.error(
+								error instanceof AxiosError ? error.response?.data.data : "Error desconocido"
+							)
 							allCorrect = false
 						}
 					} else if (item.rol.toLowerCase() === "estudiante") {
@@ -150,8 +152,9 @@ export function StudentsClassDataTable() {
 							const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
 							results.push(updatedClass)
 						} catch (error) {
-
-							toast.error(error instanceof AxiosError ? error.response?.data.data : "Error desconocido")
+							toast.error(
+								error instanceof AxiosError ? error.response?.data.data : "Error desconocido"
+							)
 							allCorrect = false
 						}
 					} else {
@@ -250,7 +253,7 @@ export function StudentsClassDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
+			cell: ({ row }) => <div className="text-center capitalize">{row.getValue("name")}</div>,
 		},
 		{
 			accessorKey: "lastName",
@@ -266,7 +269,7 @@ export function StudentsClassDataTable() {
 					</Button>
 				</div>
 			),
-			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
+			cell: ({ row }) => <div className="text-center capitalize">{row.getValue("lastName")}</div>,
 		},
 		{
 			accessorKey: "email",
@@ -310,7 +313,7 @@ export function StudentsClassDataTable() {
 					displayRole = Role.ESTUDIANTE.toLowerCase()
 				}
 
-				return <div className="text-center">{displayRole}</div>
+				return <div className="text-center capitalize">{displayRole}</div>
 			},
 		},
 		{
