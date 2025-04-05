@@ -73,7 +73,6 @@ export function ClassesDataTable() {
 			)
 
 			setData(res.data)
-			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,

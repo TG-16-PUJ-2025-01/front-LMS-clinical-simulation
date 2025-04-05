@@ -24,10 +24,13 @@ import { useEffect, useState } from "react"
 import Class from "@/modules/core/models/class"
 import { toast } from "sonner"
 import User from "@/modules/core/models/user"
-import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { createClass, getAllProfessors } from "../services/classService"
 import Course from "@/modules/core/models/course"
 import { getCourses } from "../../courses/services/courseService"
+import Select from "react-select"
+import makeAnimated from "react-select/animated"
+import { Combobox } from "@/modules/core/components/Combobox/Combobox"
+import { NumericFormat } from "react-number-format";
 
 interface Props {
 	open: boolean
@@ -40,7 +43,7 @@ const formSchema = z.object({
 		message: "El ID debe ser un número entero positivo",
 	}),
 	professor: z.object({
-		id: z.number().optional(),
+		id: z.array(z.number()).optional(),
 		name: z.string().nonempty({
 			message: "Debe seleccionar un profesor",
 		}),
@@ -65,6 +68,8 @@ const formSchema = z.object({
 //lista de trings
 const periods = ["10", "20", "30"]
 
+const animatedComponents = makeAnimated()
+
 export default function CreateClassDialog({ open, onClose }: Props) {
 	const [courses, setCourses] = useState<Course[]>([])
 	const [professors, setProfessors] = useState<User[]>([])
@@ -74,16 +79,16 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 		defaultValues: {
 			javerianaId: undefined,
 			professor: {
-				id: 0,
+				id: [],
 				name: "",
 			},
 			course: {
 				courseid: 0,
 				name: "",
 			},
-			year: new Date().getFullYear(),
-			yearPeriod: "10",
-			numberOfParticipants: 0,
+			year: undefined,
+			yearPeriod: "",
+			numberOfParticipants: undefined,
 		},
 	})
 
@@ -108,8 +113,8 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			await createClass({
-				javerianaId: values.javerianaId,
-				professorsIds: [values.professor.id!],
+				javerianaId: Number(values.javerianaId),
+				professorsIds: Array.isArray(values.professor.id) ? values.professor.id : [],
 				courseId: values.course.courseid!,
 				period: values.year.toString() + "-" + values.yearPeriod,
 				numberOfParticipants: Number(values.numberOfParticipants),
@@ -129,7 +134,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Crear Clase</DialogTitle>
-					<DialogDescription>Ingreasa los siguientes atributos de la nueva clase</DialogDescription>
+					<DialogDescription>Ingresa los siguientes atributos de la nueva clase</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
@@ -141,7 +146,15 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">ID</FormLabel>
 										<FormControl>
-											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
+											<NumericFormat
+												value={field.value}
+												onValueChange={(values) => field.onChange(values.floatValue)}
+												thousandSeparator={false}
+												allowNegative={false}
+												customInput={Input}
+												placeholder="ID"
+												className="col-span-3 m-0"
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
@@ -152,20 +165,47 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 								name="professor.name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Profesor</FormLabel>
-										<FormControl>
-											<Combobox
-												placeholderText="Selecciona un profesor"
+										<FormLabel className="col-span-1 m-0 text-right">Profesor</FormLabel>
+										<FormControl className="col-span-3">
+											<Select
+												components={animatedComponents}
+												isMulti
 												options={professors.map((val) => ({
-													key: val.id,
-													value: `${val.name} ${val.lastName}`,
+													value: val.id,
+													label: `${val.name} ${val.lastName}`,
 												}))}
-												itemName="profesor"
+												value={professors
+													.filter(
+														(prof) =>
+															Array.isArray(form.getValues("professor.id") ?? []) &&
+															(form.getValues("professor.id") ?? []).includes(prof.id)
+													)
+													.map((prof) => ({
+														value: prof.id,
+														label: `${prof.name} ${prof.lastName}`,
+													}))}
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("professor.id", selected.key)
-													//console.log(selected.key)
+													const selectedIds = selected.map((prof) => prof.value)
+													form.setValue("professor.id", selectedIds as number[])
+													field.onChange(selected.map((prof) => prof.label).join(", "))
 												}}
+												placeholder="Selecciona uno o más profesores"
+												className="w-full"
+												styles={{
+													control: (baseStyles) => ({
+														...baseStyles,
+														"borderColor": "",
+														"borderRadius": "var(--radius-md)",
+														"boxShadow": "",
+														"&:hover": { borderColor: "" },
+														"&:focus": { borderColor: "black" },
+													}),
+												}}
+												classNames={{
+													control: () =>
+														"flex w-full rounded-md border border-input bg-transparent text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:shadow-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+												}}
+												noOptionsMessage={() => "No se encontraron profesores"}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
@@ -249,13 +289,14 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">No. participantes</FormLabel>
 										<FormControl>
-											<Input
-												type="number"
-												id="id"
+											<NumericFormat
+												value={field.value}
+												onValueChange={(values) => field.onChange(values.floatValue)}
+												thousandSeparator={false}
+												allowNegative={false}
+												customInput={Input}
 												placeholder="Cant de participantes"
 												className="col-span-3 m-0"
-												{...field}
-												onChange={(e) => field.onChange(e.target.valueAsNumber)}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />

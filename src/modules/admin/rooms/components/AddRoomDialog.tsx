@@ -25,7 +25,7 @@ import RoomType from "@/modules/core/models/roomType"
 import { toast } from "sonner"
 import { ComboboxCreate } from "../../../core/components/Combobox/ComboboxCreate"
 import RoomTypeDto from "../dtos/roomTypeDto"
-import RoomDto from "../dtos/RoomDto"
+import RoomDto from "../dtos/roomDto"
 
 interface Props {
 	open: boolean

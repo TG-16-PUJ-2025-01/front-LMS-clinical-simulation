@@ -1,6 +1,5 @@
 import axios from "axios";
 import { API_URL } from "@/modules/core/config/env";
-import { setToken } from "@/modules/core/lib/tokenHandler";
 import ApiResponse from "@/modules/core/models/apiResponse";
 import Class from "@/modules/core/models/class";
 import User from "@/modules/core/models/user";
@@ -44,9 +43,7 @@ export async function createClass(newClass: CreateClassDTO): Promise<ApiResponse
     }
 }
 
-export async function updateClass(id: number, updatedClass: CreateClassDTO): Promise<ApiResponse<Class>> {
-    console.log(updatedClass)
-    
+export async function updateClass(id: number, updatedClass: CreateClassDTO): Promise<ApiResponse<Class>> {    
     const { data } = await axios.put( `${API_URL}/class/update/${id}`, updatedClass)
     return {
         ...data,
