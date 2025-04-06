@@ -6,7 +6,7 @@ import { es } from "date-fns/locale";
 import { Calendar } from "@/modules/core/components/ui/calendar";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { createSimulations, getAllRooms } from "../services/bookingService";
+import { createSimulations, getAllRooms, getPracticeById } from "../services/bookingService";
 import { useParams } from "react-router-dom";
 import Practice from "@/modules/core/models/practice";
 import Select from "react-select";
@@ -154,7 +154,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
 
   return (
     <div className="w-2/5 border rounded-lg p-4 flex flex-col space-y-4">
-      <h3 className="text-lg font-semibold">Reserva de salas</h3>
+      <h4 className="text-lg font-semibold">Reserva de salas</h4>
 
       <p className="text-sm text-gray-500">
         Se debe reservar el total de minutos indicado, el sistema los dividirá en bloques de acuerdo a la duración de la práctica.

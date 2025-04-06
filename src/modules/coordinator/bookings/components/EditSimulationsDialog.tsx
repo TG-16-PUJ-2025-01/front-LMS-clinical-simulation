@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent } from "@/modules/core/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/modules/core/components/ui/dialog";
 import { ScheduleXCalendar, useNextCalendarApp } from "@schedule-x/react";
 import { createViewDay } from "@schedule-x/calendar";
 import { createEventsServicePlugin } from "@schedule-x/events-service";
@@ -68,14 +68,16 @@ export default function EditSimulationsDialog({ open, onClose, simulation }: Edi
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-[90vw] h-[90vh] flex flex-row gap-4">
-        <div className="flex-1 overflow-y-auto">
-          {calendarApp && <ScheduleXCalendar calendarApp={calendarApp} />}
-
+      <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col gap-4">
+        <DialogTitle>Editar simulación</DialogTitle>
+        <div className="flex flex-1 flex-row gap-4 overflow-hidden">
+          <div className="flex-1 overflow-y-auto">
+            {calendarApp && <ScheduleXCalendar calendarApp={calendarApp} />}
+          </div>
+          <EditSimulationsForm onClose={onClose} simulation={simulation} />
         </div>
-        <EditSimulationsForm onClose={onClose} simulation={simulation}
-        />
       </DialogContent>
     </Dialog>
   );
+  
 }
