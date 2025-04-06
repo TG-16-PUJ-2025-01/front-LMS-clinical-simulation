@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar } from "@/modules/core/components/ui/calendar";
 import { toast } from "sonner";
-import { editSimulationById, getAllRooms } from "../services/bookingService";
+import { editSimulationById, getAllRooms, getPracticeById } from "../services/bookingService";
 import { useParams } from "react-router-dom";
 import Practice from "@/modules/core/models/practice";
 import Select from "react-select";
