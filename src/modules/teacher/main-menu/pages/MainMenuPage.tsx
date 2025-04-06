@@ -84,7 +84,7 @@ export default function MainMenuPage() {
 						options={yearOptions}
 						itemName="año"
 						selectedValue={selectedYear ? selectedYear.toString() : ""}
-						onChange={(selected) => setSelectedYear(selected.value ? Number(selected.value) : null)}
+						onChange={(selected) => setSelectedYear(selected?.value ? Number(selected.value) : null)}
 					/>
 					<span className="text-xl font-bold">-</span>
 					<Combobox
@@ -93,7 +93,7 @@ export default function MainMenuPage() {
 						itemName="periodo"
 						selectedValue={selectedPeriod ? selectedPeriod.toString() : ""}
 						onChange={(selected) =>
-							setSelectedPeriod(selected.value ? Number(selected.value) : null)
+							setSelectedPeriod(selected?.value ? Number(selected.value) : null)
 						}
 					/>
 					<Button variant="default" onClick={resetFilters}>
@@ -105,7 +105,7 @@ export default function MainMenuPage() {
 				{data.length === 0 ? (
 					<p className="text-gray-500">No se encontraron clases</p>
 				) : (
-					<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+					<div className="mt-6 grid w-full grid-cols-[repeat(auto-fit,300px)] justify-between gap-y-6">
 						{data.map((classItem) => (
 							<CardClass
 								key={classItem.classId}

@@ -224,18 +224,19 @@ export function SimulationDataTable() {
 							>
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => navigate(`/coordinador/simulacion/${simulation.simulationId}`)}>
+							<DropdownMenuItem
+								onClick={() => navigate(`/coordinador/simulacion/${simulation.simulationId}`)}
+							>
 								<Pencil /> Calificar
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => {
-									setSelectedSimulation(simulation);
-									setIsEditDialogOpen(true);
+									setSelectedSimulation(simulation)
+									setIsEditDialogOpen(true)
 								}}
 							>
 								<Calendar /> Editar Reserva
 							</DropdownMenuItem>
-
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
@@ -281,7 +282,10 @@ export function SimulationDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
+					<div className="flex items-center space-x-2">
+						<Button onClick={() => {}}>Asignar rúbrica</Button>
+						<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
+					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
 					<Table>
@@ -347,7 +351,11 @@ export function SimulationDataTable() {
 				</div>
 			</div>
 			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
-			<EditSimulationsDialog open={isEditDialogOpen} onClose={() => setIsEditDialogOpen(false)} simulation={selectedSimulation} />
+			<EditSimulationsDialog
+				open={isEditDialogOpen}
+				onClose={() => setIsEditDialogOpen(false)}
+				simulation={selectedSimulation}
+			/>
 
 			<ViewMembersDialog
 				open={isViewMembersOpen}
