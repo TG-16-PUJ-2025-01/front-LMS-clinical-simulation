@@ -3,18 +3,15 @@ import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { getPracticeByClassId } from "../../../shared/practices/services/PracticeService"
 import Practice from "@/modules/core/models/practice"
-import { Button } from "@/modules/core/components/ui/button"
-import DeletePracticeDialog from "../../../shared/practices/components/DeletePracticeDialog"
-import EditPracticeDialog from "../../../shared/practices/components/EditPracticeDialog"
-import AddPracticeDialog from "../../../shared/practices/components/AddPracticeDialog"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 import { CardPractice } from "../component/CardPractice"
+import ViewGroupsDialog from "../component/ViewGroupsDialog"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
 	const { id } = useParams()
-	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "add" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"group" | null>(null)
 	const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
 
 	const [data, setData] = useState<Practice[]>([])
@@ -35,7 +32,7 @@ export default function PracticesPage() {
 		fetchPractices()
 	}, [])
 
-	const handleOpenDialog = (type: "edit" | "delete" | "add", practice?: Practice) => {
+	const handleOpenDialog = (type: "group", practice?: Practice) => {
 		// TODO: Create new dialogs for student
 		setOpenDialog(type)
 		setSelectedPractice(practice ?? null)
@@ -58,9 +55,6 @@ export default function PracticesPage() {
 				<NavBar />
 			</LayoutSlot>
 			<LayoutSlot name="title">Prácticas</LayoutSlot>
-			<div className="mb-4 flex justify-end">
-				<Button onClick={() => handleOpenDialog("add")}>Crear Práctica</Button>
-			</div>
 			<div className="flex justify-center">
 				<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
 					{data.map((practice) => (
@@ -72,26 +66,15 @@ export default function PracticesPage() {
 							maxStudentsGroup={practice.maxStudentsGroup ?? null}
 							type={practice.type}
 							onClick={() => handlePracticeNavigation(practice)}
-							onEdit={() => handleOpenDialog("edit", practice)}
-							onDelete={() => handleOpenDialog("delete", practice)}
+							onEdit={() => handleOpenDialog("group", practice)}
 						/>
 					))}
 				</div>
 			</div>
-			<DeletePracticeDialog
-				open={openDialog === "delete"}
+			<ViewGroupsDialog
+				open={openDialog === "group"}
 				onClose={handleCloseDialog}
-				practiceId={selectedPractice?.id ?? null}
-			/>
-			<EditPracticeDialog
-				open={openDialog === "edit"}
-				onClose={handleCloseDialog}
-				practice={selectedPractice!}
-			/>
-			<AddPracticeDialog
-				open={openDialog === "add"}
-				onClose={handleCloseDialog}
-				onPracticeCreated={handlePracticeNavigation}
+				practiceId={selectedPractice?.id ?? 0}
 			/>
 		</>
 	)

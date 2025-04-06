@@ -31,7 +31,6 @@ type CardProps = React.ComponentProps<typeof Card> & {
 	type: "GRUPAL" | "INDIVIDUAL"
 	onClick?: () => void
 	onEdit: () => void
-	onDelete: () => void
 }
 
 export function CardPractice({
@@ -42,7 +41,7 @@ export function CardPractice({
 	maxStudentsGroup,
 	type,
 	onClick,
-	onDelete,
+	onEdit,
 }: CardProps) {
 	return (
 		<TooltipProvider>
@@ -70,7 +69,7 @@ export function CardPractice({
 							<DropdownMenuItem
 								onClick={(e) => {
 									e.stopPropagation()
-									onDelete()
+									onEdit()
 								}}
 							>
 								<SquarePlus className="mr-2 h-4 w-4" /> Unirse a Grupo
