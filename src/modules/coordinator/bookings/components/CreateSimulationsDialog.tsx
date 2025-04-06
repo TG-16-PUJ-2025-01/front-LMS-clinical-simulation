@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/modules/core/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/modules/core/components/ui/dialog";
 import { ScheduleXCalendar, useNextCalendarApp } from "@schedule-x/react";
 import { createViewDay } from "@schedule-x/calendar";
 import { createEventsServicePlugin } from "@schedule-x/events-service";

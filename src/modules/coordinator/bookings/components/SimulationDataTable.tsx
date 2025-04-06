@@ -38,6 +38,7 @@ import { format } from "date-fns"
 import CreateSimulationsDialog from "./CreateSimulationsDialog"
 import EditSimulationsDialog from "./EditSimulationsDialog"
 import ViewMembersDialog from "./ViewMembersDialog"
+import AssignRubricDialog from "./AssignRubricDialog"
 
 export function SimulationDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -49,6 +50,7 @@ export function SimulationDataTable() {
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+	const [isAssignRubricOpen, setIsAssignRubricOpen] = useState(false)
 	const [isViewMembersOpen, setIsViewMembersOpen] = useState(false)
 	const [selectedSimulation, setSelectedSimulation] = useState<Simulation | null>(null)
 
@@ -283,7 +285,7 @@ export function SimulationDataTable() {
 						/>
 					</div>
 					<div className="flex items-center space-x-2">
-						<Button onClick={() => {}}>Asignar rúbrica</Button>
+						<Button onClick={() => setIsAssignRubricOpen(true)}>Asignar rúbrica</Button>
 						<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
 					</div>
 				</div>
@@ -362,6 +364,7 @@ export function SimulationDataTable() {
 				onClose={() => setIsViewMembersOpen(false)}
 				simulationId={selectedSimulation?.simulationId ?? 0}
 			/>
+			<AssignRubricDialog open={isAssignRubricOpen} onClose={() => setIsAssignRubricOpen(false)} />
 		</>
 	)
 }

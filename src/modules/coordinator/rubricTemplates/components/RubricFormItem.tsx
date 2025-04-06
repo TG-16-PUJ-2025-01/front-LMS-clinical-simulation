@@ -182,7 +182,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 							<Table className="h-full w-full">
 								<TableHeader>
 									<TableRow>
-										<TableHead className="w-[100px] border py-1 align-top">Criterios</TableHead>
+										<TableHead className="w-40 border py-1 align-top">Criterios</TableHead>
 										<TableHead className="w-20 min-w-20 border py-1 align-top">Peso</TableHead>
 										{getRubric().columns.map((column, index) => (
 											<TableHead
@@ -299,7 +299,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 											</TableCell>
 											<TableCell className="border font-medium">
 												<ContextMenu>
-													<ContextMenuTrigger className="flex h-full w-full grow">
+													<ContextMenuTrigger className="flex h-full w-full grow items-center">
 														<FormField
 															control={control}
 															name={`rubric.criteria.${index}.weight` as Path<T>}
