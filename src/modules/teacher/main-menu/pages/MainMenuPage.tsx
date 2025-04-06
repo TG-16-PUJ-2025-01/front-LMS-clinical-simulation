@@ -8,10 +8,7 @@ import { Button } from "@/modules/core/components/ui/button"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { Input } from "@/modules/core/components/ui/input"
 import { Search } from "lucide-react"
-import CreateClassDialog from "@/modules/admin/classes/components/CreateClassDialog"
-import { CardClassTeacher } from "../components/CardClassTeacher"
-import EditClassDialog from "@/modules/admin/classes/components/EditClassDialog"
-import DeleteClassDialog from "@/modules/admin/classes/components/DeleteClassDialog"
+import { CardClass } from "@/modules/shared/main-menu/components/CardClass"
 
 export default function MainMenuPage() {
 	const navigate = useNavigate()
@@ -23,11 +20,8 @@ export default function MainMenuPage() {
 
 	const [selectedYear, setSelectedYear] = useState<number | null>(null)
 	const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null)
-	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 	const [data, setData] = useState<Class[]>([])
 	const [filter, setFilter] = useState<string>("")
-
-	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
 
 	const resetFilters = () => {
 		setSelectedYear(null)
@@ -51,7 +45,7 @@ export default function MainMenuPage() {
 		}
 
 		fetchClasses()
-	}, [selectedYear, selectedPeriod, filter, openDialog])
+	}, [selectedYear, selectedPeriod, filter])
 
 	useEffect(() => {
 		const fetchYearOptions = async () => {
@@ -76,16 +70,6 @@ export default function MainMenuPage() {
 		fetchYearOptions()
 	}, [])
 
-	const handleOpenDialog = (type: "edit" | "delete" | "create", classItem?: Class) => {
-		setOpenDialog(type)
-		setSelectedClass(classItem ?? null)
-	}
-
-	const handleCloseDialog = () => {
-		setOpenDialog(null)
-		setSelectedClass(null)
-	}
-
 	const handleClassNavigation = (classItem: Class) => {
 		navigate(`/profesor/clases/${classItem.classId}/practicas`)
 	}
@@ -103,17 +87,17 @@ export default function MainMenuPage() {
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">Tus Clases</LayoutSlot>
-			<div className="mb-4 flex items-center justify-between">
+			<div className="mb-4 flex items-center justify-between gap-4">
+				<div className="relative w-1/2 max-w-sm">
+					<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
+					<Input
+						placeholder="Buscar por nombre..."
+						value={filter}
+						onChange={(event) => setFilter(event.target.value)}
+						className="w-full pl-8"
+					/>
+				</div>
 				<div className="flex items-center gap-4">
-					<div className="relative">
-						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
-						<Input
-							placeholder="Buscar por nombre..."
-							value={filter}
-							onChange={(event) => setFilter(event.target.value)}
-							className="pl-8"
-						/>
-					</div>
 					<Combobox
 						placeholderText="Año"
 						options={yearOptions}
@@ -131,9 +115,10 @@ export default function MainMenuPage() {
 							setSelectedPeriod(selected.value ? Number(selected.value) : null)
 						}
 					/>
-					<Button onClick={resetFilters}>Resetear Filtros</Button>
+					<Button variant="default" onClick={resetFilters}>
+						Resetear Filtros
+					</Button>
 				</div>
-				<Button onClick={() => handleOpenDialog("create")}>Nueva Clase</Button>
 			</div>
 			<div className="flex justify-center">
 				{data.length === 0 ? (
@@ -141,28 +126,15 @@ export default function MainMenuPage() {
 				) : (
 					<div className="grid grid-cols-1 gap-18 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
 						{data.map((classItem) => (
-							<CardClassTeacher
+							<CardClass
 								key={classItem.classId}
 								classData={classItem}
 								onClick={() => handleClassNavigation(classItem)}
-								onEdit={() => handleOpenDialog("edit", classItem)}
-								onDelete={() => handleOpenDialog("delete", classItem)}
 							/>
 						))}
 					</div>
 				)}
 			</div>
-			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
-			<EditClassDialog
-				open={openDialog === "edit"}
-				onClose={handleCloseDialog}
-				classData={selectedClass ?? undefined}
-			/>
-			<DeleteClassDialog
-				open={openDialog === "delete"}
-				onClose={handleCloseDialog}
-				classId={selectedClass?.classId ?? null}
-			/>
 		</>
 	)
 }
