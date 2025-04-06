@@ -1,4 +1,4 @@
-import { MoreHorizontal, Users, User, Calendar, SquarePlus } from "lucide-react"
+import { MoreHorizontal, Users, User, SquarePlus } from "lucide-react"
 import { cn } from "@/modules/core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
 import {
@@ -42,7 +42,6 @@ export function CardPractice({
 	maxStudentsGroup,
 	type,
 	onClick,
-	onEdit,
 	onDelete,
 }: CardProps) {
 	return (
@@ -68,14 +67,6 @@ export function CardPractice({
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem
-								onClick={(e) => {
-									e.stopPropagation()
-									onEdit()
-								}}
-							>
-								<Calendar className="mr-2 h-4 w-4" /> Reservar Horario
-							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={(e) => {
 									e.stopPropagation()
