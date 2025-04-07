@@ -21,11 +21,11 @@ export default function ViewGroupsDialog({ open, onClose, practiceId }: ViewGrou
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent>
+			<DialogContent className="sm:max-w-[800px]">
 				<DialogHeader>
 					<DialogTitle>Grupos Disponibles a Inscripción</DialogTitle>
 					<DialogDescription>
-						Los siguientes son los horarios establecidos por el profesor, por favor inscribase a uno
+						Los siguientes son los horarios establecidos por el profesor, por favor inscríbase a uno
 						de ellos.
 					</DialogDescription>
 				</DialogHeader>

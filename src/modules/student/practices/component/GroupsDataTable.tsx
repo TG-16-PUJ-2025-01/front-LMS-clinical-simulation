@@ -20,7 +20,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Search, Check } from "lucide-react"
 import { format } from "date-fns"
 import Simulation from "@/modules/core/models/simulation"
 import { getSimulationsByPracticeId } from "@/modules/coordinator/bookings/services/bookingService"
@@ -35,6 +35,7 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
+	const [enrolledSimulationId, setEnrolledSimulationId] = useState<number | null>(null)
 
 	const [data, setData] = useState<Simulation[]>([])
 
@@ -132,9 +133,30 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 		{
 			id: "actions",
 			enableHiding: false,
-			cell: ({ row }) => (
-				<Button onClick={() => onEnroll(row.original.simulationId)}>Inscribirse</Button>
-			),
+			cell: ({ row }) => {
+				const simulationId = row.original.simulationId
+				const isEnrolled = enrolledSimulationId === simulationId
+
+				return (
+					<Button
+						disabled={isEnrolled}
+						onClick={() => {
+							onEnroll(simulationId)
+							setEnrolledSimulationId(simulationId)
+						}}
+						className="flex items-center justify-center"
+					>
+						{isEnrolled ? (
+							<>
+								<Check/>
+								Inscrito
+							</>
+						) : (
+							"Inscribirse"
+						)}
+					</Button>
+				)
+			},
 		},
 	]
 
@@ -163,6 +185,8 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 	return (
 		<div className="w-full">
 			<div className="flex items-center justify-between">
+			<div className="relative w-1/2 max-w-sm">
+				<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 				<Input
 					placeholder="Buscar por número de grupo..."
 					value={filter}
@@ -170,8 +194,9 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 						setFilter(event.target.value)
 						setPagination({ ...pagination, pageIndex: 0 })
 					}}
-					className="w-full max-w-sm"
+					className="w-full pl-8"
 				/>
+				</div>
 			</div>
 			<div className="mt-4 max-h-[400px] overflow-auto rounded-md border">
 				<Table>
