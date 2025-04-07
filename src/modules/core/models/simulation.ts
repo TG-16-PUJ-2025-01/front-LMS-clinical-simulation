@@ -7,6 +7,7 @@ export default interface Simulation {
 	endDateTime: Date
   grade: number
   gradeDate: Date
+  groupNumber: number
   video: Video
   rooms: Room[]
 }

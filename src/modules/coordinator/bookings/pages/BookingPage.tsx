@@ -4,7 +4,7 @@ import Practice from "@/modules/core/models/practice"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { getPracticeById } from "../../../shared/practices/services/PracticeService"
-import { SimulationDataTable } from "../components/simulationDataTable"
+import { SimulationDataTable } from "../components/SimulationDataTable"
 
 export default function PracticeDetailsPage() {
 	const { id } = useParams()
