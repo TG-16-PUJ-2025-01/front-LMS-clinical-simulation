@@ -39,6 +39,29 @@ export async function getRubricTemplates(
 	}
 }
 
+export async function getRecommendedRubricTemplatesByCourse(
+	courseId: number,
+	page: number,
+	size: number,
+	filter: string,
+): Promise<ApiResponse<RubricTemplate[]>> {
+	const { data } = await axios.get(`${API_URL}/course/recommend/${courseId}/rubrics`, {
+		params: {
+			page,
+			size,
+			filter,
+		},
+	})
+
+	return {
+		...data,
+		data: data.data.map((rubric: RubricTemplate) => ({
+			...rubric,
+			creationDate: new Date(rubric.creationDate),
+		})),
+	}
+}
+
 export async function getCoursesByRubricTemplate(rubricTemplateId: number): Promise<ApiResponse<Course[]>> {
 	const { data } = await axios.get(`${API_URL}/rubric/template/${rubricTemplateId}/courses`)
 	return data

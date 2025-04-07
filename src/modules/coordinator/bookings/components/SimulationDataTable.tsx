@@ -40,7 +40,11 @@ import EditSimulationsDialog from "./EditSimulationsDialog"
 import ViewMembersDialog from "./ViewMembersDialog"
 import AssignRubricDialog from "./AssignRubricDialog"
 
-export function SimulationDataTable() {
+interface Props {
+	courseId: number
+}
+
+export function SimulationDataTable({ courseId }: Props) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -364,7 +368,11 @@ export function SimulationDataTable() {
 				onClose={() => setIsViewMembersOpen(false)}
 				simulationId={selectedSimulation?.simulationId ?? 0}
 			/>
-			<AssignRubricDialog open={isAssignRubricOpen} onClose={() => setIsAssignRubricOpen(false)} />
+			<AssignRubricDialog
+				open={isAssignRubricOpen}
+				onClose={() => setIsAssignRubricOpen(false)}
+				courseId={courseId}
+			/>
 		</>
 	)
 }

@@ -7,22 +7,23 @@ import {
 } from "@/modules/core/components/ui/dialog"
 import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import { useEffect, useState } from "react"
-import { getRubricTemplates } from "../../rubricTemplates/services/rubricTemplateService"
 import { Input } from "@/modules/core/components/ui/input"
 import { Search } from "lucide-react"
+import { getRecommendedRubricTemplatesByCourse } from "../../rubricTemplates/services/rubricTemplateService"
 
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
+	courseId: number
 }
 
-export default function AssignRubricDialog({ open, onClose }: Props) {
+export default function AssignRubricDialog({ open, onClose, courseId }: Props) {
 	const [rubricTemplates, setRubricTemplates] = useState<RubricTemplate[]>([])
 	const [filter, setFilter] = useState("")
 
 	useEffect(() => {
 		const fetchRubrics = async () => {
-			const res = await getRubricTemplates(0, 20, filter, "creationDate", true)
+			const res = await getRecommendedRubricTemplatesByCourse(courseId, 0, 20, filter)
 			setRubricTemplates(res.data)
 		}
 		fetchRubrics()
