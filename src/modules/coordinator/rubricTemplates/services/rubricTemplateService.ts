@@ -82,3 +82,11 @@ export async function archiveRubricTemplate(rubricTemplateId: number) {
 export async function unarchiveRubricTemplate(rubricTemplateId: number) {
 	return axios.put(`${API_URL}/rubric/template/unarchive/${rubricTemplateId}`)
 }
+
+export async function setRubricTemplateToPractice(
+	practiceId: number,
+	rubricTemplateId: number
+): Promise<ApiResponse<RubricTemplate>> {
+	const { data } = await axios.put(`${API_URL}/practice/${practiceId}/rubric/${rubricTemplateId}`)
+	return data
+}

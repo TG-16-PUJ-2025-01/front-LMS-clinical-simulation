@@ -39,12 +39,13 @@ import CreateSimulationsDialog from "./CreateSimulationsDialog"
 import EditSimulationsDialog from "./EditSimulationsDialog"
 import ViewMembersDialog from "./ViewMembersDialog"
 import AssignRubricDialog from "./AssignRubricDialog"
+import Practice from "@/modules/core/models/practice"
 
 interface Props {
-	courseId: number
+	practice: Practice
 }
 
-export function SimulationDataTable({ courseId }: Props) {
+export function SimulationDataTable({ practice }: Props) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -371,7 +372,8 @@ export function SimulationDataTable({ courseId }: Props) {
 			<AssignRubricDialog
 				open={isAssignRubricOpen}
 				onClose={() => setIsAssignRubricOpen(false)}
-				courseId={courseId}
+				courseId={practice.classModel.course.courseId ?? 0}
+				selectedRubricTemplate={practice.rubricTemplate ?? undefined}
 			/>
 		</>
 	)

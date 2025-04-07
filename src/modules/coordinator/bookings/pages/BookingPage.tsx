@@ -48,7 +48,7 @@ export default function PracticeDetailsPage() {
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">{practice.name}</LayoutSlot>
-			<SimulationDataTable courseId={practice.classModel.course.courseId ?? 0} />
+			<SimulationDataTable practice={practice} />
 		</>
 	)
 }
