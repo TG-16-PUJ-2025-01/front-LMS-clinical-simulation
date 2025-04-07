@@ -19,7 +19,7 @@ import {
 	FormItem,
 	FormMessage,
 } from "@/modules/core/components/ui/form"
-import { Eye } from "lucide-react"
+import { Check, Eye, RefreshCcw } from "lucide-react"
 import { Textarea } from "@/modules/core/components/ui/textarea"
 import { Input } from "@/modules/core/components/ui/input"
 import ViewRubricTemplateDialog from "../../rubricTemplates/components/ViewRubricTemplateDialog"
@@ -86,15 +86,22 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 
 	// auto save rubric after 5 seconds
 	useEffect(() => {
+		let timer: NodeJS.Timeout | null = null
+
 		const subscription = form.watch((value) => {
-			const timer = setTimeout(() => {
+			setSaving(true)
+			if (timer) clearTimeout(timer)
+			timer = setTimeout(() => {
 				if (!saving) return
 				setSaving(false)
 				// Save the rubric
 			}, 5000)
-			return () => clearTimeout(timer)
 		})
-		return () => subscription.unsubscribe()
+
+		return () => {
+			if (timer) clearTimeout(timer)
+			subscription.unsubscribe()
+		}
 	}, [form, saving])
 
 	async function onSave() {
@@ -222,8 +229,18 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 												</TableBody>
 											</Table>
 										</article>
-										<p className="text-blue-javeriana text-right text-xs italic">
-											{saving ? "Guardando..." : "Cambios sincronizados"}
+										<p className="text-blue-javeriana text-right text-xs italic ml-auto">
+											{saving ? (
+												<span className="flex items-center gap-1">
+													<RefreshCcw className="size-4" />
+													Sincronizando cambios...
+												</span>
+											) : (
+												<span className="flex items-center gap-1">
+													<Check className="size-4" />
+													Cambios sincronizados
+												</span>
+											)}
 										</p>
 										<div className="flex w-full items-center justify-end gap-4">
 											<Button type="button" onClick={() => setOpenDialog(true)} variant="outline">
