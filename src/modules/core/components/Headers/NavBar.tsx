@@ -1,9 +1,6 @@
 // NavBar.tsx
-import { Bell } from "lucide-react";
 import { UserNav } from "./UserNav";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/modules/core/components/ui/tooltip";
 import { Button } from "@/modules/core/components/ui/button";
-import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { useNavigate } from "react-router-dom";
 import RoleSelect from "./RoleSelect";
 
@@ -46,17 +43,6 @@ export default function NavBar({ showSelect = true, navLinks = [] }: NavBarProps
 				<div className="flex items-center gap-4">
 					{/* Role Select */}
 					{showSelect && <RoleSelect />}
-					{/* Bell Button */}
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Button className="mr-2 cursor-pointer" variant="ghost" size="icon">
-									<Bell className="h-5 w-5" />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>Notificaciones</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
 					{/* Avatar Button */}
 					<UserNav />
 				</div>
