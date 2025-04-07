@@ -24,7 +24,6 @@ import { Textarea } from "@/modules/core/components/ui/textarea"
 import { Input } from "@/modules/core/components/ui/input"
 import ViewRubricTemplateDialog from "../../rubricTemplates/components/ViewRubricTemplateDialog"
 import { useEffect, useRef, useState } from "react"
-import Rubric from "@/modules/core/models/rubric"
 
 interface Props {
 	gradable?: boolean
@@ -32,69 +31,81 @@ interface Props {
 }
 
 const FormSchema = z.object({
-	criteria: z.array(
+	evaluatedCriterias: z.array(
 		z.object({
 			score: z.coerce.number(),
-			description: z.string(),
+			comment: z.string(),
 		})
 	),
 	total: z.object({
 		score: z.coerce.number(),
-		description: z.string(),
+		comment: z.string(),
 	}),
 })
 
 export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 	const [openDialog, setOpenDialog] = useState(false)
-	const [savedRubric, setSavedRubric] = useState<Rubric | null>(null)
-	const [loading, setLoading] = useState(false)
+	const [saving, setSaving] = useState(false)
 	const [totalScore, setTotalScore] = useState(0)
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			criteria: [
-				{
-					score: 0,
-					description: "",
-				},
-				{
-					score: 0,
-					description: "",
-				},
-			],
+			evaluatedCriterias: [],
 			total: {
 				score: 0,
-				description: "",
+				comment: "",
 			},
 		},
 	})
 
 	// Calculate the total score when the input changes
-	const isSettingValue = useRef(false)
+	const updatingTotal = useRef(false)
 
 	useEffect(() => {
+		if (!rubricTemplate) return
+
 		const subscription = form.watch((value) => {
-			if (isSettingValue.current) {
-				isSettingValue.current = false
+			if (updatingTotal.current) {
+				updatingTotal.current = false
 				return
 			}
 
-			const criteria = value.criteria || []
+			const criteria = value.evaluatedCriterias || []
 			const total = criteria.reduce((acc, curr, index) => {
 				return acc + (curr?.score ?? 0) * (rubricTemplate?.criteria[index]?.weight ?? 0)
 			}, 0)
 			const totalScore = Math.round(total) / 100
 			setTotalScore(totalScore)
 
-			isSettingValue.current = true
+			updatingTotal.current = true
 			form.setValue("total.score", totalScore, { shouldDirty: false })
 		})
 		return () => subscription.unsubscribe()
 	}, [form, rubricTemplate])
 
+	// auto save rubric after 5 seconds
+	useEffect(() => {
+		const subscription = form.watch((value) => {
+			const timer = setTimeout(() => {
+				if (!saving) return
+				setSaving(false)
+				// Save the rubric
+			}, 5000)
+			return () => clearTimeout(timer)
+		})
+		return () => subscription.unsubscribe()
+	}, [form, saving])
+
+	async function onSave() {
+		const data = form.getValues()
+		setSaving(false)
+		toast.success("Rúbrica guardada correctamente")
+	}
+
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		toast.success("Comentario publicado correctamente")
+		setSaving(false)
+		toast.success("Rúbrica guardada correctamente")
 	}
 
 	if (!gradable) {
@@ -117,7 +128,7 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 				<form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
 					<FormField
 						control={form.control}
-						name="criteria"
+						name="evaluatedCriterias"
 						render={() => (
 							<FormItem>
 								<FormControl>
@@ -143,11 +154,12 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 															<TableCell className="border py-1 font-medium">
 																<FormField
 																	control={form.control}
-																	name={`criteria.${index}.description`}
+																	name={`evaluatedCriterias.${index}.comment`}
 																	render={({ field }) => (
 																		<FormItem className="h-full">
 																			<FormControl>
 																				<Textarea
+																					defaultValue={""}
 																					className="h-full min-h-min min-w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
 																					{...field}
 																				/>
@@ -159,12 +171,13 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 															<TableCell className="border text-right font-medium">
 																<FormField
 																	control={form.control}
-																	name={`criteria.${index}.score`}
+																	name={`evaluatedCriterias.${index}.score`}
 																	render={({ field }) => (
 																		<FormItem className="inline-flex items-center">
 																			<FormControl>
 																				<Input
 																					type="number"
+																					defaultValue={0}
 																					min={0}
 																					max={5}
 																					className="m-0 field-sizing-content h-full min-h-min w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
@@ -186,7 +199,7 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 														<TableCell className="border py-1 font-medium">
 															<FormField
 																control={form.control}
-																name="total.description"
+																name="total.comment"
 																render={({ field }) => (
 																	<FormItem className="h-full">
 																		<FormControl>
@@ -210,16 +223,17 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 											</Table>
 										</article>
 										<p className="text-blue-javeriana text-right text-xs italic">
-											{!savedRubric ? "No se han guardado cambios" : ""}
+											{saving ? "Guardando..." : "Cambios sincronizados"}
 										</p>
 										<div className="flex w-full items-center justify-end gap-4">
 											<Button type="button" onClick={() => setOpenDialog(true)} variant="outline">
 												<Eye />
 												Ver rúbrica
 											</Button>
-											<Button type="submit" variant="default">
+											<Button type="button" onClick={onSave}>
 												Guardar
 											</Button>
+											<Button type="submit">Publicar</Button>
 										</div>
 									</div>
 								</FormControl>
