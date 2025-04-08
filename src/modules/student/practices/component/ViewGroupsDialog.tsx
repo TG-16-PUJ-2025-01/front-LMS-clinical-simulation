@@ -7,6 +7,7 @@ import {
 import { DialogDescription } from "@radix-ui/react-dialog"
 import { toast } from "sonner"
 import GroupsDataTable from "./GroupsDataTable"
+import { joinSimulation } from "../services/practicesService"
 
 interface ViewGroupsDialog {
 	open: boolean
@@ -15,8 +16,14 @@ interface ViewGroupsDialog {
 }
 
 export default function ViewGroupsDialog({ open, onClose, practiceId }: ViewGroupsDialog) {
-	const handleEnroll = (simulationId: number) => {
-		toast.success(`Inscrito en el grupo ${simulationId}`)
+	const handleEnroll = async (simulationId: number) => {
+		try {
+			await joinSimulation(simulationId)
+			toast.success(`Inscrito en el grupo ${simulationId}`)
+		} catch (error) {
+			toast.error("Error al inscribirse en el grupo")
+			console.error(error)
+		}
 	}
 
 	return (
