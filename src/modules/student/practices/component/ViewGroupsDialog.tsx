@@ -7,7 +7,8 @@ import {
 import { DialogDescription } from "@radix-ui/react-dialog"
 import { toast } from "sonner"
 import GroupsDataTable from "./GroupsDataTable"
-import { joinSimulation } from "../services/practicesService"
+import { getEnroledSimulationId, joinSimulation } from "../services/practicesService"
+import { useEffect } from "react"
 
 interface ViewGroupsDialog {
 	open: boolean
@@ -25,6 +26,21 @@ export default function ViewGroupsDialog({ open, onClose, practiceId }: ViewGrou
 			console.error(error)
 		}
 	}
+
+	useEffect(() => {
+		if (open) {
+			// Fetch the enrolled simulation ID when the dialog opens
+			const fetchEnrolledSimulationId = async () => {
+				try {
+					const res = await getEnroledSimulationId(practiceId)
+					console.log("Enrolled simulation ID:", res.data)
+				} catch (error) {
+					console.error("Error fetching enrolled simulation ID:", error)
+				}
+			}
+			fetchEnrolledSimulationId()
+		}
+	})
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
