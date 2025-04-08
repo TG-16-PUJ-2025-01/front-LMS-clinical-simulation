@@ -33,7 +33,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
-import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
+import { GradeStatusLabels } from "@/modules/core/models/gradeStatus"
 import { format } from "date-fns"
 import CreateSimulationsDialog from "./CreateSimulationsDialog"
 import EditSimulationsDialog from "./EditSimulationsDialog"
@@ -155,8 +155,8 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels
-				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof GradeStatusLabels
+				return <div className="text-center capitalize">{GradeStatusLabels[gradeStatus]}</div>
 			},
 		},
 		{
