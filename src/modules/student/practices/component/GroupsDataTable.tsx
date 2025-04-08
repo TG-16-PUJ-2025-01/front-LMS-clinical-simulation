@@ -24,6 +24,7 @@ import { ArrowUpDown, Search, Check } from "lucide-react"
 import { format } from "date-fns"
 import Simulation from "@/modules/core/models/simulation"
 import { getSimulationsByPracticeId } from "@/modules/coordinator/bookings/services/bookingService"
+import { getEnroledSimulationId } from "../services/practicesService"
 
 interface GroupsDataTableProps {
 	practiceId: number
@@ -36,6 +37,7 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 	const [enrolledSimulationId, setEnrolledSimulationId] = useState<number | null>(null)
+	const [triggerFetchEnrolled, setTriggerFetchEnrolled] = useState(false)
 
 	const [data, setData] = useState<Simulation[]>([])
 
@@ -48,6 +50,20 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 		total: 0,
 		totalPages: 0,
 	})
+
+	useEffect(() => {
+		const fetchEnrolledSimulation = async () => {
+			try {
+				const res = await getEnroledSimulationId(practiceId)
+				setEnrolledSimulationId(res.data)
+				console.log("Enrolled simulation ID:", res.data)
+			} catch (error) {
+				console.error("Error fetching enrolled simulation ID:", error)
+			}
+		}
+
+		fetchEnrolledSimulation()
+	}, [triggerFetchEnrolled])
 
 	useEffect(() => {
 		const fetchSimulations = async () => {
@@ -140,15 +156,15 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 				return (
 					<Button
 						disabled={isEnrolled}
-						onClick={() => {
-							onEnroll(simulationId)
-							setEnrolledSimulationId(simulationId)
+						onClick={async () => {
+							await onEnroll(simulationId)
+							setTriggerFetchEnrolled((prev) => !prev) // Trigger fetch after enrollment
 						}}
 						className="flex items-center justify-center"
 					>
 						{isEnrolled ? (
 							<>
-								<Check/>
+								<Check />
 								Inscrito
 							</>
 						) : (
@@ -185,17 +201,17 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 	return (
 		<div className="w-full">
 			<div className="flex items-center justify-between">
-			<div className="relative w-1/2 max-w-sm">
-				<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
-				<Input
-					placeholder="Buscar por número de grupo..."
-					value={filter}
-					onChange={(event) => {
-						setFilter(event.target.value)
-						setPagination({ ...pagination, pageIndex: 0 })
-					}}
-					className="w-full pl-8"
-				/>
+				<div className="relative w-1/2 max-w-sm">
+					<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
+					<Input
+						placeholder="Buscar por número de grupo..."
+						value={filter}
+						onChange={(event) => {
+							setFilter(event.target.value)
+							setPagination({ ...pagination, pageIndex: 0 })
+						}}
+						className="w-full pl-8"
+					/>
 				</div>
 			</div>
 			<div className="mt-4 max-h-[400px] overflow-auto rounded-md border">
