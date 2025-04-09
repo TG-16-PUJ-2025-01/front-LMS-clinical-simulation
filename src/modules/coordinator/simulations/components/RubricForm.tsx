@@ -70,6 +70,7 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 
 	useEffect(() => {
 		if (!rubric) return
+		setTotalScore(rubric.total.score ?? 0)
 		form.reset({
 			evaluatedCriterias: rubric.evaluatedCriterias.map((criteria) => ({
 				score: criteria.score ?? 0,
