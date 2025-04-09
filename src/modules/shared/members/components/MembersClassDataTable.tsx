@@ -45,9 +45,10 @@ import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Class from "@/modules/core/models/class"
 import { all, AxiosError } from "axios"
+import { FileLoader } from "../../file_loader/fileLoaderButon"
+
 
 export function StudentsClassDataTable() {
-	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
@@ -73,57 +74,27 @@ export function StudentsClassDataTable() {
 	})
 
 	//PARA HOJAS DE EXCEL
-	const [excelFile, setExcelFile] = useState<string | ArrayBuffer | File | null>(null)
 	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
-	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-		let fileTypes = [
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			"application/vnd.ms-excel",
-			"text/csv",
-		]
-		const files = e.target.files
-		if (files && files.length > 0) {
-			const selectedFile = files[0]
-			console.log(selectedFile.type)
-
-			if (fileTypes.includes(selectedFile.type)) {
-				//setExcelFile(selectedFile)
-				e.target.value = "" // Aquí forzamos el cambio del input
-				let reader = new FileReader()
-				reader.readAsArrayBuffer(selectedFile)
-				reader.onload = (e) => {
-					if (e.target?.result) {
-						setExcelFile(e.target.result)
-					}
-				}
-			} else {
-				toast.error("Tipo de archivo no permitido")
-				setExcelFile(null)
-			}
-		}
-	}
-
-	useEffect(() => {
-		if (excelFile !== null && typeof excelFile !== "string") {
+	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
 			console.log("Leyendo archivo Excel...")
-
-			const workbook = XLSX.read(excelFile, { type: "buffer" })
+		
+			const workbook = XLSX.read(fileBuffer, { type: "buffer" })
 			const workbookSheetName = workbook.SheetNames[0]
 			const worksheet = workbook.Sheets[workbookSheetName]
 			const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
-
-			//processar datos
-			// Validar formato esperado del archivo Excel
+		
 			const validFormat = data.every(
 				(item) => "institutionalId" in item && "rol" in item && typeof item.rol === "string"
 			)
-
+		
 			if (!validFormat) {
 				toast.error("El formato del archivo Excel no es el esperado.")
 				setExcelData(null)
 				return
 			}
+		
+			setExcelData(data)
 
 			let results: Class[] = []
 
@@ -177,9 +148,8 @@ export function StudentsClassDataTable() {
 
 			// Ejecutar la función asíncrona principal
 			processData()
-		}
-	}, [excelFile])
-
+	}
+	
 	useEffect(() => {
 		if (openDialog) return
 
@@ -384,21 +354,8 @@ export function StudentsClassDataTable() {
 						<Button onClick={() => handleOpenDialog("professors")}>Añadir profesores</Button>
 						<div>
 							{/* Botón que abre el input de archivo */}
-							<Button
-								className="bg-green-800 hover:bg-green-500"
-								onClick={() => fileInputRef.current?.click()} // Abre el input al hacer clic
-							>
-								<Sheet className="h-4 w-4 text-white" />
-								Cargar archivo
-							</Button>
+							<FileLoader onFileLoaded={handleExcelFile}  buttonText="Subir Archivo" />
 
-							{/* Input de archivo oculto */}
-							<input
-								type="file"
-								ref={fileInputRef}
-								onChange={handleFile}
-								style={{ display: "none" }} // Ocultar el input visualmente
-							/>
 						</div>
 					</div>
 				</div>
