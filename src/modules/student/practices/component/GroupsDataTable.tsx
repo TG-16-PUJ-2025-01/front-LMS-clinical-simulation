@@ -23,8 +23,10 @@ import {
 import { ArrowUpDown, Search, Check } from "lucide-react"
 import { format } from "date-fns"
 import Simulation from "@/modules/core/models/simulation"
-import { getSimulationsByPracticeId } from "@/modules/coordinator/bookings/services/bookingService"
-import { getEnroledSimulationId } from "../services/practicesService"
+import {
+	getEnroledSimulationId,
+	getSimulationsAvailableByPracticeId,
+} from "../services/practicesService"
 
 interface GroupsDataTableProps {
 	practiceId: number
@@ -70,7 +72,7 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 			try {
 				console.log("Fetching simulations...")
 				console.log("Practice ID:", practiceId)
-				const res = await getSimulationsByPracticeId(
+				const res = await getSimulationsAvailableByPracticeId(
 					practiceId,
 					pagination.pageIndex,
 					pagination.pageSize,
@@ -78,6 +80,7 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 					sorting[0]?.id || "simulationId",
 					!(sorting[0]?.desc ?? false)
 				)
+				console.log("Fetched simulations:", res.data)
 				setData(res.data)
 				setPaginationInfo({
 					total: res.metadata.total,
