@@ -5,8 +5,8 @@ import { getPracticeByClassId } from "../../../shared/practices/services/Practic
 import Practice from "@/modules/core/models/practice"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
-import { CardPractice } from "../component/CardPractice"
-import ViewGroupsDialog from "../component/ViewGroupsDialog"
+import { CardPractice } from "../components/CardPractice"
+import ViewGroupsDialog from "../components/ViewGroupsDialog"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
@@ -33,7 +33,6 @@ export default function PracticesPage() {
 	}, [])
 
 	const handleOpenDialog = (type: "group", practice?: Practice) => {
-		// TODO: Create new dialogs for student
 		setOpenDialog(type)
 		setSelectedPractice(practice ?? null)
 	}

@@ -20,13 +20,13 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { ArrowUpDown, Search, Check } from "lucide-react"
+import { ArrowUpDown, Search, Check, TriangleAlert } from "lucide-react"
 import { format } from "date-fns"
-import Simulation from "@/modules/core/models/simulation"
 import {
 	getEnroledSimulationId,
 	getSimulationsAvailableByPracticeId,
 } from "../services/practicesService"
+import SimulationAvailabilityDTO from "../dtos/simulationAvailabilityDto"
 
 interface GroupsDataTableProps {
 	practiceId: number
@@ -41,7 +41,7 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 	const [enrolledSimulationId, setEnrolledSimulationId] = useState<number | null>(null)
 	const [triggerFetchEnrolled, setTriggerFetchEnrolled] = useState(false)
 
-	const [data, setData] = useState<Simulation[]>([])
+	const [data, setData] = useState<SimulationAvailabilityDTO[]>([])
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
@@ -58,7 +58,6 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 			try {
 				const res = await getEnroledSimulationId(practiceId)
 				setEnrolledSimulationId(res.data)
-				console.log("Enrolled simulation ID:", res.data)
 			} catch (error) {
 				console.error("Error fetching enrolled simulation ID:", error)
 			}
@@ -70,8 +69,6 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 	useEffect(() => {
 		const fetchSimulations = async () => {
 			try {
-				console.log("Fetching simulations...")
-				console.log("Practice ID:", practiceId)
 				const res = await getSimulationsAvailableByPracticeId(
 					practiceId,
 					pagination.pageIndex,
@@ -80,7 +77,6 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 					sorting[0]?.id || "simulationId",
 					!(sorting[0]?.desc ?? false)
 				)
-				console.log("Fetched simulations:", res.data)
 				setData(res.data)
 				setPaginationInfo({
 					total: res.metadata.total,
@@ -94,7 +90,7 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 		fetchSimulations()
 	}, [pagination, filter, sorting])
 
-	const columns: ColumnDef<Simulation>[] = [
+	const columns: ColumnDef<SimulationAvailabilityDTO>[] = [
 		{
 			accessorKey: "groupNumber",
 			header: ({ column }) => (
@@ -153,15 +149,18 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {
-				const simulationId = row.original.simulationId
+				const simulation = row.original
+				const simulationId = simulation.simulationId
 				const isEnrolled = enrolledSimulationId === simulationId
+				const isAvailable = simulation.available
 
 				return (
 					<Button
-						disabled={isEnrolled}
+						disabled={isEnrolled || !isAvailable}
+						variant={!isAvailable ? "outline" : "default"}
 						onClick={async () => {
 							await onEnroll(simulationId)
-							setTriggerFetchEnrolled((prev) => !prev) // Trigger fetch after enrollment
+							setTriggerFetchEnrolled((prev) => !prev)
 						}}
 						className="flex items-center justify-center"
 					>
@@ -170,8 +169,13 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 								<Check />
 								Inscrito
 							</>
-						) : (
+						) : isAvailable ? (
 							"Inscribirse"
+						) : (
+							<>
+								<TriangleAlert />
+								No Disponible
+							</>
 						)}
 					</Button>
 				)

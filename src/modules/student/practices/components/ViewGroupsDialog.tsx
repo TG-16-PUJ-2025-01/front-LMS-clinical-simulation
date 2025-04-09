@@ -30,10 +30,11 @@ export default function ViewGroupsDialog({ open, onClose, practiceId }: ViewGrou
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[800px]">
 				<DialogHeader>
-					<DialogTitle>Grupos Disponibles a Inscripción</DialogTitle>
+					<DialogTitle>Horarios Disponibles a Inscripción</DialogTitle>
 					<DialogDescription>
-						Los siguientes son los horarios establecidos por el profesor, por favor inscríbase a uno
-						de ellos.
+						A continuación, se presentan los horarios asignados por el profesor. Por favor,
+						inscríbete en uno de ellos. Si un grupo aparece como "No disponible", esto significa que ya no
+						hay cupos o que la simulación ya fue realizada.
 					</DialogDescription>
 				</DialogHeader>
 				<GroupsDataTable practiceId={practiceId} onEnroll={handleEnroll} />

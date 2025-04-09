@@ -1,7 +1,7 @@
 import { API_URL } from "@/modules/core/config/env"
 import ApiResponse from "@/modules/core/models/apiResponse"
-import Simulation from "@/modules/core/models/simulation"
 import axios from "axios"
+import SimulationAvailabilityDTO from "../dtos/simulationAvailabilityDto"
 
 export async function joinSimulation(simulationId: number): Promise<ApiResponse<null>> {
 	const { data } = await axios.post(`${API_URL}/simulation/${simulationId}/join`)
@@ -20,7 +20,7 @@ export async function getSimulationsAvailableByPracticeId(
 	filter: string,
 	sort: string,
 	asc: boolean
-): Promise<ApiResponse<Simulation[]>> {
+): Promise<ApiResponse<SimulationAvailabilityDTO[]>> {
 	const { data } = await axios.get(`${API_URL}/simulation/practice/${practiceId}/available`, {
 		params: {
 			page,
