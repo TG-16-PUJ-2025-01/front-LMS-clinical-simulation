@@ -34,7 +34,7 @@ import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useRef, useState } from "react"
 import CreateClassDialog from "./CreateClassDialog"
-import { getClasses } from "../services/classService"
+import { createClass, getClasses } from "../services/classService"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
@@ -126,32 +126,19 @@ export function ClassesDataTable() {
 		let allCorrect = true
 
 		const processData = async () => {
-			/*const promises = data.map(async (item) => {
-				if (item.rol.toLowerCase() === "profesor") {
-					// Llama al servicio y agrega al resultado
-					try {
-						const updatedClass = await updateClassProfessorMember(Number(id), item.institutionalId)
-						results.push(updatedClass)
-					} catch (error) {
-						console.log(error)
-						toast.error(
-							error instanceof AxiosError ? error.response?.data.data : "Error desconocido"
-						)
-						allCorrect = false
-					}
-				} else if (item.rol.toLowerCase() === "estudiante") {
-					// Llama al servicio y agrega al resultado
-					try {
-						const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
-						results.push(updatedClass)
-					} catch (error) {
-						toast.error(
-							error instanceof AxiosError ? error.response?.data.data : "Error desconocido"
-						)
-						allCorrect = false
-					}
-				} else {
-					toast.error(`El rol ${item.rol.toLowerCase()} no es válido`)
+			const promises = data.map(async (item) => {
+				try {
+					await createClass({
+						javerianaId: item.claseId,
+						courseId: item.asignatura,
+						period: item.periodo,
+						numberOfParticipants: item.participantes,
+						professorsIds: Object.keys(item)
+							.filter((key) => key.trim().startsWith("profesor"))
+							.map((key) => item[key])
+							.filter((id) => id !== undefined && id !== null && id !== ""),
+					})
+				} catch (error) {
 					allCorrect = false
 				}
 			})
@@ -165,10 +152,10 @@ export function ClassesDataTable() {
 			console.log("Datos leídos del Excel:", results.length)
 
 			if (!allCorrect) {
-				toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
+				toast.warning("Hay datos erroneos en el excel, por favor verifique el archivo.")
 			} else {
 				toast.success("Archivo Excel procesado exitosamente.")
-			}*/
+			}
 		}
 
 		// Ejecutar la función asíncrona principal
@@ -180,25 +167,24 @@ export function ClassesDataTable() {
 
 		for (let i = 0; i < data.length; i++) {
 			const row = data[i]
-		
+
 			// Ignorar filas vacías
-			console.log(Object.keys(row)) 
+			console.log(Object.keys(row))
 			if (Object.keys(row).length === 0) {
 				console.warn(`Fila ${i + 1} está vacía, se ignora.`)
 				continue
-			}	
-	
-			const rowKeys = Object.keys(row).map(k => k.trim())
+			}
+
+			const rowKeys = Object.keys(row).map((k) => k.trim())
 
 			const hasAllFields = requiredFields.every((field) => rowKeys.includes(field))
 
 			const hasProfesorField = rowKeys.some((key) => key.startsWith("profesor"))
-	
+
 			if (!hasAllFields && !hasProfesorField) {
 				console.warn(`Fila ${i + 1} no tiene todos los campos requeridos.`)
 				return false
 			}
-
 		}
 
 		console.log("Todas las filas válidas tienen los campos requeridos.")
