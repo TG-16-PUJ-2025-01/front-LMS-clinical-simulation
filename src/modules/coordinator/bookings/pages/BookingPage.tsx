@@ -41,7 +41,7 @@ export default function PracticeDetailsPage() {
 							href: "/coordinador/rubricas",
 						},
 						{
-							label: `(${practice.classModel.javerianaId}) ${practice.classModel.course.name}`,
+							label: `Volver a clase`,
 							href: `/coordinador/clases/${classId}/practicas`,
 						},
 						{
