@@ -1,5 +1,7 @@
+import GradeStatus from "./gradeStatus"
 import Practice from "./practice"
 import Room from "./room"
+import Rubric from "./rubric"
 import Video from "./video"
 
 export default interface Simulation {
@@ -7,9 +9,11 @@ export default interface Simulation {
 	simulationId: number
 	startDateTime: Date
 	endDateTime: Date
-  grade: number
-  gradeDate: Date
-  video: Video
+  grade?: number
+  gradeDate?: Date
+  video?: Video
   rooms: Room[]
   practice: Practice
+  rubric?: Rubric
+  gradeStatus: GradeStatus
 }

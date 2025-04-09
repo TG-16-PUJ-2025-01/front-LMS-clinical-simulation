@@ -13,7 +13,7 @@ import { VideoOff } from "lucide-react"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 
 export default function SimulationPage() {
-	const params = useParams()
+	const { id } = useParams()
 	const videoRef = useRef<HTMLVideoElement>(null)
 	const [currentTime, setCurrentTime] = useState(0)
 	const [simulation, setSimulation] = useState<Simulation>()
@@ -23,13 +23,13 @@ export default function SimulationPage() {
 		if (isSync) return
 
 		const fetchSimulation = async () => {
-			const response = await getSimulationById(parseInt(params.id ?? "0"))
+			const response = await getSimulationById(parseInt(id ?? "0"))
 			setSimulation(response.data)
 		}
 
 		fetchSimulation()
 		setIsSync(true)
-	}, [isSync, params.id])
+	}, [isSync, id])
 
 	useEffect(() => {
 		const videoElement = videoRef.current
@@ -131,6 +131,7 @@ export default function SimulationPage() {
 					<RubricForm
 						rubricTemplate={simulation?.practice.rubricTemplate ?? undefined}
 						gradable={simulation?.practice.gradeable ?? false}
+						rubric={simulation?.rubric ?? undefined}
 					/>
 				</section>
 			</div>

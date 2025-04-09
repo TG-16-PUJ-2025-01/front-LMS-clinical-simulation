@@ -24,10 +24,15 @@ import { Textarea } from "@/modules/core/components/ui/textarea"
 import { Input } from "@/modules/core/components/ui/input"
 import ViewRubricTemplateDialog from "../../rubricTemplates/components/ViewRubricTemplateDialog"
 import { useEffect, useRef, useState } from "react"
+import Rubric from "@/modules/core/models/rubric"
+import RubricDto from "../dtos/rubricDto"
+import { updateSimulationRubric } from "../services/simulationService"
+import { useParams } from "react-router-dom"
 
 interface Props {
 	gradable?: boolean
 	rubricTemplate?: RubricTemplate
+	rubric?: Rubric
 }
 
 const FormSchema = z.object({
@@ -43,7 +48,8 @@ const FormSchema = z.object({
 	}),
 })
 
-export function RubricForm({ rubricTemplate, gradable = true }: Props) {
+export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
+	const { id } = useParams()
 	const [openDialog, setOpenDialog] = useState(false)
 	const [saving, setSaving] = useState(false)
 	const [totalScore, setTotalScore] = useState(0)
@@ -61,6 +67,20 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 
 	// Calculate the total score when the input changes
 	const updatingTotal = useRef(false)
+
+	useEffect(() => {
+		if (!rubric) return
+		form.reset({
+			evaluatedCriterias: rubric.evaluatedCriterias.map((criteria) => ({
+				score: criteria.score ?? 0,
+				comment: criteria.comment ?? "",
+			})),
+			total: {
+				score: rubric.total.score ?? 0,
+				comment: rubric.total.comment ?? "",
+			},
+		})
+	}, [rubric, form])
 
 	useEffect(() => {
 		if (!rubricTemplate) return
@@ -91,10 +111,13 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 		const subscription = form.watch((value) => {
 			setSaving(true)
 			if (timer) clearTimeout(timer)
-			timer = setTimeout(() => {
+			timer = setTimeout(async () => {
 				if (!saving) return
+				await saveRubric({
+					evaluatedCriterias: value.evaluatedCriterias,
+					total: value.total,
+				})
 				setSaving(false)
-				// Save the rubric
 			}, 5000)
 		})
 
@@ -104,15 +127,23 @@ export function RubricForm({ rubricTemplate, gradable = true }: Props) {
 		}
 	}, [form, saving])
 
+	async function saveRubric(rubric: RubricDto) {
+		await updateSimulationRubric(Number(id), rubric)
+	}
+
 	async function onSave() {
 		const data = form.getValues()
+		await saveRubric({
+			evaluatedCriterias: data.evaluatedCriterias,
+			total: data.total,
+		})
 		setSaving(false)
 		toast.success("Rúbrica guardada correctamente")
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
 		setSaving(false)
-		toast.success("Rúbrica guardada correctamente")
+		toast.success("Rúbrica publicada correctamente")
 	}
 
 	if (!gradable) {

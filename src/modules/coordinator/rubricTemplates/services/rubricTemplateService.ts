@@ -5,8 +5,8 @@ import RubricTemplate from "@/modules/core/models/rubricTemplate"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import Course from "@/modules/core/models/course"
 
-export function createRubricTemplate(data: RubricTemplateDto) {
-	return axios.post(`${API_URL}/rubric/template`, data)
+export async function createRubricTemplate(data: RubricTemplateDto) {
+	return await axios.post(`${API_URL}/rubric/template`, data)
 }
 
 export async function getRubricTemplates(
