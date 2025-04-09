@@ -43,7 +43,11 @@ export default function PracticeDetailsPage() {
 						{
 							label: `(${practice.classModel.javerianaId}) ${practice.classModel.course.name}`,
 							href: `/coordinador/clases/${classId}/practicas`,
-						}
+						},
+						{
+                            label: "Calificaciones",
+                            href: `/coordinador/clases/${classId}/calificaciones`,
+                        },
 					]}
 				/>
 			</LayoutSlot>

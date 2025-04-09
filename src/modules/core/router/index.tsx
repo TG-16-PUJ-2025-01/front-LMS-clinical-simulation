@@ -25,6 +25,7 @@ import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
 import StudentMainMenuPage from "@/modules/student/main-menu/pages/MainMenuPage"
 import TeacherPracticesPage from "@/modules/teacher/practices/pages/PracticesPage"
 import StudentPracticesPage from "@/modules/student/practices/pages/PracticesPage"
+import GradesPage from "@/modules/coordinator/grades/pages/GradesPage"
 
 export default function Router() {
 	return (
@@ -74,6 +75,7 @@ export default function Router() {
 					<Route path="/coordinador/clases/:id/miembros" element={<MembersPage />}></Route>
 					<Route path="/coordinador/practicas" element={<CoordinatorPracticesPage />}></Route>
 					<Route path="/coordinador/rubricas" element={<RubricTemplatePage />}></Route>
+					<Route path="/coordinador/clases/:classId/calificaciones" element={<GradesPage/>}></Route>
 				</Route>
 
 				{/* Admin Routes */}

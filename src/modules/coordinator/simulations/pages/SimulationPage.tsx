@@ -71,6 +71,10 @@ export default function SimulationPage() {
 							label: simulation?.practice.name ?? "",
 							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas/${simulation?.practice.id}`,
 						},
+						{
+                            label: "Calificaciones",
+                            href: `/coordinador/clases/${simulation?.practice.classModel.classId}/calificaciones`,
+                        },
 					]}
 				/>
 			</LayoutSlot>
