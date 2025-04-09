@@ -4,6 +4,6 @@ import RubricTemplate from "./rubricTemplate";
 export default interface Rubric {
   rubricId?: number
   evaluatedCriterias: EvaluatedCriteria[]
-  rubricTemplate: RubricTemplate
+  rubricTemplate?: RubricTemplate
   total: EvaluatedCriteria
 }

@@ -296,6 +296,7 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 				open={openDialog}
 				onClose={() => setOpenDialog(false)}
 				rubricTemplateData={rubricTemplate}
+				rubric={form.getValues()}
 			/>
 		</>
 	)
