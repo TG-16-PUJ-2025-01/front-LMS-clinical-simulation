@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 import { CardPractice } from "../components/CardPractice"
 import ViewGroupsDialog from "../components/ViewGroupsDialog"
+import { getEnroledSimulationId } from "../services/practicesService"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
@@ -43,9 +44,18 @@ export default function PracticesPage() {
 		fetchPractices()
 	}
 
-	const handlePracticeNavigation = (practice: Practice) => {
-		// TODO: Only redirect if the student is already in a group
-        navigate(`/estudiante/practicas/${practice.id}`)
+	const handlePracticeNavigation = async (practiceId: number) => {
+		try {
+			const res = await getEnroledSimulationId(practiceId)
+			if (res.data !== null) {
+				navigate(`/estudiante/practicas/${practiceId}`)
+			} else {
+				toast.error("Debes estar inscrito en un grupo para acceder a la práctica.")
+			}
+		} catch (error) {
+			console.error(error)
+			toast.error("Ocurrió un error al verificar la inscripción.")
+		}
 	}
 
 	return (
@@ -64,7 +74,7 @@ export default function PracticesPage() {
 							numberOfGroups={practice.numberOfGroups ?? null}
 							maxStudentsGroup={practice.maxStudentsGroup ?? null}
 							type={practice.type}
-							onClick={() => handlePracticeNavigation(practice)}
+							onClick={() => handlePracticeNavigation(practice.id)}
 							onEdit={() => handleOpenDialog("group", practice)}
 						/>
 					))}
