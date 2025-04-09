@@ -88,7 +88,11 @@ export default function PracticesPage() {
 						{
 							label: "Miembros de la Clase",
 							href: `/coordinador/clases/${id}/miembros`,
-						}
+						},
+						{
+                            label: "Calificaciones",
+                            href: `/coordinador/clases/${id}/calificaciones`,
+                        },
 					]}
 				/>
 			</LayoutSlot>

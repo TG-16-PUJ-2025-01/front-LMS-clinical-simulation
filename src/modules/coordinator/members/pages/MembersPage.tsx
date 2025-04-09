@@ -42,6 +42,10 @@ export default function MembersPage() {
 							label: "Rúbricas",
 							href: "/coordinador/rubricas",
 						},
+						{
+                            label: "Calificaciones",
+                            href: `/coordinador/clases/${id}/calificaciones`,
+                        },
             {
               label: `(${classData?.javerianaId ?? ""}) ${classData?.course.name ?? ""}`,
               href: `/coordinador/clases/${id}/practicas`,
