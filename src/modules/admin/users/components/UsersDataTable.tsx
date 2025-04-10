@@ -32,7 +32,7 @@ import { useEffect, useState } from "react"
 import DeleteUserDialog from "./DeleteUserDialog"
 import CreateUserDialog from "./CreateUserDialog"
 
-import { getUsers } from "../services/userService"
+import { createUserByExcel, getUsers } from "../services/userService"
 import EditUserDialog from "./EditUserDialog"
 import User from "@/modules/core/models/user"
 import { UpdateMailConfigDialog } from "./UpdateMailConfigDialog"
@@ -131,16 +131,20 @@ export function UsersDataTable() {
 
 		let allCorrect = true
 
-		const processData = async () => {/*
+		const processData = async () => {
 			const promises = data.map(async (item) => {
+
+        //evaluar si el rol es el correcto 
+
+        
 				try {
-					await createClassByExcel({
-						javerianaId: item.claseId,
-						courseId: item.asignatura,
-						period: item.periodo,
-						numberOfParticipants: item.participantes,
-						professorsIds: Object.keys(item)
-							.filter((key) => key.trim().startsWith("profesor"))
+					await createUserByExcel({
+						institutionalId: item.idInstitucional,
+						name: item.nombre,
+						lastName: item.apellido,
+						email: item.email,
+						roles: Object.keys(item)
+							.filter((key) => key.trim().startsWith("rol"))
 							.map((key) => item[key])
 							.filter((id) => id !== undefined && id !== null && id !== ""),
 					})
@@ -148,6 +152,7 @@ export function UsersDataTable() {
 					allCorrect = false
 				}
 			})
+
 
 			// Esperar a que todas las promesas se resuelvan
 			await Promise.all(promises)
@@ -163,14 +168,14 @@ export function UsersDataTable() {
 				setRefreshTrigger((prev) => prev + 1)
 
 				toast.success("Archivo Excel procesado exitosamente.")
-			}*/
+			}
 		}
 		// Ejecutar la función asíncrona principal
 		processData()
 	}
 
 	function neededFields(data: Record<string, any>[]) {
-		const requiredFields = ["claseId", "asignatura", "periodo", "participantes"]
+		const requiredFields = ["idInstitucional", "nombre", "apellido", "email"]
 
 		for (let i = 0; i < data.length; i++) {
 			const row = data[i]
@@ -184,9 +189,9 @@ export function UsersDataTable() {
 
 			const hasAllFields = requiredFields.every((field) => rowKeys.includes(field))
 
-			const hasProfesorField = rowKeys.some((key) => key.startsWith("profesor"))
+			const hasRoleField = rowKeys.some((key) => key.startsWith("rol"))
 
-			if (!hasAllFields && !hasProfesorField) {
+			if (!hasAllFields && !hasRoleField) {
 				return false
 			}
 		}
