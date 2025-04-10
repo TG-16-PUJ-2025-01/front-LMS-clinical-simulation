@@ -33,9 +33,9 @@ axios.interceptors.response.use(
 	(response) => response,
 	(error) => {
 		if (error.response && error.response.status === 401) {
-			// clearToken()
-			// // Redirigir a la página de login
-			// window.location.href = "/login"
+			clearToken()
+			// Redirigir a la página de login
+			window.location.href = "/login"
 			console.error("Token inválido o expirado. Por favor, inicia sesión nuevamente.")
 		}
 		return Promise.reject(error)
