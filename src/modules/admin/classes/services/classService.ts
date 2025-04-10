@@ -37,6 +37,7 @@ export async function getClass(id: number): Promise<ApiResponse<Class>> {
 }
 
 export async function createClass(newClass: CreateClassDTO): Promise<ApiResponse<Class>> {
+    console.log(newClass)
     const { data } = await axios.post(`${API_URL}/class/add`, newClass)
     return {
         ...data,

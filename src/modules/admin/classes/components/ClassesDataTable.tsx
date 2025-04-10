@@ -38,7 +38,7 @@ import { createClass, getClasses } from "../services/classService"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
-import { FileLoader } from "@/modules/shared/file_loader/fileLoaderButon"
+import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
 import { AxiosError } from "axios"
 
 export function ClassesDataTable() {
@@ -79,7 +79,7 @@ export function ClassesDataTable() {
 			)
 
 			setData(res.data)
-			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
+
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
@@ -102,7 +102,6 @@ export function ClassesDataTable() {
 	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
 	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
-		console.log("Leyendo archivo Excel...")
 
 		const workbook = XLSX.read(fileBuffer, { type: "buffer" })
 		const workbookSheetName = workbook.SheetNames[0]
@@ -110,8 +109,6 @@ export function ClassesDataTable() {
 		const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
 
 		let validFormat = true
-
-		console.log("Formato de archivo Excel válido:", validFormat)
 
 		if (!neededFields(data)) {
 			toast.error("El formato del archivo Excel no es el esperado.")
@@ -169,9 +166,7 @@ export function ClassesDataTable() {
 			const row = data[i]
 
 			// Ignorar filas vacías
-			console.log(Object.keys(row))
 			if (Object.keys(row).length === 0) {
-				console.warn(`Fila ${i + 1} está vacía, se ignora.`)
 				continue
 			}
 
@@ -182,12 +177,10 @@ export function ClassesDataTable() {
 			const hasProfesorField = rowKeys.some((key) => key.startsWith("profesor"))
 
 			if (!hasAllFields && !hasProfesorField) {
-				console.warn(`Fila ${i + 1} no tiene todos los campos requeridos.`)
 				return false
 			}
 		}
 
-		console.log("Todas las filas válidas tienen los campos requeridos.")
 		return true
 	}
 

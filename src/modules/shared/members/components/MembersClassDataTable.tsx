@@ -45,7 +45,7 @@ import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Class from "@/modules/core/models/class"
 import { all, AxiosError } from "axios"
-import { FileLoader } from "../../file_loader/fileLoaderButon"
+import { FileLoader } from "../../fileLoader/FileLoaderButon"
 
 
 export function StudentsClassDataTable() {
