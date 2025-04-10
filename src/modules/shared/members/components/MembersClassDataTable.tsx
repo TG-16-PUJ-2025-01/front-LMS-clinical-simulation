@@ -94,7 +94,6 @@ export function StudentsClassDataTable() {
 				return
 			}
 		
-			setExcelData(data)
 
 			let results: Class[] = []
 

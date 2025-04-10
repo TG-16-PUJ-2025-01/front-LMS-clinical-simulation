@@ -63,6 +63,9 @@ export function ClassesDataTable() {
 		pageSize: 10, //default page size
 	})
 
+	const [refreshTrigger, setRefreshTrigger] = useState(0)
+
+
 	const [paginationInfo, setPaginationInfo] = useState({
 		total: 0, //total number of records
 		totalPages: 0, //total number of pages
@@ -89,7 +92,7 @@ export function ClassesDataTable() {
 		}
 
 		fetchClasses()
-	}, [pagination, filter, sorting, openDialog,excelData])
+	}, [pagination, filter, sorting, openDialog,excelData,refreshTrigger])
 
 	const handleOpenDialog = (type: "create" | "edit" | "delete", Class?: Class) => {
 		setOpenDialog(type)
@@ -100,7 +103,7 @@ export function ClassesDataTable() {
 		setOpenDialog(null)
 		setSelectedClass(null)
 	}
-
+	
 	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
 
 		const workbook = XLSX.read(fileBuffer, { type: "buffer" })
@@ -137,7 +140,7 @@ export function ClassesDataTable() {
 					})
 				} catch (error) {
 					allCorrect = false
-					
+
 				}
 			})
 
@@ -152,6 +155,7 @@ export function ClassesDataTable() {
 				toast.warning("Hay datos erroneos en el excel, por favor verifique el archivo.")
 			} else {
 				setExcelData(data)
+				setRefreshTrigger(prev => prev + 1)
 
 				toast.success("Archivo Excel procesado exitosamente.")
 			}
