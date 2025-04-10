@@ -45,6 +45,15 @@ export async function createClass(newClass: CreateClassDTO): Promise<ApiResponse
     }
 }
 
+export async function createClassByExcel(newClass: CreateClassDTO): Promise<ApiResponse<Class>> {
+    console.log(newClass)
+    const { data } = await axios.post(`${API_URL}/class/add/excel`, newClass)
+    return {
+        ...data,
+        data: data.data,
+    }
+}
+
 export async function updateClass(id: number, updatedClass: CreateClassDTO): Promise<ApiResponse<Class>> {
     console.log(updatedClass)
     

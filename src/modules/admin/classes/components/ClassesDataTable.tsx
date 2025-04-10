@@ -34,11 +34,11 @@ import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useRef, useState } from "react"
 import CreateClassDialog from "./CreateClassDialog"
-import { createClass, getClasses } from "../services/classService"
+import {  createClassByExcel, getClasses } from "../services/classService"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
-import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
+import { FileLoader } from "@/modules/shared/fileLoader/fileLoaderButon"
 import { AxiosError } from "axios"
 
 export function ClassesDataTable() {
@@ -55,6 +55,8 @@ export function ClassesDataTable() {
 	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 
 	const [data, setData] = useState<Class[]>([])
+
+	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
@@ -87,7 +89,7 @@ export function ClassesDataTable() {
 		}
 
 		fetchClasses()
-	}, [pagination, filter, sorting, openDialog])
+	}, [pagination, filter, sorting, openDialog,excelData])
 
 	const handleOpenDialog = (type: "create" | "edit" | "delete", Class?: Class) => {
 		setOpenDialog(type)
@@ -98,8 +100,6 @@ export function ClassesDataTable() {
 		setOpenDialog(null)
 		setSelectedClass(null)
 	}
-
-	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
 	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
 
@@ -125,7 +125,7 @@ export function ClassesDataTable() {
 		const processData = async () => {
 			const promises = data.map(async (item) => {
 				try {
-					await createClass({
+					await createClassByExcel({
 						javerianaId: item.claseId,
 						courseId: item.asignatura,
 						period: item.periodo,
@@ -137,6 +137,7 @@ export function ClassesDataTable() {
 					})
 				} catch (error) {
 					allCorrect = false
+					
 				}
 			})
 
@@ -144,13 +145,14 @@ export function ClassesDataTable() {
 			await Promise.all(promises)
 
 			// Evaluar después de que todos los await se hayan completado
-			setExcelData(data)
 
 			console.log("Datos leídos del Excel:", results.length)
 
 			if (!allCorrect) {
 				toast.warning("Hay datos erroneos en el excel, por favor verifique el archivo.")
 			} else {
+				setExcelData(data)
+
 				toast.success("Archivo Excel procesado exitosamente.")
 			}
 		}
