@@ -10,13 +10,14 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Inbox, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
+import { ArrowUpDown, Eye, Inbox, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuLabel,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
 import { Input } from "@/modules/core/components/ui/input"
@@ -37,6 +38,7 @@ import { getRubricTemplates } from "../services/rubricTemplateService"
 import { RadioGroup, RadioGroupItem } from "@/modules/core/components/ui/radio-group"
 import { Label } from "@/modules/core/components/ui/label"
 import ArchiveRubricTemplateDialog from "./ArchiveRubricTemplateDialog"
+import ViewRubricTemplateDialog from "./ViewRubricTemplateDialog"
 
 export function RubricTemplateDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -46,9 +48,9 @@ export function RubricTemplateDataTable() {
 	const [rowSelection, setRowSelection] = useState({})
 	const [archived, setArchived] = useState<"all" | "archived">("all")
 
-	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | "archive" | null>(
-		null
-	)
+	const [openDialog, setOpenDialog] = useState<
+		"edit" | "delete" | "create" | "archive" | "view" | null
+	>(null)
 	const [selectedRubric, setSelectedRubric] = useState<RubricTemplate | null>(null)
 
 	const [data, setData] = useState<RubricTemplate[]>([])
@@ -72,7 +74,7 @@ export function RubricTemplateDataTable() {
 				filter,
 				sorting[0]?.id,
 				!(sorting[0]?.desc ?? false),
-				archived === "archived",
+				archived === "archived"
 			)
 
 			setData(res.data)
@@ -87,7 +89,7 @@ export function RubricTemplateDataTable() {
 	}, [pagination, filter, sorting, openDialog, archived])
 
 	const handleOpenDialog = (
-		type: "create" | "edit" | "delete" | "archive",
+		type: "create" | "edit" | "delete" | "archive" | "view",
 		rubric?: RubricTemplate
 	) => {
 		setOpenDialog(type)
@@ -155,11 +157,15 @@ export function RubricTemplateDataTable() {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
+							<DropdownMenuItem onClick={() => handleOpenDialog("view", rubric)}>
+								<Eye /> Ver
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
 							<DropdownMenuItem onClick={() => handleOpenDialog("edit", rubric)}>
 								<Pencil /> Editar
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("archive", rubric)}>
-								<Inbox /> {rubric.archived ? "Desarchivar": "Archivar"}
+								<Inbox /> {rubric.archived ? "Desarchivar" : "Archivar"}
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleOpenDialog("delete", rubric)}>
 								<Trash2 /> Borrar
@@ -308,6 +314,11 @@ export function RubricTemplateDataTable() {
 				rubricTemplateToArchive={selectedRubric ?? undefined}
 			/>
 			<CreateRubricTemplateDialog open={openDialog === "create"} onClose={handleCloseDialog} />
+			<ViewRubricTemplateDialog
+				open={openDialog === "view"}
+				onClose={handleCloseDialog}
+				rubricTemplateData={selectedRubric ?? undefined}
+			/>
 		</>
 	)
 }

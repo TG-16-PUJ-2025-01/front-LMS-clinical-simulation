@@ -143,6 +143,63 @@ export function CoursesDataTable() {
 			cell: ({ row }) => <div className="text-center">{row.getValue("coordinator")}</div>,
 		},
 		{
+			id: "department",
+			accessorFn: ({ department }) => `${department}`,
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Departamento
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => <div className="text-center">{row.getValue("department")}</div>,
+		},
+		{
+			id: "program",
+			accessorFn: ({ program }) => `${program}`,
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Programa
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => <div className="text-center">{row.getValue("program")}</div>,
+		},
+		{
+			id: "semester",
+			accessorFn: ({ semester }) => `${semester}`,
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Semestre
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => <div className="text-center">{row.getValue("semester")}</div>,
+		},
+		{
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {

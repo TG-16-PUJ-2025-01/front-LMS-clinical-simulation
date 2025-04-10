@@ -1,3 +1,4 @@
+import Practice from "./practice"
 import GradeStatus from "./gradeStatus"
 import Room from "./room"
 import Video from "./video"
@@ -12,4 +13,5 @@ export default interface Simulation {
   groupNumber: number
   video: Video
   rooms: Room[]
+  practice: Practice
 }

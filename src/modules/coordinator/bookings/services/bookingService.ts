@@ -23,7 +23,13 @@ export async function getSimulationsByPracticeId(
 		},
 	})
 
-	return data
+	return {
+		...data,
+		data: data.data.map((simulation: any) => ({
+			...simulation,
+			id: simulation.simulationId,
+		})),
+	}
 }
 
 interface SimulationRequest {

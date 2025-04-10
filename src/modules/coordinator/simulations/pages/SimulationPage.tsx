@@ -1,4 +1,3 @@
-import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { API_URL } from "@/modules/core/config/env"
 import { useRef, useEffect, useState } from "react"
@@ -9,6 +8,9 @@ import { Button } from "@/modules/core/components/ui/button"
 import Simulation from "@/modules/core/models/simulation"
 import { useParams } from "react-router-dom"
 import { getSimulationById } from "../services/simulationService"
+import { RubricForm } from "../components/RubricForm"
+import { VideoOff } from "lucide-react"
+import NavBar from "@/modules/core/components/Headers/NavBar"
 
 export default function SimulationPage() {
 	const params = useParams()
@@ -16,13 +18,12 @@ export default function SimulationPage() {
 	const [currentTime, setCurrentTime] = useState(0)
 	const [simulation, setSimulation] = useState<Simulation>()
 	const [isSync, setIsSync] = useState(false)
-	
+
 	useEffect(() => {
 		if (isSync) return
 
 		const fetchSimulation = async () => {
 			const response = await getSimulationById(parseInt(params.id ?? "0"))
-			console.log(response)
 			setSimulation(response.data)
 		}
 
@@ -43,7 +44,7 @@ export default function SimulationPage() {
 				videoElement.removeEventListener("timeupdate", handleTimeUpdate)
 			}
 		}
-	}, [])
+	}, [simulation?.video])
 
 	return (
 		<>
@@ -51,24 +52,52 @@ export default function SimulationPage() {
 				<NavBar
 					navLinks={[
 						{
-							label: "aqui",
-							href: "/coordinador/simulacion/1",
+							label: "Asignaturas",
+							href: `/coordinador/asignaturas`,
 						},
+						{
+							label: "Calendario",
+							href: "/coordinador/calendario",
+						},
+						{
+							label: "Rúbricas",
+							href: "/coordinador/rubricas",
+						},
+						{
+							label: `(${simulation?.practice.classModel.javerianaId ?? ""}) ${simulation?.practice.classModel.course.name ?? ""}`,
+							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas`,
+						},
+						{
+							label: simulation?.practice.name ?? "",
+							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas/${simulation?.practice.id}`,
+						},
+						{
+                            label: "Calificaciones",
+                            href: `/coordinador/clases/${simulation?.practice.classModel.classId}/calificaciones`,
+                        },
 					]}
 				/>
 			</LayoutSlot>
-			<LayoutSlot name="title">Práctica (Grupo X)</LayoutSlot>
-			<div className="grid grid-cols-2">
+			<LayoutSlot name="title">{simulation?.practice.name ?? ""} (Grupo {simulation?.groupNumber})</LayoutSlot>
+			<div className="grid grid-cols-2 gap-6">
 				<section>
-					<video
-						ref={videoRef}
-						src={`${API_URL}/streaming/video/${simulation?.video.name}`}
-						className="aspect-video w-full rounded-md"
-						controls
-					></video>
+					{simulation?.video?.name ? (
+						<video
+							ref={videoRef}
+							src={`${API_URL}/streaming/video/${simulation?.video?.name}`}
+							className="aspect-video w-full rounded-md"
+							controls
+						></video>
+					) : (
+						<div className="flex aspect-video w-full flex-col items-center justify-center gap-6">
+							<p>El video no está disponible para su visualización</p>
+							<VideoOff size={64} />
+							<div className="h-6"></div>
+						</div>
+					)}
 					<CommentForm
 						timestamp={currentTime}
-						videoId={simulation?.video.videoId ?? 0}
+						videoId={simulation?.video?.videoId ?? 0}
 						onFocus={() => videoRef.current?.pause()}
 						onSubmit={() => {
 							videoRef.current?.play()
@@ -77,16 +106,16 @@ export default function SimulationPage() {
 					/>
 					<Separator className="my-2" />
 					<h2 className="mb-2 font-semibold">Comentarios anteriores</h2>
-					{simulation?.video.comments.length === 0 ? (
+					{simulation?.video?.comments.length === 0 ? (
 						<p className="text-sm text-gray-400">No hay comentarios anteriores</p>
 					) : (
 						<ul>
-							{simulation?.video.comments.map((comment) => (
+							{simulation?.video?.comments.map((comment) => (
 								<li key={comment.timestamp} className="flex items-baseline gap-2">
 									<Button
 										type="button"
 										variant="link"
-										className="cursor-pointer p-0 text-xs text-gray-400 h-fit pb-2 w-14"
+										className="h-fit w-14 cursor-pointer p-0 pb-2 text-xs text-gray-400"
 										onClick={() => {
 											if (videoRef.current) videoRef.current.currentTime = comment.timestamp
 										}}
@@ -101,6 +130,12 @@ export default function SimulationPage() {
 							))}
 						</ul>
 					)}
+				</section>
+				<section>
+					<RubricForm
+						rubricTemplate={simulation?.practice.rubricTemplate ?? undefined}
+						gradable={simulation?.practice.gradeable ?? false}
+					/>
 				</section>
 			</div>
 		</>

@@ -5,4 +5,9 @@ export default interface Course {
 	javerianaId: number
 	name: string
 	coordinator: User
+	semester: number
+	program: string
+	department: string
+	faculty: string
+	
 }

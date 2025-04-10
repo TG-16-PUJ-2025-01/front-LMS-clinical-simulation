@@ -10,7 +10,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { getSimulationsByPracticeId } from "../services/bookingService"
 import Simulation from "@/modules/core/models/simulation"
 import { Button } from "@/modules/core/components/ui/button"
@@ -44,7 +44,8 @@ export function SimulationDataTable() {
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
-	const { id } = useParams()
+	const { practiceId } = useParams()
+	const navigate = useNavigate()
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -66,7 +67,7 @@ export function SimulationDataTable() {
 	useEffect(() => {
 		const fetchSimulations = async () => {
 			const res = await getSimulationsByPracticeId(
-				Number(id),
+				Number(practiceId),
 				pagination.pageIndex,
 				pagination.pageSize,
 				filter,
@@ -81,7 +82,7 @@ export function SimulationDataTable() {
 		}
 
 		fetchSimulations()
-	}, [pagination, filter, sorting, id])
+	}, [pagination, filter, sorting, practiceId])
 
 	const columns: ColumnDef<Simulation>[] = [
 		{
@@ -203,8 +204,8 @@ export function SimulationDataTable() {
 		{
 			id: "actions",
 			enableHiding: false,
-			cell: ({row}) => {
-				const simulation = row.original;
+			cell: ({ row }) => {
+				const simulation = row.original
 				return (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -223,18 +224,19 @@ export function SimulationDataTable() {
 							>
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
-							<DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => navigate(`/coordinador/simulacion/${simulation.simulationId}`)}
+							>
 								<Pencil /> Calificar
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => {
-									setSelectedSimulation(simulation);
-									setIsEditDialogOpen(true);
+									setSelectedSimulation(simulation)
+									setIsEditDialogOpen(true)
 								}}
 							>
 								<Calendar /> Editar Reserva
 							</DropdownMenuItem>
-
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
@@ -280,7 +282,10 @@ export function SimulationDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
+					<div className="flex items-center space-x-2">
+						<Button onClick={() => {}}>Asignar rúbrica</Button>
+						<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
+					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
 					<Table>
@@ -346,12 +351,16 @@ export function SimulationDataTable() {
 				</div>
 			</div>
 			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
-			<EditSimulationsDialog open={isEditDialogOpen} onClose={() => setIsEditDialogOpen(false)} simulation={selectedSimulation} />
+			<EditSimulationsDialog
+				open={isEditDialogOpen}
+				onClose={() => setIsEditDialogOpen(false)}
+				simulation={selectedSimulation}
+			/>
 
 			<ViewMembersDialog
 				open={isViewMembersOpen}
 				onClose={() => setIsViewMembersOpen(false)}
-				simulationId={selectedSimulation?.simulationId!}
+				simulationId={selectedSimulation?.simulationId ?? 0}
 			/>
 		</>
 	)
