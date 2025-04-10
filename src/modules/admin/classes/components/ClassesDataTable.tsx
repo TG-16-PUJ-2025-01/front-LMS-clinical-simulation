@@ -42,7 +42,6 @@ import { FileLoader } from "@/modules/shared/fileLoader/fileLoaderButon"
 import { AxiosError } from "axios"
 
 export function ClassesDataTable() {
-	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
