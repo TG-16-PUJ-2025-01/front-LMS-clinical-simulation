@@ -100,7 +100,7 @@ export function StudentsClassDataTable() {
 			let allCorrect = true
 
 			const processData = async () => {
-				const promises = data.map(async (item) => {
+				const promises = data.map(async (item, index) => {
 					if (item.rol.toLowerCase() === "profesor") {
 						// Llama al servicio y agrega al resultado
 						try {
@@ -111,7 +111,7 @@ export function StudentsClassDataTable() {
 							results.push(updatedClass)
 						} catch (error) {
 							console.log(error)
-							toast.error(error instanceof AxiosError ? error.response?.data.data : "Error desconocido")
+							toast.error(error instanceof AxiosError ? error.response?.data.data : `Error desconocido en la fila ${index + 1}`)
 							allCorrect = false
 						}
 					} else if (item.rol.toLowerCase() === "estudiante") {
@@ -121,11 +121,11 @@ export function StudentsClassDataTable() {
 							results.push(updatedClass)
 						} catch (error) {
 
-							toast.error(error instanceof AxiosError ? error.response?.data.data : "Error desconocido")
+							toast.error(error instanceof AxiosError ? error.response?.data.data : `Error desconocido en la fila ${index + 1}`)
 							allCorrect = false
 						}
 					} else {
-						toast.error(`El rol ${item.rol.toLowerCase()} no es válido`)
+						toast.error(`El rol ${item.rol.toLowerCase()} no es válido en la fila ${index + 1}`)
 						allCorrect = false
 					}
 				})

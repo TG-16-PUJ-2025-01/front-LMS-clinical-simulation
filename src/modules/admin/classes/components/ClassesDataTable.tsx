@@ -110,7 +110,6 @@ export function ClassesDataTable() {
 		const worksheet = workbook.Sheets[workbookSheetName]
 		const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
 
-		let validFormat = true
 
 		if (!neededFields(data)) {
 			toast.error("El formato del archivo Excel no es el esperado.")
@@ -125,7 +124,7 @@ export function ClassesDataTable() {
 		let allCorrect = true
 
 		const processData = async () => {
-			const promises = data.map(async (item) => {
+			const promises = data.map(async (item, index) => {
 				try {
 					await createClassByExcel({
 						javerianaId: item.claseId,
@@ -139,7 +138,7 @@ export function ClassesDataTable() {
 					})
 				} catch (error) {
 					allCorrect = false
-
+					toast.error(`Datos invalidos en la fila ${index + 1}.`)
 				}
 			})
 
