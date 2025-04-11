@@ -133,8 +133,8 @@ export function UsersDataTable() {
 		let allCorrect = true
 
 		const processData = async () => {
-			const promises = data.map(async (item) => {
-				//evaluar si el rol es el correcto
+			const promises = data.map(async (item, index) => {
+				// Evaluar si el rol es el correcto
 				let roles = Object.keys(item)
 					.filter((key) => key.trim().startsWith("rol"))
 					.map((key) => item[key])
@@ -142,19 +142,19 @@ export function UsersDataTable() {
 
 				if (roles.length === 0) {
 					allCorrect = false
-					toast.error("El rol no es correcto, por favor verifique el archivo.")
+					toast.error(
+						`Error en la fila ${index + 1}: el rol no es correcto, por favor verifique el archivo.`
+					)
 					return
 				}
 
-				//ver si rol hace parte del listado de roles Role
 				const isValidRole = roles.every((role) => Object.values(Role).includes(role))
 
-        if (!isValidRole) {
-          allCorrect = false
-          toast.error("El rol no es correcto, por favor verifique el archivo.")
-          return
-        }
-
+				if (!isValidRole) {
+					allCorrect = false
+					toast.error(`Error en la fila ${index + 1}: el rol no es válido.`)
+					return
+				}
 
 				try {
 					await createUserByExcel({
@@ -162,14 +162,14 @@ export function UsersDataTable() {
 						name: item.nombre,
 						lastName: item.apellido,
 						email: item.email,
-						roles: Object.keys(item)
-							.filter((key) => key.trim().startsWith("rol"))
-							.map((key) => item[key])
-							.filter((id) => id !== undefined && id !== null && id !== ""),
+						roles,
 					})
 				} catch (error) {
-          console.error("Error creating user:", error)
 					allCorrect = false
+					console.error(`Error al crear el usuario en la fila ${index + 1}:`, error)
+
+					// Puedes incluso extraer más detalle del error si viene con mensaje del backend
+					toast.error(`Error en la fila ${index + 1}`)  
 				}
 			})
 
