@@ -39,6 +39,7 @@ import { UpdateMailConfigDialog } from "./UpdateMailConfigDialog"
 import { FileLoader } from "@/modules/shared/fileLoader/fileLoaderButon"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
+import Role from "@/modules/core/models/role"
 
 export function UsersDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -109,7 +110,7 @@ export function UsersDataTable() {
 		}
 
 		fetchUsers()
-	}, [pagination.pageIndex, pagination.pageSize, filter, sorting, openDialog])
+	}, [pagination.pageIndex, pagination.pageSize, filter, sorting, openDialog, refreshTrigger])
 
 	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
 		const workbook = XLSX.read(fileBuffer, { type: "buffer" })
@@ -133,10 +134,28 @@ export function UsersDataTable() {
 
 		const processData = async () => {
 			const promises = data.map(async (item) => {
+				//evaluar si el rol es el correcto
+				let roles = Object.keys(item)
+					.filter((key) => key.trim().startsWith("rol"))
+					.map((key) => item[key])
+					.filter((id) => id !== undefined && id !== null && id !== "")
 
-        //evaluar si el rol es el correcto 
+				if (roles.length === 0) {
+					allCorrect = false
+					toast.error("El rol no es correcto, por favor verifique el archivo.")
+					return
+				}
 
-        
+				//ver si rol hace parte del listado de roles Role
+				const isValidRole = roles.every((role) => Object.values(Role).includes(role))
+
+        if (!isValidRole) {
+          allCorrect = false
+          toast.error("El rol no es correcto, por favor verifique el archivo.")
+          return
+        }
+
+
 				try {
 					await createUserByExcel({
 						institutionalId: item.idInstitucional,
@@ -149,10 +168,10 @@ export function UsersDataTable() {
 							.filter((id) => id !== undefined && id !== null && id !== ""),
 					})
 				} catch (error) {
+          console.error("Error creating user:", error)
 					allCorrect = false
 				}
 			})
-
 
 			// Esperar a que todas las promesas se resuelvan
 			await Promise.all(promises)
@@ -166,7 +185,6 @@ export function UsersDataTable() {
 			} else {
 				setExcelData(data)
 				setRefreshTrigger((prev) => prev + 1)
-
 				toast.success("Archivo Excel procesado exitosamente.")
 			}
 		}
