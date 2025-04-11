@@ -26,6 +26,7 @@ import StudentMainMenuPage from "@/modules/student/main-menu/pages/MainMenuPage"
 import TeacherPracticesPage from "@/modules/teacher/practices/pages/PracticesPage"
 import StudentPracticesPage from "@/modules/student/practices/pages/PracticesPage"
 import GradesPage from "@/modules/coordinator/grades/pages/GradesPage"
+import TeacherBookingPage from "@/modules/teacher/bookings/pages/BookingPage"
 
 export default function Router() {
 	return (
@@ -52,6 +53,10 @@ export default function Router() {
 
 					<Route path="/profesor/calendario" element={<CalendarPage />}></Route>
 					<Route path="/profesor/clases/:id/practicas" element={<TeacherPracticesPage />}></Route>
+					<Route
+						path="/profesor/clases/:classId/practicas/:practiceId"
+						element={<TeacherBookingPage />}
+					></Route>
 					<Route path="/profesor" element={<Navigate to="/profesor/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
@@ -63,7 +68,10 @@ export default function Router() {
 					<Route path="/coordinador/calendario" element={<CalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
 					<Route path="/coordinador/asignaturas" element={<CoordinatorCoursesPage />}></Route>
-					<Route path="/coordinador/clases/:classId/practicas/:practiceId" element={<CoordinatorBookingPage />}></Route>
+					<Route
+						path="/coordinador/clases/:classId/practicas/:practiceId"
+						element={<CoordinatorBookingPage />}
+					></Route>
 					<Route
 						path="/coordinador/clases/:id/practicas"
 						element={<CoordinatorPracticesPage />}
@@ -75,7 +83,10 @@ export default function Router() {
 					<Route path="/coordinador/clases/:id/miembros" element={<MembersPage />}></Route>
 					<Route path="/coordinador/practicas" element={<CoordinatorPracticesPage />}></Route>
 					<Route path="/coordinador/rubricas" element={<RubricTemplatePage />}></Route>
-					<Route path="/coordinador/clases/:classId/calificaciones" element={<GradesPage/>}></Route>
+					<Route
+						path="/coordinador/clases/:classId/calificaciones"
+						element={<GradesPage />}
+					></Route>
 				</Route>
 
 				{/* Admin Routes */}

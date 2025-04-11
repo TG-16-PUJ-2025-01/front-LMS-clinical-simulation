@@ -47,7 +47,8 @@ export default function PracticesPage() {
 	}
 
 	const handlePracticeNavigation = (practice: Practice) => {
-        navigate(`/profesor/practicas/${practice.id}`)
+		setSelectedPractice(practice)
+		navigate(`/profesor/clases/${id}/practicas/${practice.id}`)
 	}
 
 	return (
