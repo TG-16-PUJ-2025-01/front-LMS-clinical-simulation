@@ -31,6 +31,7 @@ import AdminCalendarPage from "@/modules/admin/calendar/pages/CalendarPage"
 import StudentCalendarPage from "@/modules/student/calendar/pages/CalendarPage"
 import TeacherCalendarPage from "@/modules/teacher/calendar/pages/CalendarPage"
 import TeacherMembersPage from "@/modules/teacher/members/pages/MembersPage"
+import StudentMembersPage from "@/modules/student/members/pages/MembersPage"
 
 
 export default function Router() {
@@ -49,6 +50,7 @@ export default function Router() {
 					<Route path="/estudiante/clases/:id/practicas" element={<StudentPracticesPage />}></Route>
 					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
 					<Route path="/estudiante/calendario" element={<StudentCalendarPage />}></Route>
+					<Route path="/estudiante/clases/:id/miembros" element={<StudentMembersPage />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
