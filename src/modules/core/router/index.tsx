@@ -25,13 +25,14 @@ import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
 import StudentMainMenuPage from "@/modules/student/main-menu/pages/MainMenuPage"
 import TeacherPracticesPage from "@/modules/teacher/practices/pages/PracticesPage"
 import StudentPracticesPage from "@/modules/student/practices/pages/PracticesPage"
-import GradesPage from "@/modules/coordinator/grades/pages/GradesPage"
+import CoordinatorGradesPage from "@/modules/coordinator/grades/pages/GradesPage"
 import TeacherBookingPage from "@/modules/teacher/bookings/pages/BookingPage"
 import AdminCalendarPage from "@/modules/admin/calendar/pages/CalendarPage"
 import StudentCalendarPage from "@/modules/student/calendar/pages/CalendarPage"
 import TeacherCalendarPage from "@/modules/teacher/calendar/pages/CalendarPage"
 import TeacherMembersPage from "@/modules/teacher/members/pages/MembersPage"
 import StudentMembersPage from "@/modules/student/members/pages/MembersPage"
+import TeacherGradesPage from "@/modules/teacher/grades/pages/GradesPage"
 
 
 export default function Router() {
@@ -66,6 +67,7 @@ export default function Router() {
 					></Route>
 					<Route path="/profesor" element={<Navigate to="/profesor/asignaturas" />}></Route>
 					<Route path="/profesor/clases/:id/miembros" element={<TeacherMembersPage />}></Route>
+					<Route path="/profesor/clases/:classId/calificaciones" element={<TeacherGradesPage />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
@@ -92,7 +94,7 @@ export default function Router() {
 					<Route path="/coordinador/rubricas" element={<RubricTemplatePage />}></Route>
 					<Route
 						path="/coordinador/clases/:classId/calificaciones"
-						element={<GradesPage />}
+						element={<CoordinatorGradesPage />}
 					></Route>
 				</Route>
 

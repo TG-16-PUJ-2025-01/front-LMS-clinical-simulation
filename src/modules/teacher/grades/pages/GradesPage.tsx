@@ -14,23 +14,23 @@ export default function GradesPage() {
 					navLinks={[
 						{
 							label: "Asignaturas",
-							href: `/coordinador/asignaturas`,
+							href: `/profesor/asignaturas`,
 						},
 						{
 							label: "Calendario",
-							href: "/coordinador/calendario",
+							href: "/profesor/calendario",
 						},
 						{
 							label: "Rúbricas",
-							href: "/coordinador/rubricas",
+							href: "/profesor/rubricas",
 						},
 						{
 							label: `Volver a clase`,
-							href: `/coordinador/clases/${classId}/practicas`,
+							href: `/profesor/clases/${classId}/practicas`,
 						},
 						{
 							label: "Calificaciones",
-							href: `/coordinador/clases/${classId}/calificaciones`,
+							href: `/profesor/clases/${classId}/calificaciones`,
 						},
 					]}
 				/>
