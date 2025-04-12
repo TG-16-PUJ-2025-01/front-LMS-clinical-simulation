@@ -80,6 +80,10 @@ export default function MainMenuPage() {
 				<NavBar
 					navLinks={[
 						{
+							label: "Asignaturas",
+							href: `/estudiante/asignaturas`,
+						},
+						{
 							label: "Calendario",
 							href: "/estudiante/calendario",
 						},
@@ -103,7 +107,9 @@ export default function MainMenuPage() {
 						options={yearOptions}
 						itemName="año"
 						selectedValue={selectedYear ? selectedYear.toString() : ""}
-						onChange={(selected) => setSelectedYear(selected?.value ? Number(selected.value) : null)}
+						onChange={(selected) =>
+							setSelectedYear(selected?.value ? Number(selected.value) : null)
+						}
 					/>
 					<span className="text-xl font-bold">-</span>
 					<Combobox

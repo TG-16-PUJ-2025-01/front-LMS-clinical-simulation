@@ -18,7 +18,7 @@ import MembersPage from "@/modules/shared/members/pages/MembersPage"
 import CoordinatorPracticesPage from "@/modules/coordinator/practices/pages/PracticesPage"
 import CoordinatorMembersPage from "@/modules/coordinator/members/pages/MembersPage"
 import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/BookingPage"
-import CalendarPage from "@/modules/coordinator/calendar/pages/CalendarPage"
+import CoordinatorCalendarPage from "@/modules/coordinator/calendar/pages/CalendarPage"
 import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesPage"
 import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
 import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
@@ -27,6 +27,8 @@ import TeacherPracticesPage from "@/modules/teacher/practices/pages/PracticesPag
 import StudentPracticesPage from "@/modules/student/practices/pages/PracticesPage"
 import GradesPage from "@/modules/coordinator/grades/pages/GradesPage"
 import TeacherBookingPage from "@/modules/teacher/bookings/pages/BookingPage"
+import AdminCalendarPage from "@/modules/admin/calendar/pages/CalendarPage"
+import StudentCalendarPage from "@/modules/student/calendar/pages/CalendarPage"
 
 export default function Router() {
 	return (
@@ -41,9 +43,10 @@ export default function Router() {
 				<Route element={<StudentRoute />}>
 					<Route path="/estudiante/asignaturas" element={<StudentMainMenuPage />}></Route>
 
-					<Route path="estudiante/calendario" element={<CalendarPage />}></Route>
+					{/* <Route path="/estudiante/calendario" element={<CalendarPage />}></Route> */}
 					<Route path="/estudiante/clases/:id/practicas" element={<StudentPracticesPage />}></Route>
 					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
+					<Route path="/estudiante/calendario" element={<StudentCalendarPage />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
@@ -51,7 +54,7 @@ export default function Router() {
 				<Route element={<TeacherRoute />}>
 					<Route path="/profesor/asignaturas" element={<TeacherMainMenuPage />}></Route>
 
-					<Route path="/profesor/calendario" element={<CalendarPage />}></Route>
+					{/* <Route path="/profesor/calendario" element={<CalendarPage />}></Route> */}
 					<Route path="/profesor/clases/:id/practicas" element={<TeacherPracticesPage />}></Route>
 					<Route
 						path="/profesor/clases/:classId/practicas/:practiceId"
@@ -65,7 +68,7 @@ export default function Router() {
 				<Route element={<CoordinatorRoute />}>
 					<Route path="/coordinador" element={<Navigate to="/coordinador/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
-					<Route path="/coordinador/calendario" element={<CalendarPage />}></Route>
+					<Route path="/coordinador/calendario" element={<CoordinatorCalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
 					<Route path="/coordinador/asignaturas" element={<CoordinatorCoursesPage />}></Route>
 					<Route
@@ -98,7 +101,7 @@ export default function Router() {
 					<Route path="/admin/salas" element={<AdminRoomsPage />}></Route>
 					<Route path="/admin/usuarios" element={<AdminUsersPage />}></Route>
 					<Route path="/admin/clases/:id/miembros" element={<MembersPage />}></Route>
-					<Route path="/admin/calendario" element={<CalendarPage />}></Route>
+					<Route path="/admin/calendario" element={<AdminCalendarPage />}></Route>
 				</Route>
 
 				{/* Default Route */}
