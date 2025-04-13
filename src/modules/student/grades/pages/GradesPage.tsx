@@ -14,6 +14,7 @@ export default function GradesPage() {
 		const fetchGrades = async () => {
 			const res = await getStudentGradeByClassId(Number(classId))
 			setGrades(res.data)
+            console.log(res.data)
 		}
 
 		fetchGrades()
