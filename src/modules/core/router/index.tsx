@@ -33,6 +33,7 @@ import TeacherCalendarPage from "@/modules/teacher/calendar/pages/CalendarPage"
 import TeacherMembersPage from "@/modules/teacher/members/pages/MembersPage"
 import StudentMembersPage from "@/modules/student/members/pages/MembersPage"
 import TeacherGradesPage from "@/modules/teacher/grades/pages/GradesPage"
+import StudentGradesPage from "@/modules/student/grades/pages/GradesPage"
 
 
 export default function Router() {
@@ -52,6 +53,7 @@ export default function Router() {
 					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
 					<Route path="/estudiante/calendario" element={<StudentCalendarPage />}></Route>
 					<Route path="/estudiante/clases/:id/miembros" element={<StudentMembersPage />}></Route>
+					<Route path="/estudiante/clases/:classId/calificaciones" element={<StudentGradesPage />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
