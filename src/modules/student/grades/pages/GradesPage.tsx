@@ -2,23 +2,10 @@ import { useParams } from "react-router-dom"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 
 import NavBar from "@/modules/core/components/Headers/NavBar"
-import { useEffect, useState } from "react"
-import { StudentGradeDto } from "@/modules/shared/students-grades/services/gradeService"
-import { getStudentGradeByClassId } from "../services/GradesService"
+import StudentGradeTable from "../components/StudentGradeTable"
 
 export default function GradesPage() {
 	const { classId } = useParams()
-    const [grades, setGrades] = useState<StudentGradeDto>()
-
-	useEffect(() => {
-		const fetchGrades = async () => {
-			const res = await getStudentGradeByClassId(Number(classId))
-			setGrades(res.data)
-            console.log(res.data)
-		}
-
-		fetchGrades()
-	}, [])
 
 	return (
 		<>
@@ -44,7 +31,8 @@ export default function GradesPage() {
 					]}
 				/>
 			</LayoutSlot>
-			<LayoutSlot name="title">Calificaciones Estudiante</LayoutSlot>
+			<LayoutSlot name="title">Calificaciones</LayoutSlot>
+			<StudentGradeTable />
 		</>
 	)
 }
