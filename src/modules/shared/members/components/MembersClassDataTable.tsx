@@ -45,7 +45,8 @@ import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Class from "@/modules/core/models/class"
 import { all, AxiosError } from "axios"
-import { FileLoader } from "../../fileLoader/fileLoaderButon"
+import { FileLoader } from "../../fileLoader/FileLoaderButon"
+import { FileDownloader } from "../../fileLoader/fileDownloaderButton"
 
 
 export function StudentsClassDataTable() {
@@ -352,10 +353,9 @@ export function StudentsClassDataTable() {
 						<Button onClick={() => handleOpenDialog("students")}>Añadir estudiantes</Button>
 						<Button onClick={() => handleOpenDialog("professors")}>Añadir profesores</Button>
 						<div>
-							{/* Botón que abre el input de archivo */}
 							<FileLoader onFileLoaded={handleExcelFile}  buttonText="Subir Archivo" />
-
 						</div>
+						<FileDownloader fileName="class members" />
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">

@@ -10,7 +10,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Sheet, Trash2, User } from "lucide-react"
+import { ArrowUpDown, FileDown, MoreHorizontal, Pencil, Search, Sheet, Trash2, User } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -38,8 +38,8 @@ import {  createClassByExcel, getClasses } from "../services/classService"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
-import { FileLoader } from "@/modules/shared/fileLoader/fileLoaderButon"
-import { AxiosError } from "axios"
+import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
+import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
 
 export function ClassesDataTable() {
 
@@ -344,6 +344,7 @@ export function ClassesDataTable() {
 						<div>
 							<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
 						</div>
+						<FileDownloader fileName="classes" />
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">

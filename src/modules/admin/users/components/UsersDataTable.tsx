@@ -40,6 +40,7 @@ import { FileLoader } from "@/modules/shared/fileLoader/fileLoaderButon"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Role from "@/modules/core/models/role"
+import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
 
 export function UsersDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -368,6 +369,7 @@ export function UsersDataTable() {
 						</Button>
 						<Button onClick={() => handleOpenDialog("create")}>Nuevo usuario</Button>
 						<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
+						<FileDownloader fileName="users" />
 					</div>
 				</div>
 
