@@ -18,13 +18,23 @@ import MembersPage from "@/modules/shared/members/pages/MembersPage"
 import CoordinatorPracticesPage from "@/modules/coordinator/practices/pages/PracticesPage"
 import CoordinatorMembersPage from "@/modules/coordinator/members/pages/MembersPage"
 import CoordinatorBookingPage from "@/modules/coordinator/bookings/pages/BookingPage"
-import CalendarPage from "@/modules/coordinator/calendar/pages/CalendarPage"
+import CoordinatorCalendarPage from "@/modules/coordinator/calendar/pages/CalendarPage"
 import CoordinatorCoursesPage from "@/modules/coordinator/courses/pages/coursesPage"
 import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
 import TeacherMainMenuPage from "@/modules/teacher/main-menu/pages/MainMenuPage"
 import StudentMainMenuPage from "@/modules/student/main-menu/pages/MainMenuPage"
 import TeacherPracticesPage from "@/modules/teacher/practices/pages/PracticesPage"
 import StudentPracticesPage from "@/modules/student/practices/pages/PracticesPage"
+import CoordinatorGradesPage from "@/modules/coordinator/grades/pages/GradesPage"
+import TeacherBookingPage from "@/modules/teacher/bookings/pages/BookingPage"
+import AdminCalendarPage from "@/modules/admin/calendar/pages/CalendarPage"
+import StudentCalendarPage from "@/modules/student/calendar/pages/CalendarPage"
+import TeacherCalendarPage from "@/modules/teacher/calendar/pages/CalendarPage"
+import TeacherMembersPage from "@/modules/teacher/members/pages/MembersPage"
+import StudentMembersPage from "@/modules/student/members/pages/MembersPage"
+import TeacherGradesPage from "@/modules/teacher/grades/pages/GradesPage"
+import StudentGradesPage from "@/modules/student/grades/pages/GradesPage"
+
 
 export default function Router() {
 	return (
@@ -39,9 +49,11 @@ export default function Router() {
 				<Route element={<StudentRoute />}>
 					<Route path="/estudiante/asignaturas" element={<StudentMainMenuPage />}></Route>
 
-					<Route path="estudiante/calendario" element={<CalendarPage />}></Route>
 					<Route path="/estudiante/clases/:id/practicas" element={<StudentPracticesPage />}></Route>
 					<Route path="/estudiante" element={<Navigate to="/estudiante/asignaturas" />}></Route>
+					<Route path="/estudiante/calendario" element={<StudentCalendarPage />}></Route>
+					<Route path="/estudiante/clases/:id/miembros" element={<StudentMembersPage />}></Route>
+					<Route path="/estudiante/clases/:classId/calificaciones" element={<StudentGradesPage />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
@@ -49,9 +61,15 @@ export default function Router() {
 				<Route element={<TeacherRoute />}>
 					<Route path="/profesor/asignaturas" element={<TeacherMainMenuPage />}></Route>
 
-					<Route path="/profesor/calendario" element={<CalendarPage />}></Route>
+					<Route path="/profesor/calendario" element={<TeacherCalendarPage />}></Route>
 					<Route path="/profesor/clases/:id/practicas" element={<TeacherPracticesPage />}></Route>
+					<Route
+						path="/profesor/clases/:classId/practicas/:practiceId"
+						element={<TeacherBookingPage />}
+					></Route>
 					<Route path="/profesor" element={<Navigate to="/profesor/asignaturas" />}></Route>
+					<Route path="/profesor/clases/:id/miembros" element={<TeacherMembersPage />}></Route>
+					<Route path="/profesor/clases/:classId/calificaciones" element={<TeacherGradesPage />}></Route>
 					{/*FIXME: Redirect to main page*/}
 				</Route>
 
@@ -59,10 +77,13 @@ export default function Router() {
 				<Route element={<CoordinatorRoute />}>
 					<Route path="/coordinador" element={<Navigate to="/coordinador/asignaturas" />}></Route>
 					{/*FIXME: Redirect to main page*/}
-					<Route path="/coordinador/calendario" element={<CalendarPage />}></Route>
+					<Route path="/coordinador/calendario" element={<CoordinatorCalendarPage />}></Route>
 					<Route path="/coordinador/simulacion/:id" element={<CoordinatorSimulationPage />}></Route>
 					<Route path="/coordinador/asignaturas" element={<CoordinatorCoursesPage />}></Route>
-					<Route path="/coordinador/clases/:classId/practicas/:practiceId" element={<CoordinatorBookingPage />}></Route>
+					<Route
+						path="/coordinador/clases/:classId/practicas/:practiceId"
+						element={<CoordinatorBookingPage />}
+					></Route>
 					<Route
 						path="/coordinador/clases/:id/practicas"
 						element={<CoordinatorPracticesPage />}
@@ -71,9 +92,12 @@ export default function Router() {
 						path="/coordinador/clases/:id/miembros"
 						element={<CoordinatorMembersPage />}
 					></Route>
-					<Route path="/coordinador/clases/:id/miembros" element={<MembersPage />}></Route>
 					<Route path="/coordinador/practicas" element={<CoordinatorPracticesPage />}></Route>
 					<Route path="/coordinador/rubricas" element={<RubricTemplatePage />}></Route>
+					<Route
+						path="/coordinador/clases/:classId/calificaciones"
+						element={<CoordinatorGradesPage />}
+					></Route>
 				</Route>
 
 				{/* Admin Routes */}
@@ -85,7 +109,7 @@ export default function Router() {
 					<Route path="/admin/salas" element={<AdminRoomsPage />}></Route>
 					<Route path="/admin/usuarios" element={<AdminUsersPage />}></Route>
 					<Route path="/admin/clases/:id/miembros" element={<MembersPage />}></Route>
-					<Route path="/admin/calendario" element={<CalendarPage />}></Route>
+					<Route path="/admin/calendario" element={<AdminCalendarPage />}></Route>
 				</Route>
 
 				{/* Default Route */}

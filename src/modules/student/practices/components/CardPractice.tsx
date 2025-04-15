@@ -1,4 +1,4 @@
-import { MoreHorizontal, Users, User, Calendar, SquarePlus } from "lucide-react"
+import { MoreHorizontal, Users, User, SquarePlus } from "lucide-react"
 import { cn } from "@/modules/core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
 import {
@@ -31,7 +31,6 @@ type CardProps = React.ComponentProps<typeof Card> & {
 	type: "GRUPAL" | "INDIVIDUAL"
 	onClick?: () => void
 	onEdit: () => void
-	onDelete: () => void
 }
 
 export function CardPractice({
@@ -43,7 +42,6 @@ export function CardPractice({
 	type,
 	onClick,
 	onEdit,
-	onDelete,
 }: CardProps) {
 	return (
 		<TooltipProvider>
@@ -72,14 +70,6 @@ export function CardPractice({
 								onClick={(e) => {
 									e.stopPropagation()
 									onEdit()
-								}}
-							>
-								<Calendar className="mr-2 h-4 w-4" /> Reservar Horario
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={(e) => {
-									e.stopPropagation()
-									onDelete()
 								}}
 							>
 								<SquarePlus className="mr-2 h-4 w-4" /> Unirse a Grupo

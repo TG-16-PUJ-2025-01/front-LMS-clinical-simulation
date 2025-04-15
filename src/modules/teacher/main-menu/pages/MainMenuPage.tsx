@@ -4,20 +4,16 @@ import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import Class from "@/modules/core/models/class"
 import { getMenuInfo } from "@/modules/shared/main-menu/services/MainMenuService"
-import { CardClass } from "../../../shared/main-menu/components/CardClass"
 import { Button } from "@/modules/core/components/ui/button"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { Input } from "@/modules/core/components/ui/input"
 import { Search } from "lucide-react"
+import { CardClass } from "@/modules/shared/main-menu/components/CardClass"
 
 export default function MainMenuPage() {
 	const navigate = useNavigate()
-	const currentYear = new Date().getFullYear()
-	const yearOptions = Array.from({ length: 5 }, (_, i) => ({
-		key: currentYear - i,
-		value: (currentYear - i).toString(),
-	}))
-	const periodOptions = ["1", "2", "3"].map((period) => ({
+	const [yearOptions, setYearOptions] = useState<{ key: number; value: string }[]>([])
+	const periodOptions = ["10", "20", "30"].map((period) => ({
 		key: Number(period),
 		value: period,
 	}))
@@ -51,6 +47,29 @@ export default function MainMenuPage() {
 		fetchClasses()
 	}, [selectedYear, selectedPeriod, filter])
 
+	useEffect(() => {
+		const fetchYearOptions = async () => {
+			try {
+				const res = await getMenuInfo(undefined, undefined, "", "professor")
+				const years = res.data.map((classItem: Class) => parseInt(classItem.period.split("-")[0]))
+				const oldestYear = Math.min(...years)
+				const newestYear = Math.max(...years)
+				const generatedYearOptions = Array.from(
+					{ length: newestYear - oldestYear + 1 },
+					(_, i) => ({
+						key: newestYear - i,
+						value: (newestYear - i).toString(),
+					})
+				)
+				setYearOptions(generatedYearOptions)
+			} catch (error) {
+				console.error("Error fetching year options:", error)
+			}
+		}
+
+		fetchYearOptions()
+	}, [])
+
 	const handleClassNavigation = (classItem: Class) => {
 		navigate(`/profesor/clases/${classItem.classId}/practicas`)
 	}
@@ -60,6 +79,10 @@ export default function MainMenuPage() {
 			<LayoutSlot name="header">
 				<NavBar
 					navLinks={[
+						{
+							label: "Asignaturas",
+							href: `/profesor/asignaturas`,
+						},
 						{
 							label: "Calendario",
 							href: "/profesor/calendario",
@@ -84,7 +107,9 @@ export default function MainMenuPage() {
 						options={yearOptions}
 						itemName="año"
 						selectedValue={selectedYear ? selectedYear.toString() : ""}
-						onChange={(selected) => setSelectedYear(selected?.value ? Number(selected.value) : null)}
+						onChange={(selected) =>
+							setSelectedYear(selected?.value ? Number(selected.value) : null)
+						}
 					/>
 					<span className="text-xl font-bold">-</span>
 					<Combobox

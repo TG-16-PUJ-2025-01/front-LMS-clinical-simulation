@@ -183,7 +183,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
         options={timeOptions}
         placeholderText="Seleccionar hora de inicio"
         itemName="Hora"
-        onChange={(selected) => setStartTime(selected.value)}
+        onChange={(selected) => setStartTime(selected?.value || "")}
         selectedValue={startTime}
       />
 
@@ -191,7 +191,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
         options={timeOptions}
         placeholderText="Seleccionar hora de finalización"
         itemName="Hora"
-        onChange={(selected) => setEndTime(selected.value)}
+        onChange={(selected) => setEndTime(selected?.value || "")}
         selectedValue={endTime}
       />
 

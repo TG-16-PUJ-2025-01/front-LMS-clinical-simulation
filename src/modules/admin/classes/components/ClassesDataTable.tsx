@@ -77,7 +77,6 @@ export function ClassesDataTable() {
 			)
 
 			setData(res.data)
-			console.log("fetching classes" + `${res.data.forEach((element) => console.log(element))}`)
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
@@ -372,7 +371,7 @@ export function ClassesDataTable() {
 			<DeleteClassDialog
 				open={openDialog === "delete"}
 				onClose={handleCloseDialog}
-				classToDelete={selectedClass ?? undefined}
+				classId={selectedClass?.classId ?? null}
 			/>
 			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>

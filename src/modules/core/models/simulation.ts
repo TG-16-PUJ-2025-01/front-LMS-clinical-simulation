@@ -5,15 +5,15 @@ import Rubric from "./rubric"
 import Video from "./video"
 
 export default interface Simulation {
-  groupNumber: number
 	simulationId: number
 	startDateTime: Date
 	endDateTime: Date
-  grade?: number
-  gradeDate?: Date
-  video?: Video
+  grade: number
+  gradeStatus: GradeStatus
+  gradeDate: Date
+  groupNumber: number
+  video: Video
   rooms: Room[]
   practice: Practice
   rubric?: Rubric
-  gradeStatus: GradeStatus
 }

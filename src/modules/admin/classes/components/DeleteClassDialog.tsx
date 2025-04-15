@@ -8,37 +8,39 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/modules/core/components/ui/alert-dialog"
-import Class from "@/modules/core/models/class"
 import { deleteClass } from "../services/classService"
 import { toast } from "sonner"
 
-
 interface Props {
-  open: boolean
-  onClose: (open: boolean) => void
-  classToDelete?: Class
+	open: boolean
+	onClose: (open: boolean) => void
+	classId: number | null
 }
 
-export default function DeleteClassDialog({ open, onClose, classToDelete }: Props) {
-	
+export default function DeleteClassDialog({ open, onClose, classId }: Props) {
 	const handleConfirm = async () => {
-			try {
-				await deleteClass(classToDelete!.classId)
-				onClose(false)
-				toast.success("Asignatura eliminada correctamente")
-			} catch (error) {
-				toast.error("Error al eliminar la asignatura")
+		try {
+			if (!classId) {
+				toast.error("No se ha proporcionado un ID de clase para eliminar.")
+				return
 			}
+			await deleteClass(classId)
+			onClose(false)
+			toast.success("Asignatura eliminada correctamente")
+		} catch (error) {
+			console.error(error)
+			toast.error("Error al eliminar la asignatura")
+		}
 	}
-	
-	
+
 	return (
 		<AlertDialog open={open}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar la clase?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y se eliminarán toda la información vinculada a dicha clase.
+						Esta acción no es reversible y se eliminarán toda la información vinculada a dicha
+						clase.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>

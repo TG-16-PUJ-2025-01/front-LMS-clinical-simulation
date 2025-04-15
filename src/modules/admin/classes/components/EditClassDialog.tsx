@@ -27,6 +27,7 @@ import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { updateClass } from "../services/classService"
 import Course from "@/modules/core/models/course"
 import { getCourses } from "../../courses/services/courseService"
+import { NumericFormat } from "react-number-format"
 
 interface Props {
 	open: boolean
@@ -35,8 +36,8 @@ interface Props {
 }
 
 const formSchema = z.object({
-	javerianaId: z.coerce.number().int().positive({
-		message: "El ID debe ser un número entero positivo",
+	javerianaId: z.number({
+		required_error: "El ID es requerido",
 	}),
 	professors: z.array(
 		z.object({
@@ -55,11 +56,11 @@ const formSchema = z.object({
 	year: z.number({
 		required_error: "El año es requerido",
 	}),
-	yearPeriod: z.string({
-		required_error: "El periodo academico es requerido",
+	yearPeriod: z.string().nonempty({
+		message: "El periodo académico es requerido",
 	}),
 	numberOfParticipants: z.number({
-		required_error: "El año es requerido",
+		required_error: "La cantidad de estudiantes es requerida",
 	}),
 })
 
@@ -68,8 +69,8 @@ const periods = ["10", "20", "30"]
 
 export default function EditClassDialog({ open, onClose, classData }: Props) {
 	const [courses, setCourses] = useState<Course[]>([])
-	const defaultPeriod = classData?.period || "" // Verifica si classModel.period está definido
-	const [defaultYear, defaultYearPeriod] = defaultPeriod.split("-") // Separa el año y período
+	const defaultPeriod = classData?.period || ""
+	const [defaultYear, defaultYearPeriod] = defaultPeriod.split("-")
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -85,7 +86,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 			],
 			course: classData?.course ?? { courseId: 0, name: "" },
 			year: new Date().getFullYear(),
-			yearPeriod: periods[0], // Usa el primer período si no hay valor
+			yearPeriod: periods[0],
 			numberOfParticipants: 0,
 		},
 	})
@@ -108,29 +109,25 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			console.log("Form values before submit:", form.getValues()); // Verifica el estado antes del submit
-			console.log("Values received in onSubmit:", values);
-	
 			if (!values.course || !values.course.courseId) {
-				console.error("Error: Course ID is undefined");
-				return;
+				console.error("Error: Course ID is undefined")
+				return
 			}
-	
+
 			await updateClass(classData!.classId as number, {
 				javerianaId: values.javerianaId,
 				professorsIds: values.professors.map((professor) => professor.id!),
 				courseId: values.course.courseId!,
 				period: values.year.toString() + "-" + values.yearPeriod,
-				numberOfParticipants: Number(values.numberOfParticipants) //castearlo a numero
-			});
-	
-			onClose(false);
-			toast.success("Clase actualizada correctamente");
+				numberOfParticipants: Number(values.numberOfParticipants),
+			})
+
+			onClose(false)
+			toast.success("Clase actualizada correctamente")
 		} catch (error) {
-			toast.error("Error al actualizar la clase");
+			toast.error("Error al actualizar la clase")
 		}
 	}
-	
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
@@ -149,7 +146,15 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">ID</FormLabel>
 										<FormControl>
-											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
+											<NumericFormat
+												value={field.value}
+												onValueChange={(values) => field.onChange(values.floatValue)}
+												thousandSeparator={false}
+												allowNegative={false}
+												customInput={Input}
+												placeholder="ID"
+												className="col-span-3 m-0"
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
@@ -181,62 +186,64 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 								)}
 							/>
 
-							<div className="flex w-full items-center justify-center gap-2">
-								<div className="w-24">
-									<FormField
-										control={form.control}
-										name="year"
-										render={({ field }) => (
-											<FormItem className="flex items-center">
-												<FormControl>
-													<Combobox
-														placeholderText={defaultYear || "Año"}
-														options={[...Array(3)].map((_, i) => {
-															const year = new Date().getFullYear() + i
-															return { key: year, value: year.toString() }
-														})}
-														itemName="año"
-														onChange={(selected) => field.onChange(Number(selected.value))}
-													/>
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-								</div>
-
-								<span className="text-xs">-</span>
-
-								{/* Período */}
-								<div className="w-16">
-									<FormField
-										control={form.control}
-										name="yearPeriod"
-										render={({ field }) => (
-											<FormItem className="flex items-center">
-												<FormControl>
-													<Combobox
-														placeholderText={defaultYearPeriod || "Período"}
-														options={periods.map((period) => ({
-															key: Number(period),
-															value: period,
-														}))}
-														itemName="período"
-														onChange={(selected) => field.onChange(selected.value.toString())}
-													/>
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-								</div>
-							</div>
+							<FormField
+								control={form.control}
+								name="year"
+								render={() => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className={"col-span-1 m-0 text-right"}>Año y Periodo</FormLabel>
+										<div className="col-span-3 flex items-center gap-2">
+											<FormControl>
+												<Combobox
+													placeholderText={form.getValues("year")?.toString() || "Año"}
+													options={[...Array(3)].map((_, i) => {
+														const year = new Date().getFullYear() + i
+														return { key: year, value: year.toString() }
+													})}
+													itemName="año"
+													onChange={(selected) => {
+														form.setValue("year", Number(selected.value))
+													}}
+												/>
+											</FormControl>
+											<span className="text-xs">-</span>
+											<FormControl>
+												<Combobox
+													placeholderText={form.getValues("yearPeriod") || "Período"}
+													options={periods.map((period) => ({
+														key: Number(period),
+														value: period,
+													}))}
+													itemName="período"
+													onChange={(selected) => {
+														form.setValue("yearPeriod", selected.value.toString())
+													}}
+												/>
+											</FormControl>
+										</div>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right">
+											{form.formState.errors.year?.message ||
+												form.formState.errors.yearPeriod?.message}
+										</FormMessage>
+									</FormItem>
+								)}
+							/>
 							<FormField
 								control={form.control}
 								name="numberOfParticipants"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">No. participantes</FormLabel>
+										<FormLabel className="m-0 text-right">No. de Participantes</FormLabel>
 										<FormControl>
-											<Input type="number" id="id" placeholder="Cant de participantes" className="col-span-3 m-0" {...field} onChange={(e) => field.onChange(e.target.valueAsNumber)}  />
+											<NumericFormat
+												value={field.value}
+												onValueChange={(values) => field.onChange(values.floatValue)}
+												thousandSeparator={false}
+												allowNegative={false}
+												customInput={Input}
+												placeholder="Cant de participantes"
+												className="col-span-3 m-0"
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>

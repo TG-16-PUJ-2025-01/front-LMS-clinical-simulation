@@ -1,9 +1,9 @@
-import axios from "axios"
-import { API_URL } from "@/modules/core/config/env"
-import ApiResponse from "@/modules/core/models/apiResponse"
-import Class from "@/modules/core/models/class"
-import User from "@/modules/core/models/user"
-import CreateClassDTO from "../dtos/createClassDTO"
+import axios from "axios";
+import { API_URL } from "@/modules/core/config/env";
+import ApiResponse from "@/modules/core/models/apiResponse";
+import Class from "@/modules/core/models/class";
+import User from "@/modules/core/models/user";
+import CreateClassDTO from "../dtos/createClassDTO";
 
 export async function getClasses(
 	page: number,

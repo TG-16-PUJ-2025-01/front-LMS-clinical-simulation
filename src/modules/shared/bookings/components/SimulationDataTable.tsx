@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-table"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { getSimulationsByPracticeId } from "../services/bookingService"
+import { getSimulationsByPracticeId } from "../../../coordinator/bookings/services/bookingService"
 import Simulation from "@/modules/core/models/simulation"
 import { Button } from "@/modules/core/components/ui/button"
 import { Input } from "@/modules/core/components/ui/input"
@@ -35,11 +35,11 @@ import {
 } from "@/modules/core/components/ui/dropdown-menu"
 import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
 import { format } from "date-fns"
-import CreateSimulationsDialog from "./CreateSimulationsDialog"
-import EditSimulationsDialog from "./EditSimulationsDialog"
-import ViewMembersDialog from "./ViewMembersDialog"
-import AssignRubricDialog from "./AssignRubricDialog"
+import AssignRubricDialog from "../../../coordinator/bookings/components/AssignRubricDialog"
 import Practice from "@/modules/core/models/practice"
+import CreateSimulationsDialog from "../../../coordinator/bookings/components/CreateSimulationsDialog"
+import EditSimulationsDialog from "../../../coordinator/bookings/components/EditSimulationsDialog"
+import ViewMembersDialog from "../../../coordinator/bookings/components/ViewMembersDialog"
 
 interface Props {
 	practice: Practice
