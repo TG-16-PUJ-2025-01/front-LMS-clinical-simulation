@@ -16,3 +16,10 @@ export async function updateSimulationRubric(
 	const { data } = await axios.put(`${API_URL}/simulation/${id}/rubric`, rubric)
 	return data
 }
+
+export async function publishSimulationGrade(
+	id: number
+): Promise<ApiResponse<Simulation>> {
+	const { data } = await axios.put(`${API_URL}/simulation/${id}/publish`)
+	return data
+}

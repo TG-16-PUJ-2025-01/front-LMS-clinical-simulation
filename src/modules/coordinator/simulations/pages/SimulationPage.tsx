@@ -132,6 +132,7 @@ export default function SimulationPage() {
 						rubricTemplate={simulation?.practice.rubricTemplate ?? undefined}
 						gradable={simulation?.practice.gradeable ?? false}
 						rubric={simulation?.rubric ?? undefined}
+						gradeStatus={simulation?.gradeStatus ?? undefined}
 					/>
 				</section>
 			</div>

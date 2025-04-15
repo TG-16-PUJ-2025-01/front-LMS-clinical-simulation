@@ -26,33 +26,54 @@ import ViewRubricTemplateDialog from "../../rubricTemplates/components/ViewRubri
 import { useEffect, useRef, useState } from "react"
 import Rubric from "@/modules/core/models/rubric"
 import RubricDto from "../dtos/rubricDto"
-import { updateSimulationRubric } from "../services/simulationService"
+import { publishSimulationGrade, updateSimulationRubric } from "../services/simulationService"
 import { useParams } from "react-router-dom"
+import GradeStatus from "@/modules/core/models/gradeStatus"
 
 interface Props {
 	gradable?: boolean
 	rubricTemplate?: RubricTemplate
 	rubric?: Rubric
+	gradeStatus?: GradeStatus
 }
 
-const FormSchema = z.object({
-	evaluatedCriterias: z.array(
-		z.object({
-			score: z.coerce.number(),
-			comment: z.string(),
-		})
-	),
-	total: z.object({
-		score: z.coerce.number(),
-		comment: z.string(),
-	}),
-})
+const FormSchema = z
+	.object({
+		evaluatedCriterias: z.array(
+			z.object({
+				score: z.coerce.number().default(0),
+				comment: z.string().default(""),
+			})
+		),
+		total: z.object({
+			score: z.coerce.number().default(0),
+			comment: z.string().default(""),
+		}),
+	})
+	.superRefine((rubric, ctx) => {
+		const hasEmptyComments = rubric.evaluatedCriterias.some((criteria) => criteria.comment === "")
+		if (hasEmptyComments || rubric.total.comment === "") {
+			console.log("add issue")
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Todos los criterios deben tener comentario",
+				path: ["evaluatedCriterias"],
+			})
+		}
+	})
 
-export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
+export function RubricForm({
+	rubricTemplate,
+	rubric,
+	gradeStatus: initialGradeStatus,
+	gradable = true,
+}: Props) {
 	const { id } = useParams()
 	const [openDialog, setOpenDialog] = useState(false)
 	const [saving, setSaving] = useState(false)
 	const [totalScore, setTotalScore] = useState(0)
+	const [editing, setEditing] = useState(true)
+	const [gradeStatus, setGradeStatus] = useState(initialGradeStatus ?? GradeStatus.PENDING)
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
@@ -64,6 +85,12 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 			},
 		},
 	})
+	useEffect(() => {
+		if (initialGradeStatus) {
+			setGradeStatus(initialGradeStatus)
+			setEditing(initialGradeStatus === GradeStatus.PENDING)
+		}
+	}, [initialGradeStatus])
 
 	// Calculate the total score when the input changes
 	const updatingTotal = useRef(false)
@@ -110,6 +137,7 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 		let timer: NodeJS.Timeout | null = null
 
 		const subscription = form.watch((value) => {
+			if (gradeStatus !== GradeStatus.PENDING) return
 			setSaving(true)
 			if (timer) clearTimeout(timer)
 			timer = setTimeout(async () => {
@@ -143,7 +171,17 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
+		await Promise.all([
+			saveRubric({
+				evaluatedCriterias: data.evaluatedCriterias,
+				total: data.total,
+			}),
+			publishSimulationGrade(Number(id)),
+		])
 		setSaving(false)
+		setEditing(false)
+		setGradeStatus(GradeStatus.REGISTERED)
+
 		toast.success("Rúbrica publicada correctamente")
 	}
 
@@ -200,6 +238,7 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 																				<Textarea
 																					defaultValue={""}
 																					className="h-full min-h-min min-w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																					disabled={!editing}
 																					{...field}
 																				/>
 																			</FormControl>
@@ -220,6 +259,7 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 																					min={0}
 																					max={5}
 																					className="m-0 field-sizing-content h-full min-h-min w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																					disabled={!editing}
 																					{...field}
 																				/>
 																			</FormControl>
@@ -244,6 +284,7 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 																		<FormControl>
 																			<Textarea
 																				className="h-full min-h-min min-w-full resize-none rounded-none border-0 p-0 text-wrap shadow-none focus-visible:ring-0"
+																				disabled={!editing}
 																				{...field}
 																			/>
 																		</FormControl>
@@ -261,28 +302,43 @@ export function RubricForm({ rubricTemplate, rubric, gradable = true }: Props) {
 												</TableBody>
 											</Table>
 										</article>
-										<p className="text-blue-javeriana text-right text-xs italic ml-auto">
-											{saving ? (
-												<span className="flex items-center gap-1">
-													<RefreshCcw className="size-4" />
-													Sincronizando cambios...
-												</span>
-											) : (
-												<span className="flex items-center gap-1">
-													<Check className="size-4" />
-													Cambios sincronizados
-												</span>
-											)}
-										</p>
+										{gradeStatus === GradeStatus.PENDING && (
+											<p className="text-blue-javeriana ml-auto text-right text-xs italic">
+												{saving ? (
+													<span className="flex items-center gap-1">
+														<RefreshCcw className="size-4" />
+														Sincronizando cambios...
+													</span>
+												) : (
+													<span className="flex items-center gap-1">
+														<Check className="size-4" />
+														Cambios sincronizados
+													</span>
+												)}
+											</p>
+										)}
 										<div className="flex w-full items-center justify-end gap-4">
 											<Button type="button" onClick={() => setOpenDialog(true)} variant="outline">
 												<Eye />
 												Ver rúbrica
 											</Button>
-											<Button type="button" onClick={onSave}>
-												Guardar
-											</Button>
-											<Button type="submit">Publicar</Button>
+											{gradeStatus === GradeStatus.PENDING && (
+												<Button type="button" onClick={onSave}>
+													Guardar
+												</Button>
+											)}
+											{gradeStatus === GradeStatus.PENDING ? (
+												<Button type="submit">Publicar</Button>
+											) : editing ? (
+												<Button type="submit">Guardar</Button>
+											) : (
+												<Button
+													type="button"
+													onClick={() => setTimeout(() => setEditing(true))}
+												>
+													Actualizar
+												</Button>
+											)}
 										</div>
 									</div>
 								</FormControl>
