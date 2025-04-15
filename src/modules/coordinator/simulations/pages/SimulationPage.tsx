@@ -64,21 +64,21 @@ export default function SimulationPage() {
 							href: "/coordinador/rubricas",
 						},
 						{
-							label: `(${simulation?.practice.classModel.javerianaId ?? ""}) ${simulation?.practice.classModel.course.name ?? ""}`,
-							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas`,
+							label: `(${simulation?.practice?.classModel.javerianaId ?? ""}) ${simulation?.practice?.classModel.course.name ?? ""}`,
+							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas`,
 						},
 						{
-							label: simulation?.practice.name ?? "",
-							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas/${simulation?.practice.id}`,
+							label: simulation?.practice?.name ?? "",
+							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas/${simulation?.practice?.id}`,
 						},
 						{
                             label: "Calificaciones",
-                            href: `/coordinador/clases/${simulation?.practice.classModel.classId}/calificaciones`,
+                            href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/calificaciones`,
                         },
 					]}
 				/>
 			</LayoutSlot>
-			<LayoutSlot name="title">{simulation?.practice.name ?? ""} (Grupo {simulation?.groupNumber})</LayoutSlot>
+			<LayoutSlot name="title">{simulation?.practice?.name ?? ""} (Grupo {simulation?.groupNumber})</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>
 					{simulation?.video?.name ? (
@@ -133,8 +133,8 @@ export default function SimulationPage() {
 				</section>
 				<section>
 					<RubricForm
-						rubricTemplate={simulation?.practice.rubricTemplate ?? undefined}
-						gradable={simulation?.practice.gradeable ?? false}
+						rubricTemplate={simulation?.practice?.rubricTemplate ?? undefined}
+						gradable={simulation?.practice?.gradeable ?? false}
 						rubric={simulation?.rubric ?? undefined}
 						gradeStatus={simulation?.gradeStatus ?? undefined}
 					/>

@@ -20,7 +20,7 @@ import { useParams } from "react-router-dom"
 interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
-	courseId: number
+	courseId?: number
 	selectedRubricTemplate?: RubricTemplate
 }
 
@@ -37,6 +37,7 @@ export default function AssignRubricDialog({
 
 	useEffect(() => {
 		const fetchRubrics = async () => {
+			if (!courseId) return
 			const res = await getRecommendedRubricTemplatesByCourse(courseId, 0, 20, filter)
 			if (selectedRubricTemplate) {
 				setRubricTemplates(

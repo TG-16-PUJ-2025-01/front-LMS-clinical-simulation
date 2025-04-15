@@ -372,7 +372,7 @@ export function SimulationDataTable({ practice }: Props) {
 			<AssignRubricDialog
 				open={isAssignRubricOpen}
 				onClose={() => setIsAssignRubricOpen(false)}
-				courseId={practice.classModel.course.courseId ?? 0}
+				courseId={practice.classModel?.course.courseId ?? undefined}
 				selectedRubricTemplate={practice.rubricTemplate ?? undefined}
 			/>
 		</>

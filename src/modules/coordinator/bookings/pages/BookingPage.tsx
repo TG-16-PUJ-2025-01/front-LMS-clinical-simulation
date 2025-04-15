@@ -45,9 +45,9 @@ export default function PracticeDetailsPage() {
 							href: `/coordinador/clases/${classId}/practicas`,
 						},
 						{
-                            label: "Calificaciones",
-                            href: `/coordinador/clases/${classId}/calificaciones`,
-                        },
+							label: "Calificaciones",
+							href: `/coordinador/clases/${classId}/calificaciones`,
+						},
 					]}
 				/>
 			</LayoutSlot>

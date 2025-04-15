@@ -14,6 +14,6 @@ export default interface Simulation {
   groupNumber: number
   video: Video
   rooms: Room[]
-  practice: Practice
+  practice?: Practice
   rubric?: Rubric
 }
