@@ -126,9 +126,9 @@ export default function MainMenuPage() {
 					</Button>
 				</div>
 			</div>
-			<div className="flex justify-center">
+			<div className="flex min-h-[60vh] justify-center">
 				{data.length === 0 ? (
-					<p className="text-gray-500">No se encontraron clases</p>
+					<p className="mt-6 text-gray-500">No se encontraron clases</p>
 				) : (
 					<div className="mt-6 grid w-full grid-cols-[repeat(auto-fit,300px)] justify-between gap-y-6">
 						{data.map((classItem) => (

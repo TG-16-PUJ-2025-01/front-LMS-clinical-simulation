@@ -120,7 +120,12 @@ export function CoursesDataTable() {
 				</div>
 			</div>
 
-			<div className="mt-8 w-full min-h-[600px] flex flex-col gap-4">
+			<div className="mt-8 w-full min-h-[60vh] flex flex-col gap-4">
+				{data.length === 0 && (
+					<div className="flex h-full items-center justify-center">
+						<p className="text-center text-gray-500">No hay resultados</p>
+					</div>
+				)}
 				{data.map((course) => (
 					<div key={course.courseId}>
 						<div className="flex items-center space-x-4">
