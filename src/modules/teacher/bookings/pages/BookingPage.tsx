@@ -52,7 +52,7 @@ export default function PracticeDetailsPage() {
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">{practice.name}</LayoutSlot>
-			<SimulationDataTable />
+			<SimulationDataTable practice={practice}/>
 		</>
 	)
 }
