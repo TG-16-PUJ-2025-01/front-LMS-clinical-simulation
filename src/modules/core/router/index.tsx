@@ -34,7 +34,8 @@ import StudentCalendarPage from "@/modules/student/calendar/pages/CalendarPage"
 import StudentMembersPage from "@/modules/student/members/pages/MembersPage"
 import StudentGradesPage from "@/modules/student/grades/pages/GradesPage"
 import MembersPage from "@/modules/shared/members/pages/MembersPage"
-import RubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
+import CoordinatorRubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
+import TeacherRubricTemplatePage from "@/modules/teacher/rubricTemplates/pages/RubricTemplatePage"
 
 
 export default function Router() {
@@ -72,6 +73,7 @@ export default function Router() {
 					<Route path="/profesor/clases/:id/miembros" element={<TeacherMembersPage />}></Route>
 					<Route path="/profesor/clases/:classId/calificaciones" element={<TeacherGradesPage />}></Route>
 					<Route path="/profesor/simulacion/:id" element={<TeacherSimulationPage />}></Route>
+					<Route path="/profesor/rubricas" element={<TeacherRubricTemplatePage />}></Route>
 				</Route>
 
 				{/* Coordinator Routes */}
@@ -93,7 +95,7 @@ export default function Router() {
 						element={<CoordinatorMembersPage />}
 					></Route>
 					<Route path="/coordinador/practicas" element={<CoordinatorPracticesPage />}></Route>
-					<Route path="/coordinador/rubricas" element={<RubricTemplatePage />}></Route>
+					<Route path="/coordinador/rubricas" element={<CoordinatorRubricTemplatePage />}></Route>
 					<Route
 						path="/coordinador/clases/:classId/calificaciones"
 						element={<CoordinatorGradesPage />}
