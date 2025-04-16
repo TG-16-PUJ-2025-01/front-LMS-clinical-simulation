@@ -45,14 +45,14 @@ export default function PracticeDetailsPage() {
 							href: `/profesor/clases/${classId}/practicas`,
 						},
 						{
-                            label: "Calificaciones",
-                            href: `/profesor/clases/${classId}/calificaciones`,
-                        },
+							label: "Calificaciones",
+							href: `/profesor/clases/${classId}/calificaciones`,
+						},
 					]}
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">{practice.name}</LayoutSlot>
-			<SimulationDataTable practice={practice}/>
+			<SimulationDataTable practice={practice} />
 		</>
 	)
 }

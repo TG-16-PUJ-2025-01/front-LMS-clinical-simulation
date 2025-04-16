@@ -72,13 +72,15 @@ export default function SimulationPage() {
 							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas/${simulation?.practice?.id}`,
 						},
 						{
-                            label: "Calificaciones",
-                            href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/calificaciones`,
-                        },
+							label: "Calificaciones",
+							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/calificaciones`,
+						},
 					]}
 				/>
 			</LayoutSlot>
-			<LayoutSlot name="title">{simulation?.practice?.name ?? ""} (Grupo {simulation?.groupNumber})</LayoutSlot>
+			<LayoutSlot name="title">
+				{simulation?.practice?.name ?? ""} (Grupo {simulation?.groupNumber})
+			</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>
 					{simulation?.video?.name ? (
