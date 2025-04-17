@@ -13,7 +13,7 @@ import { VideoOff } from "lucide-react"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 
 export default function SimulationPage() {
-	const params = useParams()
+	const { id } = useParams()
 	const videoRef = useRef<HTMLVideoElement>(null)
 	const [currentTime, setCurrentTime] = useState(0)
 	const [simulation, setSimulation] = useState<Simulation>()
@@ -23,13 +23,13 @@ export default function SimulationPage() {
 		if (isSync) return
 
 		const fetchSimulation = async () => {
-			const response = await getSimulationById(parseInt(params.id ?? "0"))
+			const response = await getSimulationById(parseInt(id ?? "0"))
 			setSimulation(response.data)
 		}
 
 		fetchSimulation()
 		setIsSync(true)
-	}, [isSync, params.id])
+	}, [isSync, id])
 
 	useEffect(() => {
 		const videoElement = videoRef.current
@@ -64,21 +64,21 @@ export default function SimulationPage() {
 							href: "/coordinador/rubricas",
 						},
 						{
-							label: `(${simulation?.practice.classModel.javerianaId ?? ""}) ${simulation?.practice.classModel.course.name ?? ""}`,
-							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas`,
+							label: `(${simulation?.practice?.classModel.javerianaId ?? ""}) ${simulation?.practice?.classModel.course.name ?? ""}`,
+							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas`,
 						},
 						{
-							label: simulation?.practice.name ?? "",
-							href: `/coordinador/clases/${simulation?.practice.classModel.classId}/practicas/${simulation?.practice.id}`,
+							label: simulation?.practice?.name ?? "",
+							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas/${simulation?.practice?.id}`,
 						},
 						{
                             label: "Calificaciones",
-                            href: `/coordinador/clases/${simulation?.practice.classModel.classId}/calificaciones`,
+                            href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/calificaciones`,
                         },
 					]}
 				/>
 			</LayoutSlot>
-			<LayoutSlot name="title">{simulation?.practice.name ?? ""} (Grupo {simulation?.groupNumber})</LayoutSlot>
+			<LayoutSlot name="title">{simulation?.practice?.name ?? ""} (Grupo {simulation?.groupNumber})</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>
 					{simulation?.video?.name ? (
@@ -133,8 +133,10 @@ export default function SimulationPage() {
 				</section>
 				<section>
 					<RubricForm
-						rubricTemplate={simulation?.practice.rubricTemplate ?? undefined}
-						gradable={simulation?.practice.gradeable ?? false}
+						rubricTemplate={simulation?.practice?.rubricTemplate ?? undefined}
+						gradable={simulation?.practice?.gradeable ?? false}
+						rubric={simulation?.rubric ?? undefined}
+						gradeStatus={simulation?.gradeStatus ?? undefined}
 					/>
 				</section>
 			</div>

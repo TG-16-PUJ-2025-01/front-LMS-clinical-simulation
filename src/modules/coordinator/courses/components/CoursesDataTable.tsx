@@ -1,5 +1,4 @@
 import { Search } from "lucide-react"
-import { Button } from "@/modules/core/components/ui/button"
 import { Input } from "@/modules/core/components/ui/input"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -126,7 +125,6 @@ export function CoursesDataTable() {
 					<div key={course.courseId}>
 						<div className="flex items-center space-x-4">
 							<h1 className="text-xl font-bold">{course.name}</h1> {/* Nombre de la asignatura */}
-							<Button>Recomendar rúbrica</Button>
 						</div>
 
 						<div className="rounded-md p-2">

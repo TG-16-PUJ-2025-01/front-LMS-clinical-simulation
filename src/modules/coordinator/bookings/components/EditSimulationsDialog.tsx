@@ -74,7 +74,7 @@ export default function EditSimulationsDialog({ open, onClose, simulation }: Edi
           <div className="flex-1 overflow-y-auto">
             {calendarApp && <ScheduleXCalendar calendarApp={calendarApp} />}
           </div>
-          <EditSimulationsForm onClose={onClose} simulation={simulation} />
+          <EditSimulationsForm onClose={onClose} simulation={simulation!} />
         </div>
       </DialogContent>
     </Dialog>

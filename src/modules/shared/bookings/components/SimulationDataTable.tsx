@@ -33,13 +33,19 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/modules/core/components/ui/dropdown-menu"
-import { GradeStatusLabels } from "@/modules/core/models/gradeStatus"
+import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
 import { format } from "date-fns"
+import AssignRubricDialog from "../../../coordinator/bookings/components/AssignRubricDialog"
+import Practice from "@/modules/core/models/practice"
 import CreateSimulationsDialog from "../../../coordinator/bookings/components/CreateSimulationsDialog"
 import EditSimulationsDialog from "../../../coordinator/bookings/components/EditSimulationsDialog"
 import ViewMembersDialog from "../../../coordinator/bookings/components/ViewMembersDialog"
 
-export function SimulationDataTable() {
+interface Props {
+	practice: Practice
+}
+
+export function SimulationDataTable({ practice }: Props) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -49,6 +55,7 @@ export function SimulationDataTable() {
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+	const [isAssignRubricOpen, setIsAssignRubricOpen] = useState(false)
 	const [isViewMembersOpen, setIsViewMembersOpen] = useState(false)
 	const [selectedSimulation, setSelectedSimulation] = useState<Simulation | null>(null)
 
@@ -156,8 +163,8 @@ export function SimulationDataTable() {
 				</div>
 			),
 			cell: ({ row }) => {
-				const gradeStatus = row.getValue("gradeStatus") as keyof typeof GradeStatusLabels
-				return <div className="text-center capitalize">{GradeStatusLabels[gradeStatus]}</div>
+				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels
+				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
 			},
 		},
 		{
@@ -283,7 +290,7 @@ export function SimulationDataTable() {
 						/>
 					</div>
 					<div className="flex items-center space-x-2">
-						<Button onClick={() => {}}>Asignar rúbrica</Button>
+						<Button onClick={() => setIsAssignRubricOpen(true)}>Asignar rúbrica</Button>
 						<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
 					</div>
 				</div>
@@ -361,6 +368,12 @@ export function SimulationDataTable() {
 				open={isViewMembersOpen}
 				onClose={() => setIsViewMembersOpen(false)}
 				simulationId={selectedSimulation?.simulationId ?? 0}
+			/>
+			<AssignRubricDialog
+				open={isAssignRubricOpen}
+				onClose={() => setIsAssignRubricOpen(false)}
+				courseId={practice.classModel?.course.courseId ?? undefined}
+				selectedRubricTemplate={practice.rubricTemplate ?? undefined}
 			/>
 		</>
 	)

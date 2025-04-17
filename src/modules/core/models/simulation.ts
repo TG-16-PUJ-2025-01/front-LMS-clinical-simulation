@@ -1,6 +1,7 @@
-import Practice from "./practice"
 import GradeStatus from "./gradeStatus"
+import Practice from "./practice"
 import Room from "./room"
+import Rubric from "./rubric"
 import Video from "./video"
 
 export default interface Simulation {
@@ -13,5 +14,6 @@ export default interface Simulation {
   groupNumber: number
   video: Video
   rooms: Room[]
-  practice: Practice
+  practice?: Practice
+  rubric?: Rubric
 }

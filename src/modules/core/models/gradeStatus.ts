@@ -4,7 +4,7 @@ enum GradeStatus {
     NOT_EVALUABLE = 'NOT_EVALUABLE'
 }
 
-export const GradeStatusLabels: { [key in GradeStatus]: string } = {
+export const gradeStatusLabels: { [key in GradeStatus]: string } = {
     [GradeStatus.PENDING]: 'Pendiente',
     [GradeStatus.REGISTERED]: 'Calificado',
     [GradeStatus.NOT_EVALUABLE]: 'No evaluable'
