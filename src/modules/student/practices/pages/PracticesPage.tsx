@@ -126,6 +126,7 @@ export default function PracticesPage() {
 				open={openDialog === "group"}
 				onClose={handleCloseDialog}
 				practiceId={selectedPractice?.id ?? 0}
+				maxNumStudentsPerGroup={selectedPractice?.maxStudentsGroup ?? 0}
 			/>
 		</>
 	)

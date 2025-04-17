@@ -20,26 +20,41 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { ArrowUpDown, Search, Check, TriangleAlert } from "lucide-react"
+import { ArrowUpDown, Search, Check, TriangleAlert, MoreHorizontal, Users } from "lucide-react"
 import { format } from "date-fns"
 import {
 	getEnroledSimulationId,
 	getSimulationsAvailableByPracticeId,
 } from "../services/practicesService"
 import SimulationAvailabilityDTO from "../dtos/simulationAvailabilityDto"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/modules/core/components/ui/dropdown-menu"
+import ViewMembersDialog from "@/modules/coordinator/bookings/components/ViewMembersDialog"
 
 interface GroupsDataTableProps {
 	practiceId: number
 	onEnroll: (simulationId: number) => void
+	maxNumStudentsPerGroup: number
 }
 
-export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTableProps) {
+export default function GroupsDataTable({ practiceId, onEnroll, maxNumStudentsPerGroup }: GroupsDataTableProps) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 	const [enrolledSimulationId, setEnrolledSimulationId] = useState<number | null>(null)
 	const [triggerFetchEnrolled, setTriggerFetchEnrolled] = useState(false)
+
+	const [isViewMembersOpen, setIsViewMembersOpen] = useState(false)
+	const [selectedSimulation, setSelectedSimulation] = useState<SimulationAvailabilityDTO | null>(
+		null
+	)
 
 	const [data, setData] = useState<SimulationAvailabilityDTO[]>([])
 
@@ -181,6 +196,34 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 				)
 			},
 		},
+		{
+			id: "viewMembers",
+			enableHiding: false,
+			cell: ({ row }) => {
+				const simulation = row.original
+				return (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" className="ml-auto flex h-8 w-8 p-0">
+								<MoreHorizontal />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								onClick={() => {
+									setSelectedSimulation(simulation)
+									setIsViewMembersOpen(true)
+								}}
+							>
+								<Users /> Ver Miembros
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)
+			},
+		},
 	]
 
 	const table = useReactTable({
@@ -281,6 +324,12 @@ export default function GroupsDataTable({ practiceId, onEnroll }: GroupsDataTabl
 					</Button>
 				</div>
 			</div>
+			<ViewMembersDialog
+				open={isViewMembersOpen}
+				onClose={() => setIsViewMembersOpen(false)}
+				simulationId={selectedSimulation?.simulationId ?? 0}
+				maxStudents={maxNumStudentsPerGroup}
+			/>
 		</div>
 	)
 }
