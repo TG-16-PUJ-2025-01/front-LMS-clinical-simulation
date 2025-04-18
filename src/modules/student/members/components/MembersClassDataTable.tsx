@@ -1,5 +1,7 @@
+"use client"
 import {
 	ColumnDef,
+	ColumnFiltersState,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -9,10 +11,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { getSimulationsByPracticeId } from "../services/bookingService"
-import Simulation from "@/modules/core/models/simulation"
+import { ArrowUpDown, Search } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import { Input } from "@/modules/core/components/ui/input"
 import {
@@ -23,62 +22,57 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Users } from "lucide-react"
+import { useEffect, useState } from "react"
+import UserModel from "@/modules/core/models/user"
+import { getClassMembers } from "../../../shared/members/services/membersService"
+import Role from "@/modules/core/models/role"
+import { useParams } from "react-router-dom"
 
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/modules/core/components/ui/dropdown-menu"
-import { gradeStatusLabels } from "@/modules/core/models/gradeStatus"
-import { format } from 'date-fns'
-import CreateSimulationsDialog from "./CreateSimulationsDialog"
-
-export function SimulationDataTable() {
+export function StudentsClassDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
+	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 	const { id } = useParams()
 
-	const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-	const [data, setData] = useState<Simulation[]>([])
+	const [data, setData] = useState<UserModel[]>([])
 
 	const [pagination, setPagination] = useState({
-		pageIndex: 0, //initial page index
-		pageSize: 10, //default page size
+		pageIndex: 0,
+		pageSize: 10,
 	})
 
 	const [paginationInfo, setPaginationInfo] = useState({
-		total: 0, //total number of records
-		totalPages: 0, //total number of pages
+		total: 0,
+		totalPages: 0,
 	})
 
 	useEffect(() => {
-
-		const fetchSimulations = async () => {
-			const res = await getSimulationsByPracticeId(
-				Number(id),
+		const fetchMembers = async () => {
+			const res = await getClassMembers(
 				pagination.pageIndex,
-				pagination.pageSize
+				pagination.pageSize,
+				filter,
+				sorting[0]?.id,
+				!(sorting[0]?.desc ?? false),
+				Number(id)
 			)
+
 			setData(res.data)
+
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
 			})
 		}
 
-		fetchSimulations()
+		fetchMembers()
 	}, [pagination, filter, sorting, id])
 
-	const columns: ColumnDef<Simulation>[] = [
+	const columns: ColumnDef<UserModel>[] = [
 		{
-			accessorKey: "startDateTime",
+			accessorKey: "institutionalId",
 			header: ({ column }) => (
 				<div className="relative w-full">
 					<Button
@@ -86,115 +80,92 @@ export function SimulationDataTable() {
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
 						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					>
-						Hora de Inicio
+						ID
 						{column.getIsSorted() && <ArrowUpDown />}
 					</Button>
 				</div>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.getValue("startDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
+				return <div className="text-center">{row.getValue("institutionalId")}</div>
 			},
 		},
 		{
-			accessorKey: "endDateTime",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Hora de Finalización
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				const date = new Date(row.getValue("endDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
-			},
-		},
-		{
-			accessorKey: "grade",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Calificación
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				return <div className="text-center capitalize">{row.getValue("grade")}</div>
-			},
-		},
-		{
-			accessorKey: "gradeDateTime",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Hora de Calificación
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				const date = new Date(row.getValue("gradeDateTime"));
-				return <div className="text-center capitalize">{format(date, 'dd/MM/yyyy HH:mm')}</div>
-			},
-		},
-		{
-			accessorKey: "gradeStatus",
-			header: ({ column }) => (
-				<div className="relative w-full">
-					<Button
-						variant="ghost"
-						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Estado de Calificación
-						{column.getIsSorted() && <ArrowUpDown />}
-					</Button>
-				</div>
-			),
-			cell: ({ row }) => {
-				const gradeStatus = row.getValue("gradeStatus") as keyof typeof gradeStatusLabels;
-				return <div className="text-center capitalize">{gradeStatusLabels[gradeStatus]}</div>
-			},
-		},
-		{
-			id: "actions",
-			enableHiding: false,
-			cell: () => {
-
+			accessorKey: "name",
+			header: ({ column }) => {
 				return (
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" className="ml-auto flex h-8 w-8 p-0">
-								<MoreHorizontal />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Acciones</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem>
-								<Users /> Ver Miembros
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<Pencil /> Calificar
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Nombres
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
 				)
+			},
+			cell: ({ row }) => <div className="text-center capitalize">{row.getValue("name")}</div>,
+		},
+		{
+			accessorKey: "lastName",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Apellidos
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => <div className="text-center capitalize">{row.getValue("lastName")}</div>,
+		},
+		{
+			accessorKey: "email",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Correo
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => <div className="text-center">{row.getValue("email")}</div>,
+		},
+		{
+			accessorKey: "roles",
+			header: ({ column }) => {
+				return (
+					<div className="relative w-full">
+						<Button
+							variant="ghost"
+							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
+							onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						>
+							Cargo
+							{column.getIsSorted() && <ArrowUpDown />}
+						</Button>
+					</div>
+				)
+			},
+			cell: ({ row }) => {
+				const roles = row.getValue("roles") as Role[]
+
+				let displayRole = "Sin rol"
+				if (roles.includes(Role.PROFESOR)) {
+					displayRole = Role.PROFESOR.toLowerCase()
+				} else if (roles.includes(Role.ESTUDIANTE)) {
+					displayRole = Role.ESTUDIANTE.toLowerCase()
+				}
+
+				return <div className="text-center capitalize">{displayRole}</div>
 			},
 		},
 	]
@@ -203,6 +174,7 @@ export function SimulationDataTable() {
 		data,
 		columns,
 		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
@@ -215,6 +187,7 @@ export function SimulationDataTable() {
 		pageCount: paginationInfo.totalPages,
 		state: {
 			sorting,
+			columnFilters,
 			columnVisibility,
 			rowSelection,
 			pagination,
@@ -237,7 +210,6 @@ export function SimulationDataTable() {
 							className="w-full pl-8"
 						/>
 					</div>
-					<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
 				</div>
 				<div className="mt-4 rounded-md border">
 					<Table>
@@ -270,14 +242,18 @@ export function SimulationDataTable() {
 							) : (
 								<TableRow>
 									<TableCell colSpan={columns.length} className="h-24 text-center">
-										Sin resultados.
+										No results.
 									</TableCell>
 								</TableRow>
 							)}
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 pt-4">
+				<div className="flex items-center justify-between space-x-2 pt-4">
+					<span className="text-sm text-gray-600">
+						Página {paginationInfo.totalPages === 0 ? 0 : pagination.pageIndex + 1} de{" "}
+						{paginationInfo.totalPages}
+					</span>
 					<div className="space-x-2">
 						<Button
 							variant="outline"
@@ -298,7 +274,6 @@ export function SimulationDataTable() {
 					</div>
 				</div>
 			</div>
-			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
 		</>
 	)
 }

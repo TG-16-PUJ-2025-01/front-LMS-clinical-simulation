@@ -3,7 +3,7 @@ import Room from "@/modules/core/models/room"
 import ApiResponse from "@/modules/core/models/apiResponse"
 import RoomType from "@/modules/core/models/roomType"
 import { API_URL } from "@/modules/core/config/env"
-import RoomDto from "../dtos/RoomDto"
+import RoomDto from "../dtos/roomDto"
 import RoomTypeDto from "../dtos/roomTypeDto"
 
 export async function getAllRooms(

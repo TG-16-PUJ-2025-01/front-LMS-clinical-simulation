@@ -28,6 +28,7 @@ export default function DeletePracticeDialog({ open, onClose, practiceId }: Prop
 			onClose(false)
 			toast.success("Práctica eliminada correctamente")
 		} catch (error) {
+			console.error(error)
 			toast.error("Error al eliminar la práctica")
 		}
 	}

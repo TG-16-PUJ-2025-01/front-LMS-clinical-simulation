@@ -1,4 +1,4 @@
-import { MoreHorizontal, Pencil, Trash2, Users, User } from "lucide-react"
+import { MoreHorizontal, Users, User, SquarePlus } from "lucide-react"
 import { cn } from "@/modules/core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
 import {
@@ -31,7 +31,6 @@ type CardProps = React.ComponentProps<typeof Card> & {
 	type: "GRUPAL" | "INDIVIDUAL"
 	onClick?: () => void
 	onEdit: () => void
-	onDelete: () => void
 }
 
 export function CardPractice({
@@ -43,14 +42,13 @@ export function CardPractice({
 	type,
 	onClick,
 	onEdit,
-	onDelete,
 }: CardProps) {
 	return (
 		<TooltipProvider>
 			<Card
 				onClick={onClick}
 				className={cn(
-					"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden transition-transform hover:scale-105",
+					"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden shadow-md transition-transform hover:scale-105",
 					className
 				)}
 			>
@@ -74,15 +72,7 @@ export function CardPractice({
 									onEdit()
 								}}
 							>
-								<Pencil className="mr-2 h-4 w-4" /> Editar
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={(e) => {
-									e.stopPropagation()
-									onDelete()
-								}}
-							>
-								<Trash2 className="mr-2 h-4 w-4" /> Borrar
+								<SquarePlus className="mr-2 h-4 w-4" /> Unirse a Grupo
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>

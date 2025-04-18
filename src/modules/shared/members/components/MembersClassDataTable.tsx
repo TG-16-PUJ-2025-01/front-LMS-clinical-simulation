@@ -220,7 +220,7 @@ export function StudentsClassDataTable() {
 					</div>
 				)
 			},
-			cell: ({ row }) => <div className="text-center">{row.getValue("name")}</div>,
+			cell: ({ row }) => <div className="text-center capitalize">{row.getValue("name")}</div>,
 		},
 		{
 			accessorKey: "lastName",
@@ -236,7 +236,7 @@ export function StudentsClassDataTable() {
 					</Button>
 				</div>
 			),
-			cell: ({ row }) => <div className="text-center">{row.getValue("lastName")}</div>,
+			cell: ({ row }) => <div className="text-center capitalize">{row.getValue("lastName")}</div>,
 		},
 		{
 			accessorKey: "email",
@@ -280,7 +280,7 @@ export function StudentsClassDataTable() {
 					displayRole = Role.ESTUDIANTE.toLowerCase()
 				}
 
-				return <div className="text-center">{displayRole}</div>
+				return <div className="text-center capitalize">{displayRole}</div>
 			},
 		},
 		{

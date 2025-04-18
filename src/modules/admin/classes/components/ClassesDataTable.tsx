@@ -418,7 +418,7 @@ export function ClassesDataTable() {
 			<DeleteClassDialog
 				open={openDialog === "delete"}
 				onClose={handleCloseDialog}
-				classToDelete={selectedClass ?? undefined}
+				classId={selectedClass?.classId ?? null}
 			/>
 			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
 		</>

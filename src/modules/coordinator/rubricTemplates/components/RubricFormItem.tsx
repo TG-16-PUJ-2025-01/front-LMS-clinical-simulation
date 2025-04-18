@@ -178,11 +178,11 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 			<FormControl>
 				<section className="flex max-w-[92vw] flex-col gap-2 xl:max-w-[1152px]">
 					<div className="flex h-full w-full gap-2">
-						<article className="max-h-[60vh] flex-1 overflow-auto rounded-md border">
+						<article className="flex-1 overflow-hidden rounded-md border [&>div]:-m-px [&>div]:max-h-[60vh] [&>div]:w-[calc(100%+2px)]">
 							<Table className="h-full w-full">
 								<TableHeader>
 									<TableRow>
-										<TableHead className="w-[100px] border py-1 align-top">Criterios</TableHead>
+										<TableHead className="w-40 border py-1 align-top">Criterios</TableHead>
 										<TableHead className="w-20 min-w-20 border py-1 align-top">Peso</TableHead>
 										{getRubric().columns.map((column, index) => (
 											<TableHead
@@ -208,13 +208,15 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 																</FormItem>
 															)}
 														/>
-														<span className="text-blue-javeriana flex items-center gap-2 text-xs font-bold italic">
+														<span className="flex items-baseline gap-2">
 															<FormField
 																control={control}
 																name={`rubric.columns.${index}.scoringScale.lowerValue` as Path<T>}
 																render={({ field }) => (
 																	<FormItem className="flex items-baseline gap-2">
-																		<FormLabel>Min</FormLabel>
+																		<FormLabel className="text-blue-javeriana text-sm font-bold italic">
+																			Min
+																		</FormLabel>
 																		<FormControl>
 																			<Input
 																				type="number"
@@ -233,7 +235,9 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 																name={`rubric.columns.${index}.scoringScale.upperValue` as Path<T>}
 																render={({ field }) => (
 																	<FormItem className="flex items-baseline gap-2">
-																		<FormLabel>Max</FormLabel>
+																		<FormLabel className="text-blue-javeriana text-sm font-bold italic">
+																			Max
+																		</FormLabel>
 																		<FormControl>
 																			<Input
 																				type="number"
@@ -246,7 +250,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 																	</FormItem>
 																)}
 															/>
-															puntos
+															<p className="text-blue-javeriana text-sm font-bold italic">puntos</p>
 														</span>
 													</ContextMenuTrigger>
 													<CustomContextMenuContent
@@ -295,7 +299,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 											</TableCell>
 											<TableCell className="border font-medium">
 												<ContextMenu>
-													<ContextMenuTrigger className="flex h-full w-full grow">
+													<ContextMenuTrigger className="flex h-full w-full grow items-center">
 														<FormField
 															control={control}
 															name={`rubric.criteria.${index}.weight` as Path<T>}
@@ -313,7 +317,7 @@ export function RubricFormItem<T extends RubricFormValues = RubricFormValues>({
 																</FormItem>
 															)}
 														/>
-														<span>%</span>
+														<span className="text-blue-javeriana font-bold italic">%</span>
 													</ContextMenuTrigger>
 													<CustomContextMenuContent
 														rowActions={{

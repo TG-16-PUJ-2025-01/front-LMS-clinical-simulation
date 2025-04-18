@@ -1,5 +1,5 @@
 // components/LoginForm.tsx
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Label } from "@/modules/core/components/ui/label"
 import { Button } from "@/modules/core/components/ui/button"
 import { Input } from "@/modules/core/components/ui/input"
@@ -7,6 +7,7 @@ import { Eye, EyeClosed } from "lucide-react"
 import { login } from "../services/authService" // Importa el servicio de autenticación
 import { useNavigate } from "react-router-dom"
 import Role from "@/modules/core/models/role"
+import { clearToken } from "@/modules/core/lib/tokenHandler"
 
 interface LoginFormProps {
 	onForgotPassword: () => void
@@ -16,6 +17,10 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
 	const [showPassword, setShowPassword] = useState(false)
 	const [error, setError] = useState<string | null>(null) // Estado para manejar errores
 	const navigate = useNavigate()
+
+	useEffect(() => {
+		clearToken()
+	}, [])
 
 	const handleLogin = async (email: string, password: string) => {
 		try {

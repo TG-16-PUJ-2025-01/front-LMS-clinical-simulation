@@ -1,71 +1,53 @@
-import { useState, useEffect, useMemo } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/modules/core/components/ui/dialog";
+import { useEffect, useMemo, useState } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/modules/core/components/ui/dialog";
 import { ScheduleXCalendar, useNextCalendarApp } from "@schedule-x/react";
-import { createViewWeek } from "@schedule-x/calendar";
+import { createViewDay } from "@schedule-x/calendar";
 import { createEventsServicePlugin } from "@schedule-x/events-service";
 import '@schedule-x/theme-shadcn/dist/index.css';
 
 import CreateSimulationsForm from "./CreateSimulationsForm";
-import { getAllRooms, getReservationsByRoom } from "../services/bookingService";
-import { Combobox } from "@/modules/core/components/Combobox/Combobox";
+import { getSchedule } from "../services/bookingService";
 
 interface BookingDialogProps {
   open: boolean;
-  onClose: () => void; 
-}
-
-interface Room {
-  id: string;
-  name: string;
+  onClose: () => void;
 }
 
 export default function CreateSimulationsDialog({ open, onClose }: BookingDialogProps) {
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [rooms, setRooms] = useState<{ key: number; value: string }[]>([]);
 
   const eventsServicePlugin = useMemo(() => createEventsServicePlugin(), []);
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(new Date().toISOString().split('T')[0]);
 
   const calendarApp = useNextCalendarApp(
-    { 
-      views: [createViewWeek()], 
-      theme: "shadcn blue", 
+    {
+      views: [createViewDay()],
+      theme: "shadcn blue",
       locale: "es-ES",
       dayBoundaries: {
         start: '06:00',
         end: '20:00',
       },
+      callbacks: {
+        onSelectedDateUpdate(date) {
+          setSelectedDate(date);
+        },
+      }
     },
     [eventsServicePlugin]
   );
 
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const roomsData = await getAllRooms();
-        setRooms(roomsData.map(room => ({ key: room.id, value: room.name })));
-        if (roomsData.length > 0) {
-          setSelectedRoom({ id: roomsData[0].id.toString(), name: roomsData[0].name });
-        }
-      } catch (error) {
-        console.error("Error cargando salas:", error);
-      }
-    };
 
-    if (open) {
-      fetchRooms();
-    }
-  }, [open]);
 
   useEffect(() => {
     const fetchReservations = async () => {
-      if (!selectedRoom) return;
-
       try {
-        const reservationsData = await getReservationsByRoom(selectedRoom.id);
+        if (!selectedDate) return;
+        const reservationsData = await getSchedule(selectedDate);
         if (eventsServicePlugin?.set) {
           eventsServicePlugin.set(
             reservationsData.map((res, index) => ({
               id: index.toString(),
+              title: res.room,
               start: res.startDateTime,
               end: res.endDateTime,
               calendarId: "room",
@@ -76,42 +58,23 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
         console.error("Error cargando reservas:", error);
       }
     };
-
-    fetchReservations();
-  }, [selectedRoom, eventsServicePlugin, calendarApp]);
+    if (open) {
+      fetchReservations();
+    }
+  }, [open, eventsServicePlugin, calendarApp, selectedDate]);
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-[90vw] h-[80vh] flex flex-row gap-4">
-        <div className="w-2/3 border rounded-lg p-6 relative">
-          <DialogHeader>
-            <DialogTitle>Reserva de prácticas</DialogTitle>
-          </DialogHeader>
-
-          {/* Selector de sala */}
-          <div className="mt-4 flex items-center space-x-2">
-            <span className="text-sm font-medium text-gray-700">Calendario para la sala:</span>
-            <Combobox
-              options={rooms}
-              placeholderText="Seleccionar sala"
-              itemName="Sala"
-              onChange={(selected) => {
-                const selectedRoomData = rooms.find(room => room.key === selected.key);
-                if (selectedRoomData) {
-                  setSelectedRoom({ id: selectedRoomData.key.toString(), name: selectedRoomData.value });
-                }
-              }}
-              selectedValue={selectedRoom?.name || ""}
-            />
-          </div>
-
-          <div className="mt-6 h-[55vh] overflow-y-auto">
+      <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col gap-4">
+        <DialogTitle>Reservar las prácticas</DialogTitle>
+        <div className="flex flex-1 flex-row gap-4 overflow-hidden">
+          <div className="flex-1 overflow-y-auto">
             {calendarApp && <ScheduleXCalendar calendarApp={calendarApp} />}
           </div>
+          <CreateSimulationsForm onClose={onClose} />
         </div>
-
-        <CreateSimulationsForm onClose={onClose} />
       </DialogContent>
     </Dialog>
   );
+
 }

@@ -24,10 +24,13 @@ import { useEffect, useState } from "react"
 import Class from "@/modules/core/models/class"
 import { toast } from "sonner"
 import User from "@/modules/core/models/user"
-import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { createClass, getAllProfessors } from "../services/classService"
 import Course from "@/modules/core/models/course"
 import { getCourses } from "../../courses/services/courseService"
+import Select from "react-select"
+import makeAnimated from "react-select/animated"
+import { Combobox } from "@/modules/core/components/Combobox/Combobox"
+import { NumericFormat } from "react-number-format"
 
 interface Props {
 	open: boolean
@@ -36,34 +39,35 @@ interface Props {
 }
 
 const formSchema = z.object({
-	javerianaId: z.coerce.number().int().positive({
-		message: "El ID debe ser un número entero positivo",
+	javerianaId: z.number({
+		required_error: "El ID es requerido",
 	}),
 	professor: z.object({
-		id: z.number().optional(),
+		id: z.array(z.number()).optional(),
 		name: z.string().nonempty({
-			message: "Debe seleccionar un profesor",
+			message: "El profesor es requerido",
 		}),
 	}),
 	course: z.object({
 		courseid: z.number().optional(),
 		name: z.string().nonempty({
-			message: "Debe seleccionar la asignatura asociada",
+			message: "La asignatura es requerida",
 		}),
 	}),
 	year: z.number({
 		required_error: "El año es requerido",
 	}),
-	yearPeriod: z.string({
-		required_error: "El periodo academico es requerido",
+	yearPeriod: z.string().nonempty({
+		message: "El periodo académico es requerido",
 	}),
 	numberOfParticipants: z.number({
-		required_error: "La cantidad de estudiantes es requerido",
+		required_error: "La cantidad de estudiantes es requerida",
 	}),
 })
 
-//lista de trings
 const periods = ["10", "20", "30"]
+
+const animatedComponents = makeAnimated()
 
 export default function CreateClassDialog({ open, onClose }: Props) {
 	const [courses, setCourses] = useState<Course[]>([])
@@ -74,23 +78,22 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 		defaultValues: {
 			javerianaId: undefined,
 			professor: {
-				id: 0,
+				id: [],
 				name: "",
 			},
 			course: {
 				courseid: 0,
 				name: "",
 			},
-			year: new Date().getFullYear(),
-			yearPeriod: "10",
-			numberOfParticipants: 0,
+			year: undefined,
+			yearPeriod: "",
+			numberOfParticipants: undefined,
 		},
 	})
 
 	useEffect(() => {
 		const fetchProfessors = async () => {
 			const res = await getAllProfessors()
-			//console.log(res.data)
 			setProfessors(res.data)
 		}
 
@@ -98,7 +101,6 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 
 		const fetchCourses = async () => {
 			const res = await getCourses(0, 10, "", "name", true)
-			//console.log(res.data)
 			setCourses(res.data)
 		}
 
@@ -109,12 +111,9 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-
-			//console.log(values)
-
 			await createClass({
-				javerianaId: values.javerianaId,
-				professorsIds: [values.professor.id!],
+				javerianaId: Number(values.javerianaId),
+				professorsIds: Array.isArray(values.professor.id) ? values.professor.id : [],
 				courseId: values.course.courseid!,
 				period: values.year.toString() + "-" + values.yearPeriod,
 				numberOfParticipants: Number(values.numberOfParticipants),
@@ -134,7 +133,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Crear Clase</DialogTitle>
-					<DialogDescription>Ingreasa los siguientes atributos de la nueva clase</DialogDescription>
+					<DialogDescription>Ingresa los siguientes atributos de la nueva clase</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
@@ -146,7 +145,15 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">ID</FormLabel>
 										<FormControl>
-											<Input id="id" placeholder="ID" className="col-span-3 m-0" {...field} />
+											<NumericFormat
+												value={field.value}
+												onValueChange={(values) => field.onChange(values.floatValue)}
+												thousandSeparator={false}
+												allowNegative={false}
+												customInput={Input}
+												placeholder="ID"
+												className="col-span-3 m-0"
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
@@ -157,20 +164,47 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 								name="professor.name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">Profesor</FormLabel>
-										<FormControl>
-											<Combobox
-												placeholderText="Selecciona un profesor"
+										<FormLabel className="col-span-1 m-0 text-right">Profesor</FormLabel>
+										<FormControl className="col-span-3">
+											<Select
+												components={animatedComponents}
+												isMulti
 												options={professors.map((val) => ({
-													key: val.id,
-													value: `${val.name} ${val.lastName}`,
+													value: val.id,
+													label: `${val.name} ${val.lastName}`,
 												}))}
-												itemName="profesor"
+												value={professors
+													.filter(
+														(prof) =>
+															Array.isArray(form.getValues("professor.id") ?? []) &&
+															(form.getValues("professor.id") ?? []).includes(prof.id)
+													)
+													.map((prof) => ({
+														value: prof.id,
+														label: `${prof.name} ${prof.lastName}`,
+													}))}
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("professor.id", selected.key)
-													//console.log(selected.key)
+													const selectedIds = selected.map((prof) => prof.value)
+													form.setValue("professor.id", selectedIds as number[])
+													field.onChange(selected.map((prof) => prof.label).join(", "))
 												}}
+												placeholder="Selecciona uno o más profesores"
+												className="w-full"
+												styles={{
+													control: (baseStyles) => ({
+														...baseStyles,
+														"borderColor": "",
+														"borderRadius": "var(--radius-md)",
+														"boxShadow": "",
+														"&:hover": { borderColor: "" },
+														"&:focus": { borderColor: "black" },
+													}),
+												}}
+												classNames={{
+													control: () =>
+														"flex w-full rounded-md border border-input bg-transparent text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:shadow-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+												}}
+												noOptionsMessage={() => "No se encontraron profesores"}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
@@ -202,59 +236,74 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 								)}
 							/>
 
-							<div className="flex w-full items-center justify-center gap-2">
-								<div className="w-24">
-									<FormField
-										control={form.control}
-										name="year"
-										render={({ field }) => (
-											<FormItem className="flex items-center">
-												<FormControl>
-													<Combobox
-														placeholderText="Año"
-														options={[...Array(3)].map((_, i) => {
-															const year = new Date().getFullYear() + i
-															return { key: year, value: year.toString() }
-														})}
-														itemName="año"
-														onChange={(selected) => field.onChange(Number(selected.value))}
-													/>
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-								</div>
-								<span className="text-xs">-</span>
-								<div className="w-16">
-									<FormField
-										control={form.control}
-										name="yearPeriod"
-										render={({ field }) => (
-											<FormItem className="flex items-center">
-												<FormControl>
-													<Combobox
-														placeholderText="Período"
-														options={periods.map((period) => ({
-															key: Number(period),
-															value: period,
-														}))}
-														itemName="período"
-														onChange={(selected) => field.onChange(selected.value.toString())}
-													/>
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-								</div>
-							</div>
+							<FormField
+								control={form.control}
+								name="year"
+								render={() => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel
+											className={`col-span-1 m-0 text-right ${
+												form.formState.errors.year || form.formState.errors.yearPeriod
+													? "text-red-500"
+													: ""
+											}`}
+										>
+											Año y Periodo
+										</FormLabel>
+										<div className="col-span-3 flex items-center gap-2">
+											<FormControl>
+												<Combobox
+													placeholderText="Año"
+													options={[...Array(3)].map((_, i) => {
+														const year = new Date().getFullYear() + i
+														return { key: year, value: year.toString() }
+													})}
+													itemName="año"
+													onChange={(selected) => {
+														form.setValue("year", Number(selected.value))
+														form.trigger(["year", "yearPeriod"])
+													}}
+												/>
+											</FormControl>
+											<span className="text-xs">-</span>
+											<FormControl>
+												<Combobox
+													placeholderText="Período"
+													options={periods.map((period) => ({
+														key: Number(period),
+														value: period,
+													}))}
+													itemName="período"
+													onChange={(selected) => {
+														form.setValue("yearPeriod", selected.value.toString())
+														form.trigger(["year", "yearPeriod"])
+													}}
+												/>
+											</FormControl>
+										</div>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right">
+											{form.formState.errors.year?.message ||
+												form.formState.errors.yearPeriod?.message}
+										</FormMessage>
+									</FormItem>
+								)}
+							/>
 							<FormField
 								control={form.control}
 								name="numberOfParticipants"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel className="m-0 text-right">No. participantes</FormLabel>
+										<FormLabel className="m-0 text-right">No. de Participantes</FormLabel>
 										<FormControl>
-											<Input type="number" id="id" placeholder="Cant de participantes" className="col-span-3 m-0" {...field} onChange={(e) => field.onChange(e.target.valueAsNumber)}  />
+											<NumericFormat
+												value={field.value}
+												onValueChange={(values) => field.onChange(values.floatValue)}
+												thousandSeparator={false}
+												allowNegative={false}
+												customInput={Input}
+												placeholder="No. de participantes"
+												className="col-span-3 m-0"
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
