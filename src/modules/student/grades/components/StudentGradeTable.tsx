@@ -22,7 +22,6 @@ export default function StudentGradeTable() {
         try {
             const res = await getStudentGradeByClassId(Number(classId))
             setStudentGrades(res.data)
-            console.log(res.data)
         } catch (err) {
             console.error("Error al obtener las calificaciones del estudiante", err)
         }
@@ -32,7 +31,6 @@ export default function StudentGradeTable() {
         try {
             const res = await getPracticesPercentageByClassId(Number(classId))
             setPracticesPercentage(res.data)
-            console.log(res.data)
         } catch (err) {
             console.error("Error al obtener los porcentajes de las prácticas", err)
         }
