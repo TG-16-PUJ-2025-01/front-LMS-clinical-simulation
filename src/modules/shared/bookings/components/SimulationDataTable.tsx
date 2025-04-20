@@ -370,6 +370,7 @@ export function SimulationDataTable({ practice }: Props) {
 				open={isViewMembersOpen}
 				onClose={() => setIsViewMembersOpen(false)}
 				simulationId={selectedSimulation?.simulationId ?? 0}
+				maxStudents={practice.maxStudentsGroup ?? 0}
 			/>
 			<AssignRubricDialog
 				open={isAssignRubricOpen}

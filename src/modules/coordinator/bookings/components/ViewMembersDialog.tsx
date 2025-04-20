@@ -22,9 +22,10 @@ interface ViewMembersDialogProps {
 	open: boolean
 	onClose: () => void
 	simulationId: number
+	maxStudents: number
 }
 
-export default function ViewMembersDialog({ open, onClose, simulationId }: ViewMembersDialogProps) {
+export default function ViewMembersDialog({ open, onClose, simulationId, maxStudents }: ViewMembersDialogProps) {
 	const [students, setStudents] = useState<User[]>([])
 
 	useEffect(() => {
@@ -47,7 +48,7 @@ export default function ViewMembersDialog({ open, onClose, simulationId }: ViewM
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Miembros de la Simulación</DialogTitle>
-					<DialogDescription>Estudiantes asociados</DialogDescription>
+					<DialogDescription>Número de estudiantes inscritos en este horario: {students.length}/{maxStudents}</DialogDescription>
 				</DialogHeader>
 				<div className="rounded-md border">
 					<Table>

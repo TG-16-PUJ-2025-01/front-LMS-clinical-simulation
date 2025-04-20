@@ -1,120 +1,98 @@
-import {
-	useReactTable,
-	getCoreRowModel,
-	getSortedRowModel,
-	getFilteredRowModel,
-	flexRender,
-	ColumnDef,
-} from "@tanstack/react-table"
 import { useEffect, useMemo, useState } from "react"
 
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/modules/core/components/ui/table"
 import { useParams } from "react-router-dom"
 import { StudentGradeDto } from "@/modules/shared/students-grades/services/gradeService"
-import { getStudentGradeByClassId } from "../services/gradesService"
+import { getPracticesPercentageByClassId, getStudentGradeByClassId } from "../services/gradesService"
+import { PracticesPercentageDTO } from "../dtos/praticesPercentageDto"
 
 export default function StudentGradeTable() {
-	const { classId } = useParams()
-	const [studentGrades, setStudentGrades] = useState<StudentGradeDto | null>(null)
+    const { classId } = useParams()
+    const [studentGrades, setStudentGrades] = useState<StudentGradeDto | null>(null)
+    const [practicesPercentage, setPracticesPercentage] = useState<PracticesPercentageDTO[] | null>(null)
 
-	useEffect(() => {
-		async function fetchStudentGrades() {
-			try {
-				const res = await getStudentGradeByClassId(Number(classId))
-				setStudentGrades(res.data)
-				console.log(res.data)
-			} catch (err) {
-				console.error("Error al obtener las calificaciones del estudiante", err)
-			}
-		}
-		fetchStudentGrades()
-	}, [classId])
+    const fetchStudentGrades = async () => {
+        try {
+            const res = await getStudentGradeByClassId(Number(classId))
+            setStudentGrades(res.data)
+        } catch (err) {
+            console.error("Error al obtener las calificaciones del estudiante", err)
+        }
+    }
 
-	const practiceNames = useMemo(() => {
-		if (!studentGrades) return []
-		return Object.keys(studentGrades.practiceGrades)
-	}, [studentGrades])
+    const fetchPracticesPercentage = async () => {
+        try {
+            const res = await getPracticesPercentageByClassId(Number(classId))
+            setPracticesPercentage(res.data)
+        } catch (err) {
+            console.error("Error al obtener los porcentajes de las prácticas", err)
+        }
+    }
 
-	const columns: ColumnDef<any>[] = useMemo(() => {
-		const staticCols: ColumnDef<any>[] = [
-			{
-				accessorKey: "studentName",
-				header: "Estudiante",
-				cell: () => <div className="text-center">{studentGrades?.studentName}</div>,
-			},
-		]
+    useEffect(() => {
+        fetchStudentGrades()
+        fetchPracticesPercentage()
+    }, [classId])
 
-		const dynamicCols: ColumnDef<any>[] = practiceNames.map((practice) => ({
-			accessorKey: `practiceGrades.${practice}`,
-			id: practice,
-			header: () => <div className="flex w-full justify-center text-center">{practice}</div>,
-			cell: () => {
-				const value = studentGrades?.practiceGrades[practice]
-				return <div className="text-center">{value ?? "-"}</div>
-			},
-		}))
+    const practiceNames = useMemo(() => {
+        if (!studentGrades) return []
+        return Object.keys(studentGrades.practiceGrades)
+    }, [studentGrades])
 
-		const finalCol: ColumnDef<any> = {
-			accessorKey: "finalGrade",
-			header: "Nota Final",
-			cell: () => <div className="text-center">{studentGrades?.finalGrade?.toFixed(2) ?? "-"}</div>,
-		}
+    const rows = useMemo(() => {
+        if (!studentGrades || !practicesPercentage) return []
 
-		return [...staticCols, ...dynamicCols, finalCol]
-	}, [practiceNames, studentGrades])
+        return practiceNames.map((practice, index) => {
+            const percentage = practicesPercentage[index]?.percentage ?? "-"
+            return {
+                label: practice,
+                percentage,
+                value: studentGrades.practiceGrades[practice] ?? "-",
+            }
+        }).concat({
+            label: "Nota Final",
+            percentage: 100,
+            value: studentGrades.finalGrade?.toFixed(2) ?? "-",
+        })
+    }, [studentGrades, practicesPercentage, practiceNames])
 
-	const table = useReactTable({
-		data: studentGrades ? [studentGrades] : [],
-		columns,
-		state: {
-			sorting: [],
-		},
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		getFilteredRowModel: getFilteredRowModel(),
-	})
+    if (!studentGrades) {
+        return <div className="py-10 text-center">No se encontraron datos del estudiante.</div>
+    }
 
-	if (practiceNames.length === 0) {
-		return (
-			<p className="py-10 text-center text-gray-500">No existen practicas para ser evaluadas</p>
-		)
-	}
+    if (practiceNames.length === 0) {
+        return <div className="py-10 text-center">No Existen Practicas Para Ser Evaluadas</div>
+    }
 
-	return (
-		<div className="w-full">
-			<div className="rounded-md border">
-				<Table>
-					<TableHeader>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<TableHead key={header.id} className="text-center">
-										{flexRender(header.column.columnDef.header, header.getContext())}
-									</TableHead>
-								))}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{table.getRowModel().rows.map((row) => (
-							<TableRow key={row.id}>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id} className="text-center">
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
-								))}
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</div>
-		</div>
-	)
+    return (
+        <div className="w-full">
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="text-center">Práctica</TableHead>
+                            <TableHead className="text-center">Porcentaje (%)</TableHead>
+                            <TableHead className="text-center">Calificación</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {rows.map((row, index) => (
+                            <TableRow key={index}>
+                                <TableCell className="text-center">{row.label}</TableCell>
+                                <TableCell className="text-center">{row.percentage}</TableCell>
+                                <TableCell className="text-center">{row.value}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    )
 }
