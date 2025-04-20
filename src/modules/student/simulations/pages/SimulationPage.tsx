@@ -1,0 +1,121 @@
+import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
+import { API_URL } from "@/modules/core/config/env"
+import { useRef, useEffect, useState } from "react"
+import { formatTimestamp } from "../../../core/lib/utils"
+import { Button } from "@/modules/core/components/ui/button"
+import Simulation from "@/modules/core/models/simulation"
+import { useParams } from "react-router-dom"
+import { VideoOff } from "lucide-react"
+import NavBar from "@/modules/core/components/Headers/NavBar"
+import { EvaluatedRubric } from "../components/EvaluatedRubric"
+import { getSimulationById } from "@/modules/coordinator/simulations/services/simulationService"
+import GradeStatus from "@/modules/core/models/gradeStatus"
+
+export default function SimulationPage() {
+	const { id } = useParams()
+	const videoRef = useRef<HTMLVideoElement>(null)
+	const [simulation, setSimulation] = useState<Simulation>()
+	const [isSync, setIsSync] = useState(false)
+
+	useEffect(() => {
+		if (isSync) return
+
+		const fetchSimulation = async () => {
+			const response = await getSimulationById(parseInt(id ?? "0"))
+			setSimulation(response.data)
+		}
+
+		fetchSimulation()
+		setIsSync(true)
+	}, [isSync, id])
+
+	return (
+		<>
+			<LayoutSlot name="header">
+				<NavBar
+					navLinks={[
+						{
+							label: "Asignaturas",
+							href: `/coordinador/asignaturas`,
+						},
+						{
+							label: "Calendario",
+							href: "/coordinador/calendario",
+						},
+						{
+							label: "Rúbricas",
+							href: "/coordinador/rubricas",
+						},
+						{
+							label: `(${simulation?.practice?.classModel.javerianaId ?? ""}) ${simulation?.practice?.classModel.course.name ?? ""}`,
+							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas`,
+						},
+						{
+							label: simulation?.practice?.name ?? "",
+							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas/${simulation?.practice?.id}`,
+						},
+						{
+							label: "Calificaciones",
+							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/calificaciones`,
+						},
+					]}
+				/>
+			</LayoutSlot>
+			<LayoutSlot name="title">
+				{simulation?.practice?.name ?? ""} (Grupo {simulation?.groupNumber})
+			</LayoutSlot>
+			<div className="grid grid-cols-2 gap-6">
+				<section>
+					{simulation?.video?.name ? (
+						<video
+							ref={videoRef}
+							src={`${API_URL}/streaming/video/${simulation?.video?.name}`}
+							className="aspect-video w-full rounded-md"
+							controls
+						></video>
+					) : (
+						<div className="flex aspect-video w-full flex-col items-center justify-center gap-6">
+							<p>El video no está disponible para su visualización</p>
+							<VideoOff size={64} />
+							<div className="h-6"></div>
+						</div>
+					)}
+					<h2 className="my-2 font-semibold">Comentarios del evaluador</h2>
+					{simulation?.video?.comments.length === 0 ||
+					simulation?.gradeStatus !== GradeStatus.REGISTERED ? (
+						<p className="text-sm text-gray-400">No hay comentarios</p>
+					) : (
+						<ul>
+							{simulation?.video?.comments.map((comment) => (
+								<li key={comment.timestamp} className="flex items-baseline gap-2">
+									<Button
+										type="button"
+										variant="link"
+										className="h-fit w-14 cursor-pointer p-0 pb-2 text-xs text-gray-400"
+										onClick={() => {
+											if (videoRef.current) videoRef.current.currentTime = comment.timestamp
+										}}
+									>
+										{formatTimestamp(comment.timestamp)}
+									</Button>
+									<div className="flex flex-col self-stretch">
+										<div className="h-full flex-grow border-l border-gray-400"></div>
+									</div>
+									<p className="text-sm">{comment.message}</p>
+								</li>
+							))}
+						</ul>
+					)}
+				</section>
+				<section>
+					<EvaluatedRubric
+						rubricTemplate={simulation?.practice?.rubricTemplate ?? undefined}
+						gradable={simulation?.practice?.gradeable ?? false}
+						rubric={simulation?.rubric ?? undefined}
+						gradeStatus={simulation?.gradeStatus ?? undefined}
+					/>
+				</section>
+			</div>
+		</>
+	)
+}

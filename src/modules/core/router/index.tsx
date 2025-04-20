@@ -33,6 +33,7 @@ import StudentPracticesPage from "@/modules/student/practices/pages/PracticesPag
 import StudentCalendarPage from "@/modules/student/calendar/pages/CalendarPage"
 import StudentMembersPage from "@/modules/student/members/pages/MembersPage"
 import StudentGradesPage from "@/modules/student/grades/pages/GradesPage"
+import StudentSimulationPage from "@/modules/student/simulations/pages/SimulationPage"
 import MembersPage from "@/modules/shared/members/pages/MembersPage"
 import CoordinatorRubricTemplatePage from "@/modules/coordinator/rubricTemplates/pages/rubricTemplatePage"
 import TeacherRubricTemplatePage from "@/modules/teacher/rubricTemplates/pages/RubricTemplatePage"
@@ -56,7 +57,7 @@ export default function Router() {
 					<Route path="/estudiante/calendario" element={<StudentCalendarPage />}></Route>
 					<Route path="/estudiante/clases/:id/miembros" element={<StudentMembersPage />}></Route>
 					<Route path="/estudiante/clases/:classId/calificaciones" element={<StudentGradesPage />}></Route>
-					{/*FIXME: Redirect to main page*/}
+					<Route path="/estudiante/simulacion/:id" element={<StudentSimulationPage />}></Route>
 				</Route>
 
 				{/* Teacher Routes */}
