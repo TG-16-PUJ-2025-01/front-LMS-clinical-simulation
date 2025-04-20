@@ -10,7 +10,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Sheet, Trash2, User } from "lucide-react"
+import { ArrowUpDown, FileDown, MoreHorizontal, Pencil, Search, Sheet, Trash2, User } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -34,13 +34,14 @@ import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useRef, useState } from "react"
 import CreateClassDialog from "./CreateClassDialog"
-import { getClasses } from "../services/classService"
+import {  createClassByExcel, getClasses } from "../services/classService"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
+import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
+import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
 
 export function ClassesDataTable() {
-	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
@@ -54,10 +55,15 @@ export function ClassesDataTable() {
 
 	const [data, setData] = useState<Class[]>([])
 
+	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
+
 	const [pagination, setPagination] = useState({
 		pageIndex: 0, //initial page index
 		pageSize: 10, //default page size
 	})
+
+	const [refreshTrigger, setRefreshTrigger] = useState(0)
+
 
 	const [paginationInfo, setPaginationInfo] = useState({
 		total: 0, //total number of records
@@ -77,6 +83,7 @@ export function ClassesDataTable() {
 			)
 
 			setData(res.data)
+
 			setPaginationInfo({
 				total: res.metadata.total,
 				totalPages: res.metadata.totalPages,
@@ -84,7 +91,7 @@ export function ClassesDataTable() {
 		}
 
 		fetchClasses()
-	}, [pagination, filter, sorting, openDialog])
+	}, [pagination, filter, sorting, openDialog,excelData,refreshTrigger])
 
 	const handleOpenDialog = (type: "create" | "edit" | "delete", Class?: Class) => {
 		setOpenDialog(type)
@@ -95,36 +102,90 @@ export function ClassesDataTable() {
 		setOpenDialog(null)
 		setSelectedClass(null)
 	}
+	
+	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
 
-	const [excelFile, setExcelFile] = useState<string | ArrayBuffer | File | null>(null)
-	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
+		const workbook = XLSX.read(fileBuffer, { type: "buffer" })
+		const workbookSheetName = workbook.SheetNames[0]
+		const worksheet = workbook.Sheets[workbookSheetName]
+		const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
 
-	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-		let fileTypes = [
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			"application/vnd.ms-excel",
-			"text/csv",
-		]
-		const files = e.target.files
-		if (files && files.length > 0) {
-			const selectedFile = files[0]
-			console.log(selectedFile.type)
 
-			if (fileTypes.includes(selectedFile.type)) {
-				setExcelFile(selectedFile)
-				e.target.value = "" // Aquí forzamos el cambio del input
-				let reader = new FileReader()
-				reader.readAsArrayBuffer(selectedFile)
-				reader.onload = (e) => {
-					if (e.target?.result) {
-						setExcelFile(e.target.result)
-					}
+		if (!neededFields(data)) {
+			toast.error("El formato del archivo Excel no es el esperado.")
+			setExcelData(null)
+			return
+		}
+
+		setExcelData(data)
+
+		let results: Class[] = []
+
+		let allCorrect = true
+
+		const processData = async () => {
+			const promises = data.map(async (item, index) => {
+				try {
+					await createClassByExcel({
+						javerianaId: item.claseId,
+						courseId: item.asignatura,
+						period: item.periodo,
+						numberOfParticipants: item.participantes,
+						professorsIds: Object.keys(item)
+							.filter((key) => key.trim().startsWith("profesor"))
+							.map((key) => item[key])
+							.filter((id) => id !== undefined && id !== null && id !== ""),
+					})
+				} catch (error) {
+					allCorrect = false
+					toast.error(`Datos invalidos en la fila ${index + 1}.`)
 				}
+			})
+
+			// Esperar a que todas las promesas se resuelvan
+			await Promise.all(promises)
+
+			// Evaluar después de que todos los await se hayan completado
+
+			console.log("Datos leídos del Excel:", results.length)
+
+			if (!allCorrect) {
+				toast.warning("Hay datos erroneos en el excel, por favor verifique el archivo.")
 			} else {
-				toast.error("Tipo de archivo no permitido")
-				setExcelFile(null)
+				setExcelData(data)
+				setRefreshTrigger(prev => prev + 1)
+
+				toast.success("Archivo Excel procesado exitosamente.")
 			}
 		}
+
+		// Ejecutar la función asíncrona principal
+		processData()
+	}
+
+	function neededFields(data: Record<string, any>[]) {
+		const requiredFields = ["claseId", "asignatura", "periodo", "participantes"]
+
+		for (let i = 0; i < data.length; i++) {
+			const row = data[i]
+
+			// Ignorar filas vacías
+			if (Object.keys(row).length === 0) {
+				continue
+			}
+
+			const rowKeys = Object.keys(row).map((k) => k.trim())
+
+			const hasAllFields = requiredFields.every((field) => rowKeys.includes(field))
+
+			const hasProfesorField = rowKeys.some((key) => key.startsWith("profesor"))
+
+			if (!hasAllFields && !hasProfesorField) {
+				return false
+			}
+		}
+
+		return true
 	}
 
 	const columns: ColumnDef<Class>[] = [
@@ -281,23 +342,9 @@ export function ClassesDataTable() {
 					<div className="flex items-center gap-4">
 						<Button onClick={() => handleOpenDialog("create")}>Nueva clase</Button>
 						<div>
-							{/* Botón que abre el input de archivo */}
-							<Button
-								className="bg-green-800 hover:bg-green-500"
-								onClick={() => fileInputRef.current?.click()} // Abre el input al hacer clic
-							>
-								<Sheet className="h-4 w-4 text-white" />
-								Cargar archivo
-							</Button>
-
-							{/* Input de archivo oculto */}
-							<input
-								type="file"
-								ref={fileInputRef}
-								onChange={handleFile}
-								style={{ display: "none" }} // Ocultar el input visualmente
-							/>
+							<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
 						</div>
+						<FileDownloader fileName="classes" />
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
