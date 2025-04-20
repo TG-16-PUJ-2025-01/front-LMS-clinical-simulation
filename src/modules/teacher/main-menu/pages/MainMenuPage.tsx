@@ -9,7 +9,6 @@ import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import { Input } from "@/modules/core/components/ui/input"
 import { Search } from "lucide-react"
 import { CardClass } from "@/modules/shared/main-menu/components/CardClass"
-import Loader from "@/modules/shared/others/Loader/Loader"
 
 export default function MainMenuPage() {
 	const navigate = useNavigate()
@@ -23,7 +22,6 @@ export default function MainMenuPage() {
 	const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null)
 	const [data, setData] = useState<Class[]>([])
 	const [filter, setFilter] = useState<string>("")
-	const [loadingCount, setLoadingCount] = useState<number>(0)
 
 	const resetFilters = () => {
 		setSelectedYear(null)
@@ -31,15 +29,9 @@ export default function MainMenuPage() {
 		setFilter("")
 	}
 
-	const startLoading = () => setLoadingCount((prev) => prev + 1)
-    const stopLoading = () => setLoadingCount((prev) => Math.max(prev - 1, 0))
-
 	useEffect(() => {
 		const fetchClasses = async () => {
-			startLoading()
 			try {
-				// TODO: wait for 3 sec to test loading (add skeleton to the card)
-				await new Promise((resolve) => setTimeout(resolve, 3000))
 				const res = await getMenuInfo(
 					selectedYear ?? undefined,
 					selectedPeriod ?? undefined,
@@ -49,8 +41,6 @@ export default function MainMenuPage() {
 				setData(res.data)
 			} catch (error) {
 				console.error("Error fetching classes:", error)
-			} finally {
-				stopLoading()
 			}
 		}
 
@@ -59,7 +49,6 @@ export default function MainMenuPage() {
 
 	useEffect(() => {
 		const fetchYearOptions = async () => {
-			startLoading()
 			try {
 				const res = await getMenuInfo(undefined, undefined, "", "professor")
 				const years = res.data.map((classItem: Class) => parseInt(classItem.period.split("-")[0]))
@@ -75,8 +64,6 @@ export default function MainMenuPage() {
 				setYearOptions(generatedYearOptions)
 			} catch (error) {
 				console.error("Error fetching year options:", error)
-			} finally {
-				stopLoading()
 			}
 		}
 
@@ -86,14 +73,6 @@ export default function MainMenuPage() {
 	const handleClassNavigation = (classItem: Class) => {
 		navigate(`/profesor/clases/${classItem.classId}/practicas`)
 	}
-
-	if (loadingCount > 0) {
-        return (
-            <div className="flex min-h-screen items-center justify-center">
-                <Loader />
-            </div>
-        )
-    }
 
 	return (
 		<>
