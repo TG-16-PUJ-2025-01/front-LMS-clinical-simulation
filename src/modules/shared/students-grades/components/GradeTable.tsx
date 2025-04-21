@@ -24,7 +24,7 @@ import { Input } from "@/modules/core/components/ui/input"
 import { ArrowUpDown, Search } from "lucide-react"
 import { useParams } from "react-router-dom"
 import { getGradesByClassId, StudentGradeDto } from "../services/gradeService"
-
+import { EditPercentagesDialog } from "./EditPercentagesDialog"
 
 export default function GradeTable() {
   const params = useParams()
@@ -34,6 +34,7 @@ export default function GradeTable() {
   const [filter, setFilter] = useState("")
   const [sorting, setSorting] = useState([])
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+  const [openPercentagesDialog, setOpenPercentagesDialog] = useState(false)
 
   useEffect(() => {
     async function fetchGrades() {
@@ -83,17 +84,7 @@ export default function GradeTable() {
       (practice) => ({
         accessorKey: `practiceGrades.${practice}`,
         id: practice,
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() =>
-              column.toggleSorting(column.getIsSorted() === "asc")
-            }
-          >
-            {practice}
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
+        header: () => <div className="text-center">{practice}</div>,
         cell: ({ row }) => {
           const value = row.original.practiceGrades[practice]
           return <div className="text-center">{value ?? "-"}</div>
@@ -103,17 +94,7 @@ export default function GradeTable() {
 
     const finalCol: ColumnDef<StudentGradeDto> = {
       accessorKey: "finalGrade",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
-        >
-          Nota Final
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
+      header: () => <div className="text-center">Nota Final</div>,
       cell: ({ row }) => (
         <div className="text-center">
           {row.getValue("finalGrade").toFixed(2)}
@@ -162,6 +143,12 @@ export default function GradeTable() {
             }}
             className="w-full pl-8"
           />
+        </div>
+
+        <div className="flex space-x-2 mt-4">
+          <Button onClick={() => setOpenPercentagesDialog(true)}>
+            Editar porcentajes de calificación
+          </Button>
         </div>
       </div>
 
@@ -233,6 +220,11 @@ export default function GradeTable() {
           </Button>
         </div>
       </div>
+      <EditPercentagesDialog
+        open={openPercentagesDialog}
+        onClose={() => setOpenPercentagesDialog(false)}
+        classId={classId}
+      />
     </div>
   )
 }
