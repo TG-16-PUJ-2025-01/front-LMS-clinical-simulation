@@ -41,3 +41,17 @@ axios.interceptors.response.use(
 		return Promise.reject(error)
 	}
 )
+
+// Interceptor para manejar errores 403
+axios.interceptors.response.use(
+	(response) => response,
+	(error) => {
+		if (error.response && error.response.status === 403) {
+			clearToken()
+			// Redirigir a la página de login
+			window.location.href = "/login"
+			console.error("Acceso denegado. No tienes permiso para acceder a este recurso.")
+		}
+		return Promise.reject(error)
+	}
+)
