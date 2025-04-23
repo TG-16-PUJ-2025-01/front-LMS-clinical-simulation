@@ -55,3 +55,17 @@ axios.interceptors.response.use(
 		return Promise.reject(error)
 	}
 )
+
+// Interceptor para manejar errores 404
+axios.interceptors.response.use(
+	(response) => response,
+	(error) => {
+		if (error.response && error.response.status === 404) {
+			clearToken()
+			// Redirigir a la página de login
+			window.location.href = "/login"
+			console.error("Recurso no encontrado.")
+		}
+		return Promise.reject(error)
+	}
+)
