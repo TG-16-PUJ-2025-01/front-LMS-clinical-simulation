@@ -56,6 +56,7 @@ axios.interceptors.response.use(
 	}
 )
 
+// TODO: Quitar el interceptor de 404 cuando se implemente el manejo de errores
 // Interceptor para manejar errores 404
 axios.interceptors.response.use(
 	(response) => response,
