@@ -1,21 +1,19 @@
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { API_URL } from "@/modules/core/config/env"
 import { useRef, useEffect, useState } from "react"
-import { CommentForm } from "../components/CommentForm"
-import { Separator } from "@/modules/core/components/ui/separator"
 import { formatTimestamp } from "../../../core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
 import Simulation from "@/modules/core/models/simulation"
 import { useParams } from "react-router-dom"
-import { getSimulationById } from "../services/simulationService"
-import { RubricForm } from "../components/RubricForm"
 import { VideoOff } from "lucide-react"
 import NavBar from "@/modules/core/components/Headers/NavBar"
+import { EvaluatedRubric } from "../components/EvaluatedRubric"
+import { getSimulationById } from "@/modules/coordinator/simulations/services/simulationService"
+import GradeStatus from "@/modules/core/models/gradeStatus"
 
 export default function SimulationPage() {
 	const { id } = useParams()
 	const videoRef = useRef<HTMLVideoElement>(null)
-	const [currentTime, setCurrentTime] = useState(0)
 	const [simulation, setSimulation] = useState<Simulation>()
 	const [isSync, setIsSync] = useState(false)
 
@@ -30,21 +28,6 @@ export default function SimulationPage() {
 		fetchSimulation()
 		setIsSync(true)
 	}, [isSync, id])
-
-	useEffect(() => {
-		const videoElement = videoRef.current
-		if (videoElement) {
-			const handleTimeUpdate = () => {
-				setCurrentTime(Math.floor(videoElement.currentTime))
-			}
-
-			videoElement.addEventListener("timeupdate", handleTimeUpdate)
-
-			return () => {
-				videoElement.removeEventListener("timeupdate", handleTimeUpdate)
-			}
-		}
-	}, [simulation?.video])
 
 	return (
 		<>
@@ -97,19 +80,10 @@ export default function SimulationPage() {
 							<div className="h-6"></div>
 						</div>
 					)}
-					<CommentForm
-						timestamp={currentTime}
-						videoId={simulation?.video?.videoId ?? 0}
-						onFocus={() => videoRef.current?.pause()}
-						onSubmit={() => {
-							videoRef.current?.play()
-							setIsSync(false)
-						}}
-					/>
-					<Separator className="my-2" />
-					<h2 className="mb-2 font-semibold">Comentarios anteriores</h2>
-					{simulation?.video?.comments.length === 0 ? (
-						<p className="text-sm text-gray-400">No hay comentarios anteriores</p>
+					<h2 className="my-2 font-semibold">Comentarios del evaluador</h2>
+					{simulation?.video?.comments.length === 0 ||
+					simulation?.gradeStatus !== GradeStatus.REGISTERED ? (
+						<p className="text-sm text-gray-400">No hay comentarios</p>
 					) : (
 						<ul>
 							{simulation?.video?.comments.map((comment) => (
@@ -134,7 +108,7 @@ export default function SimulationPage() {
 					)}
 				</section>
 				<section>
-					<RubricForm
+					<EvaluatedRubric
 						rubricTemplate={simulation?.practice?.rubricTemplate ?? undefined}
 						gradable={simulation?.practice?.gradeable ?? false}
 						rubric={simulation?.rubric ?? undefined}
