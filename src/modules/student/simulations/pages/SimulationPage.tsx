@@ -3,31 +3,43 @@ import { API_URL } from "@/modules/core/config/env"
 import { useRef, useEffect, useState } from "react"
 import { formatTimestamp } from "../../../core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
-import Simulation from "@/modules/core/models/simulation"
 import { useParams } from "react-router-dom"
 import { VideoOff } from "lucide-react"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 import { EvaluatedRubric } from "../components/EvaluatedRubric"
-import { getSimulationById } from "@/modules/coordinator/simulations/services/simulationService"
 import GradeStatus from "@/modules/core/models/gradeStatus"
+import { useClassStore } from "@/modules/core/stores/classStore"
+import { usePracticeStore } from "@/modules/core/stores/practiceStore"
+import { useSimulationStore } from "@/modules/core/stores/simulationStore"
 
 export default function SimulationPage() {
 	const { id } = useParams()
 	const videoRef = useRef<HTMLVideoElement>(null)
-	const [simulation, setSimulation] = useState<Simulation>()
+	const classData = useClassStore((state) => state.class)
+	const setClassData = useClassStore((state) => state.setClass)
+	const practice = usePracticeStore((state) => state.practice)
+	const setPractice = usePracticeStore((state) => state.setPractice)
+	const simulation = useSimulationStore((state) => state.simulation)
+	const setSimulation = useSimulationStore((state) => state.setSimulation)
 	const [isSync, setIsSync] = useState(false)
 
 	useEffect(() => {
 		if (isSync) return
 
 		const fetchSimulation = async () => {
-			const response = await getSimulationById(parseInt(id ?? "0"))
-			setSimulation(response.data)
+			setSimulation(parseInt(id ?? "0"))
 		}
 
 		fetchSimulation()
 		setIsSync(true)
 	}, [isSync, id])
+
+	useEffect(() => {
+		if (!simulation || !simulation.practice) return
+		setPractice(simulation.practice.id)
+		if (!simulation.practice.classModel) return
+		setClassData(simulation.practice.classModel.classId)
+	}, [simulation])
 
 	return (
 		<>
@@ -36,33 +48,30 @@ export default function SimulationPage() {
 					navLinks={[
 						{
 							label: "Asignaturas",
-							href: `/coordinador/asignaturas`,
+							href: `/estudiante/asignaturas`,
 						},
 						{
 							label: "Calendario",
-							href: "/coordinador/calendario",
+							href: "/estudiante/calendario",
 						},
 						{
-							label: "Rúbricas",
-							href: "/coordinador/rubricas",
-						},
-						{
-							label: `(${simulation?.practice?.classModel.javerianaId ?? ""}) ${simulation?.practice?.classModel.course.name ?? ""}`,
-							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas`,
-						},
-						{
-							label: simulation?.practice?.name ?? "",
-							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/practicas/${simulation?.practice?.id}`,
+							label: "Miembros de la clase",
+							href: `/estudiante/clases/${classData?.classId}/miembros`,
 						},
 						{
 							label: "Calificaciones",
-							href: `/coordinador/clases/${simulation?.practice?.classModel.classId}/calificaciones`,
+							href: `/estudiante/clases/${classData?.classId}/calificaciones`,
+						},
+						{
+							label: "Volver a la clase",
+							href: `/estudiante/clases/${classData?.classId}/practicas`,
 						},
 					]}
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">
-				{simulation?.practice?.name ?? ""} (Grupo {simulation?.groupNumber})
+				({classData?.javerianaId ?? ""}) {classData?.course.name ?? ""} - {practice?.name ?? ""}{" "}
+				(Grupo {simulation?.groupNumber})
 			</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>
