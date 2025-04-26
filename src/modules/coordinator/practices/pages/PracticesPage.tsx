@@ -131,6 +131,7 @@ export default function PracticesPage() {
 				open={openDialog === "add"}
 				onClose={handleCloseDialog}
 				onPracticeCreated={handlePracticeNavigation}
+				numberOfParticipants={classData?.numberOfParticipants ?? 0}
 			/>
 		</>
 	)
