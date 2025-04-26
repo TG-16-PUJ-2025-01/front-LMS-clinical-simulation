@@ -10,6 +10,7 @@ interface ClassStore {
 interface ClassStoreActions {
 	setClass: (classId: number) => Promise<void>
 	unsetClass: () => void
+	setClassData: (classData: Class) => void
 }
 
 export const useClassStore = create<ClassStore & ClassStoreActions>((set) => ({
@@ -25,4 +26,7 @@ export const useClassStore = create<ClassStore & ClassStoreActions>((set) => ({
 	unsetClass: () => {
 		set({ class: undefined })
 	},
+	setClassData: (classData) => {
+		set({ class: classData })
+	}
 }))
