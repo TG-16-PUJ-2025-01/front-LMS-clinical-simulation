@@ -96,14 +96,11 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 				typeId: values.type.id!,
 			}
 
-			console.log(newRoom)
-
 			await createRoom(newRoom)
 
 			onClose(false)
 
 			toast.success("Sala creada exitosamente")
-
 		} catch (error: any) {
 			toast.error("El nombre de la sala ya existe")
 		}
@@ -190,7 +187,12 @@ export default function AddRoomDialog({ open, onClose }: Props) {
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Dirección IP</FormLabel>
 										<FormControl>
-											<Input id="ip" placeholder="Dirección IP" className="col-span-3 m-0" {...field} />
+											<Input
+												id="ip"
+												placeholder="Dirección IP"
+												className="col-span-3 m-0"
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
