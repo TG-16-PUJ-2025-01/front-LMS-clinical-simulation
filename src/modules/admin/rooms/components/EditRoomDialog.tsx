@@ -25,7 +25,7 @@ import { getRoomsTypes, updateRoom, addRoomType } from "../services/roomService"
 import RoomType from "@/modules/core/models/roomType"
 import { toast } from "sonner"
 import { ComboboxCreate } from "../../../core/components/Combobox/ComboboxCreate"
-import RoomDto from "../dtos/RoomDto"
+import RoomDto from "../dtos/roomDto"
 import RoomTypeDto from "../dtos/roomTypeDto"
 
 interface Props {
@@ -40,6 +40,9 @@ const formSchema = z.object({
 	}),
 	capacity: z.number().int().min(1, {
 		message: "La capacidad debe ser mayor a 0",
+	}),
+	ip: z.string().nonempty({
+		message: "La dirección IP no puede estar vacía",
 	}),
 	type: z.object({
 		id: z.number().optional(),
@@ -57,6 +60,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 		defaultValues: {
 			name: "",
 			capacity: 0,
+			ip: "",
 			type: {
 				id: undefined,
 				name: "",
@@ -83,6 +87,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 			form.reset({
 				name: room.name,
 				capacity: room.capacity,
+				ip: room.ip,
 				type: {
 					id: room.type.id,
 					name: room.type.name,
@@ -96,6 +101,7 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 			const updatedRoom: RoomDto = {
 				name: values.name,
 				capacity: values.capacity,
+				ip: values.ip,
 				typeId: values.type.id!,
 			}
 
@@ -106,7 +112,6 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 			onClose(false)
 		} catch (error: any) {
 			toast.error("El nombre de la sala ya existe")
-			
 		}
 	}
 
@@ -176,6 +181,24 @@ export default function EditRoomDialog({ open, onClose, room }: Props) {
 												{...field}
 												onChange={(e) => field.onChange(Number(e.target.value))}
 												min={0}
+											/>
+										</FormControl>
+										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="ip"
+								render={({ field }) => (
+									<FormItem className="grid grid-cols-4 items-center gap-4">
+										<FormLabel className="m-0 text-right">Dirección IP</FormLabel>
+										<FormControl>
+											<Input
+												id="ip"
+												placeholder="Dirección IP"
+												className="col-span-3 m-0"
+												{...field}
 											/>
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
