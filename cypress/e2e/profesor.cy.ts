@@ -76,6 +76,7 @@ describe('Teacher flow tests', () => {
     cy.step('Step 9 - Revisar acceso a listado de miembros no autorizadas');
     cy.pause();
     cy.visit('/profesor/clases/3/miembros');
+    cy.wait(1000);
     cy.url().should('include', '/login');
     // cy.get('h1').invoke('text').should('contain', 'Iniciar Sesión'); TODO arreglar validacion
 
