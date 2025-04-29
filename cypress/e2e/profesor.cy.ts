@@ -2,6 +2,7 @@ describe('Teacher flow tests', () => {
 
   // TODO: Hace falta paso para ver miembros, guardarlos y que esos miembros sean a los que se les modifica la nota
   // Reservas
+  // TODO: Use practice card lengths instead of hardcoded values
   it.only('PROF-1 Flujo Completo Profe', () => {
 
     cy.step('Step 1 - Login');
@@ -82,11 +83,9 @@ describe('Teacher flow tests', () => {
     });
 
     cy.step('Step 8 - Crear Práctica con campos obligatorios');
-    cy.get('div[role="dialog"]').within(() => {
-      cy.get('input#name').type('Práctica 1');
-      cy.get('input#description').type('Descripción de la práctica 1');
-      cy.get('button[role="combobox"]').click();  
-    });
+    cy.get('input#name').type('Prueba');
+    cy.get('input#description').type('Descripción de la prueba');
+    cy.get('button[role="combobox"]').click();  
     cy.get('div[data-radix-popper-content-wrapper]').should('be.visible');
     cy.get('div[role="listbox"]')
       .contains('Grupal')
@@ -97,6 +96,62 @@ describe('Teacher flow tests', () => {
     cy.get('input#maxStudentsGroup').type('3');
     cy.get('button').contains('Guardar').click();
     cy.get('div[role="dialog"]').should('not.exist');
+
+    cy.get('li[data-sonner-toast][data-visible="true"]')
+      .should('exist')
+      .and('contain.text', 'Práctica creada exitosamente.');
+
+    cy.get('h1').invoke('text').should('contain', '(20001) Semiología Clínica - Prueba');
+
+    cy.step('Step 9 - Editar práctica');
+    cy.get('nav')
+      .contains('button', 'Volver a la clase')
+      .should('be.visible')
+      .and('not.be.disabled')
+      .click();
+
+    cy.get('[data-slot="card"]')
+    .last()
+    .within(() => {
+      cy.get('button[aria-haspopup="menu"]').click();
+    });
+    cy.contains('Editar')
+      .should('be.visible')
+      .click();
+
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('input#name').should('exist').clear().type('Prueba Editada');
+      cy.get('input#description').should('exist').clear().type('Descripción de la prueba editada');
+      cy.get('button').contains('Guardar').click();
+    });
+
+    cy.get('li[data-sonner-toast][data-visible="true"]')
+      .should('exist')
+      .and('contain.text', 'Práctica actualizada exitosamente.');
+
+    cy.get('[data-slot="card"]')
+    .last()
+    .within(() => {
+      cy.get('[data-slot="card-title"]').should('contain.text', 'Prueba Editada');
+      cy.get('[data-slot="card-description"]').invoke('text').should('contain', 'Descripción de la prueba editada');
+    });
+
+    cy.step('Step 10 - Eliminar práctica');
+    cy.get('[data-slot="card"]')
+    .last()
+    .within(() => {
+      cy.get('button[aria-haspopup="menu"]').click();
+    });
+    cy.contains('Borrar')
+      .should('be.visible')
+      .click();
+
+    cy.get('button').contains('Eliminar').click();    
+    cy.get('li[data-sonner-toast][data-visible="true"]')
+      .should('exist')
+      .and('contain.text', 'Práctica eliminada exitosamente.');
+
+    cy.step('Step 11 - Abrir práctica');
   });
 
   it('PROF-2 Acceso No Autorizado Profesor', () => {
