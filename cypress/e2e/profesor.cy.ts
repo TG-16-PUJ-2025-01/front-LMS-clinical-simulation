@@ -1,19 +1,33 @@
 describe('Teacher flow tests', () => {
 
-  it('PROF-1 Flujo Completo Profe', () => {
+  // TODO: Hace falta paso para ver miembros, guardarlos y que esos miembros sean a los que se les modifica la nota
+  it.only('PROF-1 Flujo Completo Profe', () => {
+
+    cy.step('Step 1 - Login');
     cy.visit('/');
-
-    // TODO: Hace falta paso para ver miembros, guardarlos y que esos miembros sean a los que se les modifica la nota
-
-    cy.wait(1000);
-
+    cy.get('input#email').should('be.visible').and('have.attr', 'placeholder', 'Correo registrado');
+    cy.get('input#password').should('be.visible').and('have.attr', 'placeholder', 'Contraseña');
+    cy.get('button[type="submit"]').should('be.visible').and('contain', 'Ingresar');
     cy.get('#email').type('profesor@gmail.com');
-
     cy.get('#password').type('profesor');
-
     cy.get('button[type="submit"]').click();
-
     cy.url().should('include', '/profesor/asignaturas');
+
+    cy.step('Step 2 - Barra de busqueda');
+    cy.get('input[placeholder="Buscar por nombre..."]')
+      .should('be.visible')
+      .click()
+      .type('Fisiopatología Clínica');  
+    cy.get('[data-slot="card"]').should('have.length', 1);
+    cy.get('[data-slot="card-title"]').should('contain.text', 'Fisiopatología Clínica');
+
+    cy.step('Step 3 - Revisar acceso a clase autorizado');
+    cy.get('button[role="combobox"]').contains('Año').click();
+    cy.get('div[role="option"][data-value="2025"]').click();
+    cy.pause();
+    cy.get('button[role="combobox"]').contains('Periodo').click();
+    cy.get('div[role="option"][data-value="30"]').click();
+
   });
 
   it('PROF-2 Acceso No Autorizado Profesor', () => {
