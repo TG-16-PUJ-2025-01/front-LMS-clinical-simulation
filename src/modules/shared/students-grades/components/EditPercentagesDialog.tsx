@@ -42,11 +42,13 @@ export function EditPercentagesDialog({ open, onClose, classId }: Props) {
       getClassPractices(classId)
         .then((response) => {
           if (response.data) {
-            const practicesData = response.data.map((practice: Practice) => ({
-              practiceId: practice.id,
-              name: practice.name,
-              percentage: practice.gradePercentage
-            }))
+            const practicesData = response.data
+              .filter((practice: any) => practice.gradeable) // Solo las prácticas calificables
+              .map((practice: any) => ({
+                practiceId: practice.id,
+                name: practice.name,
+                percentage: practice.gradePercentage ?? 0 // Manejo de null por si acaso
+              }))
             setPractices(practicesData)
           }
         })
@@ -57,6 +59,7 @@ export function EditPercentagesDialog({ open, onClose, classId }: Props) {
         .finally(() => setLoading(false))
     }
   }, [open, classId])
+  
 
   const handleChange = (id: number, value: number) => {
     setPractices((prev) =>
