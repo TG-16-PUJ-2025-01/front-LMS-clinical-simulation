@@ -36,7 +36,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
   const [rooms, setRooms] = useState<{ value: number; label: string }[]>([]);
-  const practiceId = useParams<{ id: string }>().id;
+  const { practiceId } = useParams<{ classId: string; practiceId: string }>();
   const [practice, setPractice] = useState<Practice | null>(null);
   const [timeOptions, setTimeOptions] = useState<{ key: number; value: string }[]>([]);
   const animatedComponents = makeAnimated();
