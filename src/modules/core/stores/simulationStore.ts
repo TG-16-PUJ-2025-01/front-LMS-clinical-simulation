@@ -10,6 +10,7 @@ interface SimulationStore {
 interface SimulationStoreActions {
   setSimulation: (simulationId: number) => Promise<void>
   unsetSimulation: () => void
+  setSimulationData: (simulation: Simulation) => void
 }
 
 export const useSimulationStore = create<SimulationStore & SimulationStoreActions>((set) => ({
@@ -25,4 +26,7 @@ export const useSimulationStore = create<SimulationStore & SimulationStoreAction
   unsetSimulation: () => {
     set({ simulation: undefined })
   },
+  setSimulationData: (simulation) => {
+    set({ simulation })
+  }
 }))

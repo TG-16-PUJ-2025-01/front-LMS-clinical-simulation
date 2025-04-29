@@ -18,9 +18,9 @@ export default function SimulationPage() {
 	const videoRef = useRef<HTMLVideoElement>(null)
 	const [currentTime, setCurrentTime] = useState(0)
 	const classData = useClassStore((state) => state.class)
-	const setClassData = useClassStore((state) => state.setClass)
+	const setClassData = useClassStore((state) => state.setClassData)
 	const practice = usePracticeStore((state) => state.practice)
-	const setPractice = usePracticeStore((state) => state.setPractice)
+	const setPracticeData = usePracticeStore((state) => state.setPracticeData)
 	const simulation = useSimulationStore((state) => state.simulation)
 	const setSimulation = useSimulationStore((state) => state.setSimulation)
 	const [isSync, setIsSync] = useState(false)
@@ -38,9 +38,9 @@ export default function SimulationPage() {
 
 	useEffect(() => {
 		if (!simulation || !simulation.practice) return
-		setPractice(simulation.practice.id)
+		setPracticeData(simulation.practice)
 		if (!simulation.practice.classModel) return
-		setClassData(simulation.practice.classModel.classId)
+		setClassData(simulation.practice.classModel)
 	}, [simulation])
 
 	useEffect(() => {

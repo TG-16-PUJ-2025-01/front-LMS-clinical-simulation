@@ -10,6 +10,7 @@ interface PracticeStore {
 interface PracticeStoreActions {
   setPractice: (practiceId: number) => Promise<void>
   unsetPractice: () => void
+  setPracticeData: (practice: Practice) => void
 }
 
 export const usePracticeStore = create<PracticeStore & PracticeStoreActions>((set) => ({
@@ -25,4 +26,7 @@ export const usePracticeStore = create<PracticeStore & PracticeStoreActions>((se
   unsetPractice: () => {
     set({ practice: undefined })
   },
+  setPracticeData: (practice) => {
+    set({ practice })
+  }
 }))
