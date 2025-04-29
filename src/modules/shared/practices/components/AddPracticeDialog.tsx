@@ -147,7 +147,7 @@ export default function AddPracticeDialog({
 						Puedes agregar una nueva práctica con los siguientes atributos
 					</DialogDescription>
 				</DialogHeader>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" noValidate>
 					<Form {...form}>
 						<div className="grid gap-4 py-4">
 							<FormField
@@ -252,12 +252,20 @@ export default function AddPracticeDialog({
 													id="simulationDuration"
 													name="simulationDuration"
 													type="number"
-													value={field.value}
-													onChange={(e) => field.onChange(Number(e.target.value))}
+													value={field.value ?? ""}
+													onChange={(e) => {
+														const newValue = e.target.value === "" ? "" : Number(e.target.value)
+														field.onChange(newValue)
+													}}
+													onBlur={(e) => {
+														const value = Number(e.target.value)
+														if (value % 15 !== 0) {
+															field.onChange(0)
+														}
+													}}
 													step={15}
 													min={0}
 													className="m-0 w-24 text-center"
-													onKeyDown={(e) => e.preventDefault()}
 												/>
 												<span className="ml-2">min</span>
 											</div>
@@ -266,6 +274,7 @@ export default function AddPracticeDialog({
 									</FormItem>
 								)}
 							/>
+
 							{isGroupPractice && (
 								<div className="space-y-4">
 									<FormField

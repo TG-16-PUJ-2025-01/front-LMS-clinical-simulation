@@ -1,10 +1,12 @@
 describe('Teacher flow tests', () => {
 
   // TODO: Hace falta paso para ver miembros, guardarlos y que esos miembros sean a los que se les modifica la nota
+  // Reservas
   it.only('PROF-1 Flujo Completo Profe', () => {
 
     cy.step('Step 1 - Login');
     cy.visit('/');
+    cy.wait(2000);
     cy.get('input#email').should('be.visible').and('have.attr', 'placeholder', 'Correo registrado');
     cy.get('input#password').should('be.visible').and('have.attr', 'placeholder', 'Contraseña');
     cy.get('button[type="submit"]').should('be.visible').and('contain', 'Ingresar');
@@ -24,10 +26,77 @@ describe('Teacher flow tests', () => {
     cy.step('Step 3 - Revisar acceso a clase autorizado');
     cy.get('button[role="combobox"]').contains('Año').click();
     cy.get('div[role="option"][data-value="2025"]').click();
-    cy.pause();
     cy.get('button[role="combobox"]').contains('Periodo').click();
     cy.get('div[role="option"][data-value="30"]').click();
+    cy.contains('p', 'No se encontraron clases').should('be.visible');
 
+    cy.step('Step 4 - Resetear Filtros')
+    cy.get('button').contains('Resetear Filtros').click();
+    cy.get('[data-slot="card"]').should('have.length', 5);
+
+    cy.step('Step 5 - Abrir clase');
+    cy.get('[data-slot="card-title"]').contains('Semiología Clínica').click();
+    cy.url().should('include', '/profesor/clases/1');
+    cy.get('h1').invoke('text').should('contain', '(20001) Semiología Clínica - 2025-10');
+
+    cy.step('Step 6 - Crear Práctica');
+    cy.get('button').contains('Crear Práctica').click();
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('label[for="name"]').should('contain', 'Nombre');
+      cy.get('input#name').should('exist');
+    
+      cy.get('label[for="description"]').should('contain', 'Descripción');
+      cy.get('input#description').should('exist');
+    
+      cy.get('label[for="type"]').should('contain', 'Tipo');
+      cy.get('button[role="combobox"]').should('exist');
+    
+      cy.get('label[for="gradeable"]').should('contain', 'Evaluación');
+      cy.get('button[role="checkbox"]').should('exist');
+    
+      cy.get('label[for="simulationDuration"]').should('contain', 'Duración Simulación');
+      cy.get('input#simulationDuration').should('exist');
+    
+      cy.get('label[for="numberOfGroups"]').should('contain', 'Número de grupos');
+      cy.get('input#numberOfGroups').should('exist');
+    
+      cy.get('label[for="maxStudentsGroup"]').should('contain', 'Máximo estudiantes por grupo');
+      cy.get('input#maxStudentsGroup').should('exist');
+    });
+
+    cy.step('Step 7 - Revisar campos con visibilidad condicional');
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('button[role="combobox"]').click();  
+    });
+    cy.get('div[data-radix-popper-content-wrapper]').should('be.visible');
+    cy.get('div[role="listbox"]')
+      .contains('Individual')
+      .click();
+
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('label[for="numberOfGroups"]').should('not.exist');
+      cy.get('input#numberOfGroups').should('not.exist');
+
+      cy.get('label[for="maxStudentsGroup"]').should('not.exist');
+      cy.get('input#maxStudentsGroup').should('not.exist');
+    });
+
+    cy.step('Step 8 - Crear Práctica con campos obligatorios');
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('input#name').type('Práctica 1');
+      cy.get('input#description').type('Descripción de la práctica 1');
+      cy.get('button[role="combobox"]').click();  
+    });
+    cy.get('div[data-radix-popper-content-wrapper]').should('be.visible');
+    cy.get('div[role="listbox"]')
+      .contains('Grupal')
+      .click();
+    cy.get('button[role="checkbox"]').click();
+    cy.get('input#simulationDuration').type('30');
+    cy.get('input#numberOfGroups').type('3');
+    cy.get('input#maxStudentsGroup').type('3');
+    cy.get('button').contains('Guardar').click();
+    cy.get('div[role="dialog"]').should('not.exist');
   });
 
   it('PROF-2 Acceso No Autorizado Profesor', () => {
