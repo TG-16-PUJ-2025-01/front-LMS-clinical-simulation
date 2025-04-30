@@ -85,11 +85,13 @@ describe('Teacher flow tests', () => {
     cy.step('Step 8 - Crear Práctica con campos obligatorios');
     cy.get('input#name').type('Prueba');
     cy.get('input#description').type('Descripción de la prueba');
+
     cy.get('button[role="combobox"]').click();  
     cy.get('div[data-radix-popper-content-wrapper]').should('be.visible');
     cy.get('div[role="listbox"]')
       .contains('Grupal')
       .click();
+
     cy.get('button[role="checkbox"]').click();
     cy.get('input#simulationDuration').type('30');
     cy.get('input#numberOfGroups').type('3');
@@ -152,6 +154,193 @@ describe('Teacher flow tests', () => {
       .and('contain.text', 'Práctica eliminada exitosamente.');
 
     cy.step('Step 11 - Abrir práctica');
+    cy.get('[data-slot="card-title"]').contains('Practica 1').click();
+    cy.get('h1').invoke('text').should('contain', 'Practica 1');
+    cy.get('h1').invoke('text').should('contain', '(20001) Semiología Clínica');
+    cy.get('table tbody tr').should('have.length', 3);
+
+    cy.step('Step 12 - Modal de modificar reservas');
+    // cy.get('button').contains('Modificar Reservas').click();
+    // TODO: Esperar a que andres arregle esta parte
+
+    cy.step('Step 13 - Ingresar datos de reserva');
+    // TODO: Esperar a que andres arregle esta parte
+
+    cy.step('Step 14 - Crear reserva y validar exito');
+    // TODO: Esperar a que andres arregle esta parte
+
+    cy.step('Step 15 - Apartado rúbrica');
+    cy.get('nav')
+      .contains('button', 'Rúbricas')
+      .should('be.visible')
+      .and('not.be.disabled')
+      .click();
+    cy.get('h1').invoke('text').should('contain', 'Rúbricas');
+    cy.get('button').contains('Nueva Rubrica').click();
+    cy.get('[role="dialog"]').should('be.visible');
+    cy.get('[role="dialog"] h2').invoke('text').should('contain', 'Crear Rúbrica');
+    cy.get('[role="dialog"] table').should('exist');
+
+    cy.step('Step 16 - Crear rúbrica con campos obligatorios');
+    cy.get('input[placeholder="Título"]').type('Mi rúbrica de ejemplo');
+
+    cy.get('div.react-select__placeholder')
+    .contains('Seleccionar asignaturas')
+    .click({ force: true });
+
+    cy.get('div[role="listbox"]')
+    .contains('Semiología Clínica')
+    .should('exist')
+    .click();
+
+    cy.get('button').contains('+').should('be.visible').click();
+    cy.get('button.px-4').contains('+').click();
+
+    cy.get('textarea[name="rubric.criteria.0.name"]').clear().type('Actitud');
+    cy.get('textarea[name="rubric.criteria.1.name"]').clear().type('Conocimientos Teóricos');
+    cy.get('textarea[name="rubric.criteria.2.name"]').clear().type('Comportamiento');
+
+    cy.get('input[name="rubric.criteria.0.weight"]').clear().type('50');
+    cy.get('input[name="rubric.criteria.1.weight"]').clear().type('30');
+    cy.get('input[name="rubric.criteria.2.weight"]').clear().type('20');
+
+    cy.get('textarea[name="rubric.criteria.0.scoringScaleDescription.0"]').clear().type('Descripción actualizada 1');
+    cy.get('textarea[name="rubric.criteria.1.scoringScaleDescription.0"]').clear().type('Descripción actualizada 2');
+    cy.get('textarea[name="rubric.criteria.2.scoringScaleDescription.0"]').clear().type('Descripción actualizada 3');
+    cy.get('textarea[name="rubric.criteria.0.scoringScaleDescription.1"]').clear().type('Descripción actualizada 4');
+    cy.get('textarea[name="rubric.criteria.1.scoringScaleDescription.1"]').clear().type('Descripción actualizada 5');
+    cy.get('textarea[name="rubric.criteria.2.scoringScaleDescription.1"]').clear().type('Descripción actualizada 6');
+    cy.get('textarea[name="rubric.criteria.0.scoringScaleDescription.2"]').clear().type('Descripción actualizada 7');
+    cy.get('textarea[name="rubric.criteria.1.scoringScaleDescription.2"]').clear().type('Descripción actualizada 8');
+    cy.get('textarea[name="rubric.criteria.2.scoringScaleDescription.2"]').clear().type('Descripción actualizada 9');
+
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('thead tr th').eq(2)
+      .find('textarea')
+      .clear()
+      .type('Bajo');
+
+      cy.get('thead tr th').eq(2)
+      .find('input')
+      .first()
+      .clear()
+      .type('0');
+
+      cy.get('thead tr th').eq(2)
+      .find('input')
+      .last()
+      .clear()
+      .type('3');
+
+      cy.get('thead tr th').eq(3)
+      .find('textarea')
+      .clear()
+      .type('Medio');
+
+      cy.get('thead tr th').eq(3)
+      .find('input')
+      .first()
+      .clear()
+      .type('3');
+
+      cy.get('thead tr th').eq(3)
+      .find('input')
+      .last()
+      .clear()
+      .type('4');
+
+      cy.get('thead tr th').eq(4)
+      .find('textarea')
+      .clear()
+      .type('Alto');
+
+      cy.get('thead tr th').eq(4)
+      .find('input')
+      .first()
+      .clear()
+      .type('4');
+
+      cy.get('thead tr th').eq(4)
+      .find('input')
+      .last()
+      .clear()
+      .type('5');
+
+      cy.get('button').contains('Crear').click();
+    });
+
+    cy.get('li[data-sonner-toast][data-visible="true"]')
+      .should('exist')
+      .and('contain.text', 'Rubrica creada correctamente');
+
+    cy.get('table tbody tr').should('have.length', 1);
+
+    cy.get('table tbody tr td').eq(0).should('contain.text', 'Mi rúbrica de ejemplo');
+
+    const today = new Date();
+    const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+
+    cy.get('table tbody tr td').eq(1).should('contain.text', formattedDate);
+
+    cy.step('Step 17 - Ver rúbrica');
+    cy.get('table tbody tr td').find('button').click();
+
+    cy.contains('Ver')
+      .should('be.visible')
+      .click();
+
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('h2').invoke('text').should('contain', 'Mi rúbrica de ejemplo');
+      cy.get('button').click();
+    });
+
+    cy.step('Step 18 - Editar rúbrica');
+    cy.get('table tbody tr td').find('button').click();
+
+    cy.contains('Editar')
+      .should('be.visible')
+      .click();
+
+    cy.get('input[placeholder="Título"]').clear().type('Rúbrica Modificada');
+    cy.get('textarea[name="rubric.criteria.1.name"]').clear().type('Criterio Modificado');
+    cy.get('textarea[name="rubric.criteria.1.scoringScaleDescription.0"]').clear().type('Descripción modificada 1');
+
+    cy.get('button').contains('Guardar').click();
+
+    cy.get('li[data-sonner-toast][data-visible="true"]')
+      .should('exist')
+      .and('contain.text', 'Rubrica actualizada correctamente');
+
+    cy.get('table tbody tr td').eq(0).should('contain.text', 'Rúbrica Modificada');
+
+    cy.get('table tbody tr td').find('button').click();
+
+    cy.contains('Ver')
+      .should('be.visible')
+      .click();
+
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('table tbody tr').eq(1).find('td').eq(0).should('contain.text', 'Criterio Modificado');
+      cy.get('table tbody tr').eq(1).find('td').eq(1).should('contain.text', 'Descripción modificada 1');
+      cy.get('h2').invoke('text').should('contain', 'Rúbrica Modificada');
+      cy.get('button').click();
+    });
+
+    cy.step('Step 19 - Archivar rúbrica');
+    cy.get('table tbody tr td').find('button').click();
+
+    cy.contains('Archivar')
+      .should('be.visible')
+      .click();
+
+    cy.get('button').contains('Archivar').click().then(() => {
+      cy.get('li[data-sonner-toast][data-visible="true"]')
+        .should('exist')
+        .and('contain.text', 'Rubrica archivada correctamente');
+    }
+    );
+
+    cy.get('table tbody tr').should('have.length', 0);
   });
 
   it('PROF-2 Acceso No Autorizado Profesor', () => {
