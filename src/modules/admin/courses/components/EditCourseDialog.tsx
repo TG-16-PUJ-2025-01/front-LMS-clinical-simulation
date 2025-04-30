@@ -130,7 +130,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 
 			onClose(false)
 
-			toast.success("Asignatura actualizada correctamente")
+			toast.success("Asignatura actualizada exitosamente")
 		} catch (error) {
 			toast.error("Error al actualizar la asignatura")
 		}

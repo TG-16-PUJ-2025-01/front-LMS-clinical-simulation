@@ -26,7 +26,7 @@ export default function DeleteClassDialog({ open, onClose, classId }: Props) {
 			}
 			await deleteClass(classId)
 			onClose(false)
-			toast.success("Asignatura eliminada correctamente")
+			toast.success("Asignatura eliminada exitosamente")
 		} catch (error) {
 			console.error(error)
 			toast.error("Error al eliminar la asignatura")

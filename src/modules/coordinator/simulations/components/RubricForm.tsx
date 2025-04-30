@@ -167,7 +167,7 @@ export function RubricForm({
 			total: data.total,
 		})
 		setSaving(false)
-		toast.success("Rúbrica guardada correctamente")
+		toast.success("Rúbrica guardada exitosamente")
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -182,7 +182,7 @@ export function RubricForm({
 		setEditing(false)
 		setGradeStatus(GradeStatus.REGISTERED)
 
-		toast.success("Rúbrica publicada correctamente")
+		toast.success("Rúbrica publicada exitosamente")
 	}
 
 	if (!gradable) {
