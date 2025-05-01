@@ -344,7 +344,7 @@ describe("Teacher flow tests", () => {
 
 		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
 
-		cy.step('Step 22 - Calificar simulación')
+		cy.step("Step 22 - Calificar simulación")
 		cy.visit("/profesor/clases/1/practicas/1")
 
 		cy.get("table tbody tr").eq(0).find("button").click()
@@ -353,13 +353,19 @@ describe("Teacher flow tests", () => {
 
 		cy.contains("Calificar").should("be.visible").click()
 
-		cy.get('section > div.grid > section:nth-child(2) div').invoke("text").should("contain", "La práctica no tiene rúbrica asignada")
+		cy.get("section > div.grid > section:nth-child(2) div")
+			.invoke("text")
+			.should("contain", "La práctica no tiene rúbrica asignada")
 
-		cy.step('Step 23 - Modal de asignar rúbrica')
-		cy.get("nav").contains("button", "Volver a la práctica").should("be.visible").and("not.be.disabled").click()
+		cy.step("Step 23 - Modal de asignar rúbrica")
+		cy.get("nav")
+			.contains("button", "Volver a la práctica")
+			.should("be.visible")
+			.and("not.be.disabled")
+			.click()
 		cy.get("section button").contains("Asignar rúbrica").click()
 
-		cy.step('Step 24 - Asignar rúbrica a práctica')
+		cy.step("Step 24 - Asignar rúbrica a práctica")
 		cy.get('div[role="dialog"]').within(() => {
 			cy.get("h2").invoke("text").should("contain", "Asignar Rúbrica")
 			cy.get("button").contains("Guardar").should("be.visible").and("be.disabled")
@@ -367,8 +373,10 @@ describe("Teacher flow tests", () => {
 			cy.get("button").contains("Guardar").click()
 		})
 
-		cy.step('Step 25 - Verificar asignación de rúbrica')
+		cy.step("Step 25 - Verificar asignación de rúbrica")
 		cy.get("table tbody tr").eq(0).find("button").click()
+
+		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Pendiente")
 
 		cy.wait(2000)
 
@@ -376,24 +384,205 @@ describe("Teacher flow tests", () => {
 
 		cy.url().should("include", "profesor/simulacion/1")
 
-		cy.get('h1').invoke("text").should("contain", "(20001) Semiología Clínica - Practica 1 (Grupo 1)")
+		cy.get("h1")
+			.invoke("text")
+			.should("contain", "(20001) Semiología Clínica - Practica 1 (Grupo 1)")
 
-		cy.step('Step 26 - Reproducir video de simulación')
+		cy.step("Step 26 - Reproducir video de simulación")
 		cy.wait(5000)
 
-		cy.get('section > div.grid > section:nth-child(1) textarea').clear().type("Comentario de prueba")
-		cy.get('section > div.grid > section:nth-child(1) button').click()
+		cy.get("section > div.grid > section:nth-child(1) textarea")
+			.clear()
+			.type("Comentario de prueba")
+		cy.get("section > div.grid > section:nth-child(1) button").click()
 
 		cy.wait(5000)
-		cy.get('section > div.grid > section:nth-child(1) textarea').click().clear().type("Segundo comentario de prueba")
-		cy.get('section > div.grid > section:nth-child(1) button').contains("Guardar").click()
+		cy.get("section > div.grid > section:nth-child(1) textarea")
+			.click()
+			.clear()
+			.type("Segundo comentario de prueba")
+		cy.get("section > div.grid > section:nth-child(1) button").contains("Guardar").click()
 
-		cy.get('section > div.grid > section:nth-child(1) > ul > li').eq(0).invoke('text').should("contain", "Comentario de prueba")
-		cy.get('section > div.grid > section:nth-child(1) > ul > li').eq(1).invoke('text').should("contain", "Segundo comentario de prueba")
+		cy.get("section > div.grid > section:nth-child(1) > ul > li")
+			.eq(0)
+			.invoke("text")
+			.should("contain", "Comentario de prueba")
+		cy.get("section > div.grid > section:nth-child(1) > ul > li")
+			.eq(1)
+			.invoke("text")
+			.should("contain", "Segundo comentario de prueba")
 
-		cy.step('Step 27 - Calificar rúbrica')
-		cy.get('section > div.grid > section:nth-child(2) div').eq(0).click()
+		cy.step("Step 27 - Calificar rúbrica")
+		cy.get("table tbody tr").eq(0).find("textarea").type("Mal, no lo hiciste bien")
+		cy.get("table tbody tr").eq(0).find("input").type("2")
 
+		cy.get("table tbody tr").eq(1).find("textarea").type("Bien hecho, pero puedes mejorar")
+		cy.get("table tbody tr").eq(1).find("input").type("4")
+
+		cy.get("table tbody tr").eq(2).find("textarea").type("Excelente, lo hiciste muy bien")
+		cy.get("table tbody tr").eq(2).find("input").type("5")
+
+		cy.get("table tbody tr").eq(3).find("textarea").type("En general, bien hecho")
+
+		cy.get("section:nth-child(2)")
+			.find("p.text-blue-javeriana.text-right.italic")
+			.should("be.visible")
+			.and("contain.text", "Sincronizando cambios...")
+
+		cy.wait(7000) // Wait for changes to be automatically saved
+
+		cy.get("section:nth-child(2)")
+			.find("p.text-blue-javeriana.text-right.italic")
+			.should("be.visible")
+			.and("contain.text", "Cambios sincronizados")
+
+		cy.step("Step 28 - Verificar cambios guardados automáticamente")
+		cy.reload()
+		cy.get("table tbody tr")
+			.eq(0)
+			.find("textarea")
+			.invoke("val")
+			.should("eq", "Mal, no lo hiciste bien")
+		cy.get("table tbody tr").eq(0).find("input").invoke("val").should("eq", "2")
+
+		cy.get("table tbody tr")
+			.eq(1)
+			.find("textarea")
+			.invoke("val")
+			.should("eq", "Bien hecho, pero puedes mejorar")
+		cy.get("table tbody tr").eq(1).find("input").invoke("val").should("eq", "4")
+
+		cy.get("table tbody tr")
+			.eq(2)
+			.find("textarea")
+			.invoke("val")
+			.should("eq", "Excelente, lo hiciste muy bien")
+		cy.get("table tbody tr").eq(2).find("input").invoke("val").should("eq", "5")
+
+		cy.get("table tbody tr")
+			.eq(3)
+			.find("textarea")
+			.invoke("val")
+			.should("eq", "En general, bien hecho")
+
+		cy.step("Step 29 - Verificar niveles en rúbrica")
+		cy.get("section > div.grid > section:nth-child(2) button").contains("Ver rúbrica").click()
+
+		cy.get('div[role="dialog"]').should("be.visible")
+
+		cy.get('div[role="dialog"] tbody tr')
+			.first()
+			.within(() => {
+				cy.get("td")
+					.eq(1)
+					.within(() => {
+						cy.get("svg").should("exist")
+					})
+				cy.get("td")
+					.eq(2)
+					.within(() => {
+						cy.get("svg").should("not.exist")
+					})
+				cy.get("td")
+					.eq(3)
+					.within(() => {
+						cy.get("svg").should("not.exist")
+					})
+			})
+
+		cy.get('div[role="dialog"] tbody tr')
+			.eq(1)
+			.within(() => {
+				cy.get("td")
+					.eq(1)
+					.within(() => {
+						cy.get("svg").should("not.exist")
+					})
+				cy.get("td")
+					.eq(2)
+					.within(() => {
+						cy.get("svg").should("not.exist")
+					})
+				cy.get("td")
+					.eq(3)
+					.within(() => {
+						cy.get("svg").should("exist")
+					})
+			})
+
+		cy.get('div[role="dialog"] tbody tr')
+			.eq(2)
+			.within(() => {
+				cy.get("td")
+					.eq(1)
+					.within(() => {
+						cy.get("svg").should("not.exist")
+					})
+				cy.get("td")
+					.eq(2)
+					.within(() => {
+						cy.get("svg").should("not.exist")
+					})
+				cy.get("td")
+					.eq(3)
+					.within(() => {
+						cy.get("svg").should("exist")
+					})
+			})
+
+		cy.step("Step 30 - Publicar rúbrica")
+		cy.get('div[role="dialog"]').within(() => {
+			cy.get("button").click()
+		})
+
+		cy.get("section > div.grid > section:nth-child(2) button")
+			.contains("Publicar")
+			.click()
+			.then(() => {
+				cy.get('li[data-sonner-toast][data-visible="true"]')
+					.should("exist")
+					.and("contain.text", "Rúbrica publicada correctamente")
+			})
+
+		cy.step("Step 31 - Verificar publicación de rúbrica")
+		cy.get("nav")
+			.contains("button", "Volver a la práctica")
+			.should("be.visible")
+			.and("not.be.disabled")
+			.click()
+
+		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Calificado")
+		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
+		/*
+		cy.get("table tbody tr").eq(0).find("td").eq(4).should("contain.text", formattedDate)
+		cy.get("table tbody tr").eq(0).find("td").eq(5).should("contain.text", "3.2")
+		*/
+
+		cy.step("Step 32 - Ver calificaciónes")
+		cy.get("nav")
+			.contains("button", "Calificaciones")
+			.should("be.visible")
+			.and("not.be.disabled")
+			.click()
+
+		cy.get("h1").invoke("text").should("contain", "Calificaciones")
+
+		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
+		/*
+		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(4).find("td").eq(1).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(7).find("td").eq(1).should("contain.text", "3.2")
+		*/
+
+		cy.step("Step 33 - Modificar porcentajes prácticas")
+		//TODO: Falta que se implemente la funcionalidad de modificar porcentajes de prácticas
+
+		cy.step("Step 34 - Revisión calculo de porcentajes")
+		//TODO: Falta que se implemente la funcionalidad de de calculo de practicas basada en los porcentajes
+
+		cy.step("Step 35 - Modificar reservas")
+		// TODO: No deberia de dejar, porque ya se califico la práctica
+		// TODO: Esperar a que esto este arreglado
 	})
 
 	it("PROF-2 Acceso No Autorizado Profesor", () => {
