@@ -36,6 +36,7 @@ export default function SimulationPage() {
 
 	useEffect(() => {
 		if (!simulation) return
+
 		if (!selectedVideo) {
 			setSelectedVideo(simulation.videos[0])
 		} else {
@@ -45,7 +46,7 @@ export default function SimulationPage() {
 			}
 		}
 
-		if (!simulation || !simulation.practice) return
+		if (!simulation.practice) return
 		setPracticeData(simulation.practice)
 
 		if (!simulation.practice.classModel) return
@@ -110,7 +111,7 @@ export default function SimulationPage() {
 												setIsSync(false)
 											}}
 										>
-											Video {index}
+											Video {index + 1}
 										</Button>
 									</li>
 								))}
