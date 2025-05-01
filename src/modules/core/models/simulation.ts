@@ -12,7 +12,7 @@ export default interface Simulation {
   gradeStatus: GradeStatus
   gradeDate: Date
   groupNumber: number
-  video: Video
+  videos: Video[]
   rooms: Room[]
   practice?: Practice
   rubric?: Rubric
