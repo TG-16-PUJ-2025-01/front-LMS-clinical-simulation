@@ -42,7 +42,7 @@ export function CommentForm({ timestamp, onFocus, videoId, onSubmit: onSubmitCal
 	})
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		toast.success("Comentario publicado correctamente")
+		toast.success("Comentario publicado exitosamente")
 		await addCommentToVideo(videoId, {
 			message: data.description,
 			timestamp,

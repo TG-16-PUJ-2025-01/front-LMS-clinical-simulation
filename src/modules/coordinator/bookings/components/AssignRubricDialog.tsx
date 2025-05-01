@@ -56,7 +56,7 @@ export default function AssignRubricDialog({
 		if (!newRubricTemplate) return
 
 		await setRubricTemplateToPractice(Number(practiceId), newRubricTemplate.rubricTemplateId!)
-		toast.info("Rúbrica asignada correctamente")
+		toast.info("Rúbrica asignada exitosamente")
 		onClose(false)
 	}
 

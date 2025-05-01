@@ -68,7 +68,7 @@ export default function StudentGradeTable() {
     }
 
     if (practiceNames.length === 0) {
-        return <div className="py-10 text-center">No Existen Practicas Para Ser Evaluadas</div>
+        return <div className="py-10 text-center">No Existen Prácticas Para Ser Evaluadas</div>
     }
 
     return (

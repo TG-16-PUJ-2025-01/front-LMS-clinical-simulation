@@ -79,7 +79,7 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 
 		try {
 			await updateClassMembers(classId, selectedStudents)
-			toast.success("Miembros anadidos a la clase correctamente")
+			toast.success("Miembros anadidos a la clase exitosamente")
 		} catch (error) {
 			toast.error("Error al anadir miembros en la clase")
 		}

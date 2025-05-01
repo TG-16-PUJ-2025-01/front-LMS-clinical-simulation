@@ -1,20 +1,19 @@
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
-import { API_URL } from "@/modules/core/config/env"
-import { useRef, useEffect, useState } from "react"
-import { formatTimestamp } from "../../../core/lib/utils"
+import { useEffect, useState } from "react"
+import { cn } from "../../../core/lib/utils"
 import { Button } from "@/modules/core/components/ui/button"
 import { useParams } from "react-router-dom"
 import { VideoOff } from "lucide-react"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 import { EvaluatedRubric } from "../components/EvaluatedRubric"
-import GradeStatus from "@/modules/core/models/gradeStatus"
 import { useClassStore } from "@/modules/core/stores/classStore"
 import { usePracticeStore } from "@/modules/core/stores/practiceStore"
 import { useSimulationStore } from "@/modules/core/stores/simulationStore"
+import Video from "@/modules/core/models/video"
+import VideoTab from "../components/VideoTab"
 
 export default function SimulationPage() {
 	const { id } = useParams()
-	const videoRef = useRef<HTMLVideoElement>(null)
 	const classData = useClassStore((state) => state.class)
 	const setClassData = useClassStore((state) => state.setClassData)
 	const practice = usePracticeStore((state) => state.practice)
@@ -22,6 +21,7 @@ export default function SimulationPage() {
 	const simulation = useSimulationStore((state) => state.simulation)
 	const setSimulation = useSimulationStore((state) => state.setSimulation)
 	const [isSync, setIsSync] = useState(false)
+	const [selectedVideo, setSelectedVideo] = useState<Video | undefined>()
 
 	useEffect(() => {
 		if (isSync) return
@@ -32,14 +32,26 @@ export default function SimulationPage() {
 
 		fetchSimulation()
 		setIsSync(true)
-	}, [isSync, id])
+	}, [isSync, id, setSimulation])
 
 	useEffect(() => {
-		if (!simulation || !simulation.practice) return
+		if (!simulation) return
+
+		if (!selectedVideo) {
+			setSelectedVideo(simulation.videos[0])
+		} else {
+			const video = simulation.videos.find((video) => video.videoId === selectedVideo.videoId)
+			if (video) {
+				setSelectedVideo(video)
+			}
+		}
+
+		if (!simulation.practice) return
 		setPracticeData(simulation.practice)
+
 		if (!simulation.practice.classModel) return
 		setClassData(simulation.practice.classModel)
-	}, [simulation])
+	}, [simulation, setPracticeData, setClassData, selectedVideo])
 
 	return (
 		<>
@@ -75,45 +87,35 @@ export default function SimulationPage() {
 			</LayoutSlot>
 			<div className="grid grid-cols-2 gap-6">
 				<section>
-					{simulation?.video?.name ? (
-						<video
-							ref={videoRef}
-							src={`${API_URL}/streaming/video/${simulation?.video?.name}`}
-							className="aspect-video w-full rounded-md"
-							controls
-						></video>
+					{simulation?.videos.length !== 0 ? (
+						<div>
+							<ul className="mb-2 flex">
+								{simulation?.videos.map((video, index) => (
+									<li>
+										<Button
+											variant="ghost"
+											className={cn("rounded-b-none border-b-2", {
+												"border-blue-javeriana": selectedVideo?.videoId === video.videoId,
+											})}
+											type="button"
+											onClick={() => {
+												setSelectedVideo(video)
+												setIsSync(false)
+											}}
+										>
+											Video {index + 1}
+										</Button>
+									</li>
+								))}
+							</ul>
+							<VideoTab video={selectedVideo} gradeStatus={simulation?.gradeStatus} />
+						</div>
 					) : (
 						<div className="flex aspect-video w-full flex-col items-center justify-center gap-6">
 							<p>El video no está disponible para su visualización</p>
 							<VideoOff size={64} />
 							<div className="h-6"></div>
 						</div>
-					)}
-					<h2 className="my-2 font-semibold">Comentarios del evaluador</h2>
-					{simulation?.video?.comments.length === 0 ||
-					simulation?.gradeStatus !== GradeStatus.REGISTERED ? (
-						<p className="text-sm text-gray-400">No hay comentarios</p>
-					) : (
-						<ul>
-							{simulation?.video?.comments.map((comment) => (
-								<li key={comment.timestamp} className="flex items-baseline gap-2">
-									<Button
-										type="button"
-										variant="link"
-										className="h-fit w-14 cursor-pointer p-0 pb-2 text-xs text-gray-400"
-										onClick={() => {
-											if (videoRef.current) videoRef.current.currentTime = comment.timestamp
-										}}
-									>
-										{formatTimestamp(comment.timestamp)}
-									</Button>
-									<div className="flex flex-col self-stretch">
-										<div className="h-full flex-grow border-l border-gray-400"></div>
-									</div>
-									<p className="text-sm">{comment.message}</p>
-								</li>
-							))}
-						</ul>
 					)}
 				</section>
 				<section>
