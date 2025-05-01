@@ -8,5 +8,6 @@ export default interface Video {
 	duration: number // in seconds
 	size: number // in GB
 	available: boolean
+	videoUrl: string
 	comments: Comment[]
 }

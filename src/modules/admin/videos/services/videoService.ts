@@ -52,3 +52,16 @@ export async function deleteVideo(videoId: number): Promise<ApiResponse<null>> {
 	const { data } = await axios.delete(`${API_URL}/video/${videoId}`)
 	return data
 }
+
+export async function setVideoAsUnavailable(videoId: number): Promise<ApiResponse<Video>> {
+	const { data } = await axios.put(`${API_URL}/video/unavailable/${videoId}`)
+
+	return {
+		...data,
+		data: {
+			...data.data,
+			recordingDate: new Date(data.data.recordingDate),
+			expirationDate: new Date(data.data.expirationDate),
+		},
+	}
+}
