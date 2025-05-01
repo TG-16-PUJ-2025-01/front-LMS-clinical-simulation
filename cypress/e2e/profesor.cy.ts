@@ -143,11 +143,11 @@ describe("Teacher flow tests", () => {
 		cy.get("button").contains("Eliminar").click()
 		cy.get('li[data-sonner-toast][data-visible="true"]')
 			.should("exist")
-			.and("contain.text", "Práctica eliminada exitosamente.")
+			.and("contain.text", "Práctica eliminada exitosamente")
 
 		cy.step("Step 11 - Abrir práctica")
-		cy.get('[data-slot="card-title"]').contains("Practica 1").click()
-		cy.get("h1").invoke("text").should("contain", "Practica 1")
+		cy.get('[data-slot="card-title"]').contains("Práctica 1").click()
+		cy.get("h1").invoke("text").should("contain", "Práctica 1")
 		cy.get("h1").invoke("text").should("contain", "(20001) Semiología Clínica")
 		cy.get("table tbody tr").should("have.length", 3)
 
@@ -164,7 +164,7 @@ describe("Teacher flow tests", () => {
 		cy.step("Step 15 - Apartado rúbrica")
 		cy.get("nav").contains("button", "Rúbricas").should("be.visible").and("not.be.disabled").click()
 		cy.get("h1").invoke("text").should("contain", "Rúbricas")
-		cy.get("button").contains("Nueva Rubrica").click()
+		cy.get("button").contains("Nueva Rúbrica").click()
 		cy.get('[role="dialog"]').should("be.visible")
 		cy.get('[role="dialog"] h2').invoke("text").should("contain", "Crear Rúbrica")
 		cy.get('[role="dialog"] table').should("exist")
@@ -241,7 +241,7 @@ describe("Teacher flow tests", () => {
 
 		cy.get('li[data-sonner-toast][data-visible="true"]')
 			.should("exist")
-			.and("contain.text", "Rubrica creada correctamente")
+			.and("contain.text", "Rúbrica creada exitosamente")
 
 		cy.get("table tbody tr").should("have.length", 1)
 
@@ -277,7 +277,7 @@ describe("Teacher flow tests", () => {
 
 		cy.get('li[data-sonner-toast][data-visible="true"]')
 			.should("exist")
-			.and("contain.text", "Rubrica actualizada correctamente")
+			.and("contain.text", "Rúbrica actualizada exitosamente")
 
 		cy.get("table tbody tr td").eq(0).should("contain.text", "Rúbrica Modificada")
 
@@ -307,7 +307,7 @@ describe("Teacher flow tests", () => {
 			.then(() => {
 				cy.get('li[data-sonner-toast][data-visible="true"]')
 					.should("exist")
-					.and("contain.text", "Rubrica archivada correctamente")
+					.and("contain.text", "Rúbrica archivada exitosamente")
 			})
 
 		cy.wait(2000)
@@ -335,7 +335,7 @@ describe("Teacher flow tests", () => {
 			.then(() => {
 				cy.get('li[data-sonner-toast][data-visible="true"]')
 					.should("exist")
-					.and("contain.text", "Rubrica desarchivada correctamente")
+					.and("contain.text", "Rúbrica desarchivada exitosamente")
 			})
 
 		cy.get('button[type="button"][role="radio"][value="all"]').click({ force: true })
@@ -386,7 +386,7 @@ describe("Teacher flow tests", () => {
 
 		cy.get("h1")
 			.invoke("text")
-			.should("contain", "(20001) Semiología Clínica - Practica 1 (Grupo 1)")
+			.should("contain", "(20001) Semiología Clínica - Práctica 1 (Grupo 1)")
 
 		cy.step("Step 26 - Reproducir video de simulación")
 		cy.wait(5000)
@@ -394,7 +394,7 @@ describe("Teacher flow tests", () => {
 		cy.get("section > div.grid > section:nth-child(1) textarea")
 			.clear()
 			.type("Comentario de prueba")
-		cy.get("section > div.grid > section:nth-child(1) button").click()
+		cy.get("section > div.grid > section:nth-child(1) button").contains("Guardar").click()
 
 		cy.wait(5000)
 		cy.get("section > div.grid > section:nth-child(1) textarea")
@@ -403,11 +403,11 @@ describe("Teacher flow tests", () => {
 			.type("Segundo comentario de prueba")
 		cy.get("section > div.grid > section:nth-child(1) button").contains("Guardar").click()
 
-		cy.get("section > div.grid > section:nth-child(1) > ul > li")
+		cy.get("section > div.grid > section:nth-child(1) > div > div > ul > li")
 			.eq(0)
 			.invoke("text")
 			.should("contain", "Comentario de prueba")
-		cy.get("section > div.grid > section:nth-child(1) > ul > li")
+		cy.get("section > div.grid > section:nth-child(1) > div > div > ul > li")
 			.eq(1)
 			.invoke("text")
 			.should("contain", "Segundo comentario de prueba")
@@ -541,7 +541,7 @@ describe("Teacher flow tests", () => {
 			.then(() => {
 				cy.get('li[data-sonner-toast][data-visible="true"]')
 					.should("exist")
-					.and("contain.text", "Rúbrica publicada correctamente")
+					.and("contain.text", "Rúbrica publicada exitosamente")
 			})
 
 		cy.step("Step 31 - Verificar publicación de rúbrica")
