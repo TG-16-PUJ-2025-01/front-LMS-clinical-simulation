@@ -324,6 +324,7 @@ describe("Teacher flow tests", () => {
 
 		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
 
+		cy.step("Step 21 - Desarchivar rúbrica")
 		cy.get("table tbody tr td").find("button").click()
 
 		cy.contains("Desarchivar").should("be.visible").click()
@@ -342,6 +343,57 @@ describe("Teacher flow tests", () => {
 		cy.get("table tbody tr td").eq(0).should("contain.text", "Rúbrica Modificada")
 
 		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
+
+		cy.step('Step 22 - Calificar simulación')
+		cy.visit("/profesor/clases/1/practicas/1")
+
+		cy.get("table tbody tr").eq(0).find("button").click()
+
+		cy.wait(2000)
+
+		cy.contains("Calificar").should("be.visible").click()
+
+		cy.get('section > div.grid > section:nth-child(2) div').invoke("text").should("contain", "La práctica no tiene rúbrica asignada")
+
+		cy.step('Step 23 - Modal de asignar rúbrica')
+		cy.get("nav").contains("button", "Volver a la práctica").should("be.visible").and("not.be.disabled").click()
+		cy.get("section button").contains("Asignar rúbrica").click()
+
+		cy.step('Step 24 - Asignar rúbrica a práctica')
+		cy.get('div[role="dialog"]').within(() => {
+			cy.get("h2").invoke("text").should("contain", "Asignar Rúbrica")
+			cy.get("button").contains("Guardar").should("be.visible").and("be.disabled")
+			cy.get("div > button").contains("Rúbrica Modificada").click()
+			cy.get("button").contains("Guardar").click()
+		})
+
+		cy.step('Step 25 - Verificar asignación de rúbrica')
+		cy.get("table tbody tr").eq(0).find("button").click()
+
+		cy.wait(2000)
+
+		cy.contains("Calificar").should("be.visible").click()
+
+		cy.url().should("include", "profesor/simulacion/1")
+
+		cy.get('h1').invoke("text").should("contain", "(20001) Semiología Clínica - Practica 1 (Grupo 1)")
+
+		cy.step('Step 26 - Reproducir video de simulación')
+		cy.wait(5000)
+
+		cy.get('section > div.grid > section:nth-child(1) textarea').clear().type("Comentario de prueba")
+		cy.get('section > div.grid > section:nth-child(1) button').click()
+
+		cy.wait(5000)
+		cy.get('section > div.grid > section:nth-child(1) textarea').click().clear().type("Segundo comentario de prueba")
+		cy.get('section > div.grid > section:nth-child(1) button').contains("Guardar").click()
+
+		cy.get('section > div.grid > section:nth-child(1) > ul > li').eq(0).invoke('text').should("contain", "Comentario de prueba")
+		cy.get('section > div.grid > section:nth-child(1) > ul > li').eq(1).invoke('text').should("contain", "Segundo comentario de prueba")
+
+		cy.step('Step 27 - Calificar rúbrica')
+		cy.get('section > div.grid > section:nth-child(2) div').eq(0).click()
+
 	})
 
 	it("PROF-2 Acceso No Autorizado Profesor", () => {
