@@ -1,5 +1,3 @@
-"use client"
-
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,6 +6,7 @@ import {
   getPaginationRowModel,
   flexRender,
   ColumnDef,
+  SortingState,
 } from "@tanstack/react-table"
 import { useEffect, useMemo, useState } from "react"
 
@@ -24,7 +23,7 @@ import { Input } from "@/modules/core/components/ui/input"
 import { ArrowUpDown, Search } from "lucide-react"
 import { useParams } from "react-router-dom"
 import { getGradesByClassId, StudentGradeDto } from "../services/gradeService"
-
+import { EditPercentagesDialog } from "./EditPercentagesDialog"
 
 export default function GradeTable() {
   const params = useParams()
@@ -32,26 +31,33 @@ export default function GradeTable() {
   const [grades, setGrades] = useState<StudentGradeDto[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("")
-  const [sorting, setSorting] = useState([])
+  const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+  const [openPercentagesDialog, setOpenPercentagesDialog] = useState(false)
+
+  async function fetchGrades() {
+    try {
+      setLoading(true)
+      const res = await getGradesByClassId(classId)
+      setGrades(res.data)
+    } catch (err) {
+      console.error("Error al obtener calificaciones", err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    async function fetchGrades() {
-      try {
-        setLoading(true)
-        const res = await getGradesByClassId(classId)
-        setGrades(res.data)
-      } catch (err) {
-        console.error("Error al obtener calificaciones", err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     if (!isNaN(classId)) {
       fetchGrades()
     }
   }, [classId])
+
+  useEffect(() => {
+    if (!openPercentagesDialog) {
+      fetchGrades()
+    }
+  }, [openPercentagesDialog])
 
   const practiceNames = useMemo(() => {
     const set = new Set<string>()
@@ -83,17 +89,7 @@ export default function GradeTable() {
       (practice) => ({
         accessorKey: `practiceGrades.${practice}`,
         id: practice,
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() =>
-              column.toggleSorting(column.getIsSorted() === "asc")
-            }
-          >
-            {practice}
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
+        header: () => <div className="text-center">{practice}</div>,
         cell: ({ row }) => {
           const value = row.original.practiceGrades[practice]
           return <div className="text-center">{value ?? "-"}</div>
@@ -103,20 +99,10 @@ export default function GradeTable() {
 
     const finalCol: ColumnDef<StudentGradeDto> = {
       accessorKey: "finalGrade",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
-        >
-          Nota Final
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
+      header: () => <div className="text-center">Nota Final</div>,
       cell: ({ row }) => (
         <div className="text-center">
-          {row.getValue("finalGrade").toFixed(2)}
+          {(row.getValue("finalGrade") as number).toFixed(2)}
         </div>
       ),
     }
@@ -138,12 +124,10 @@ export default function GradeTable() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    globalFilterFn: (row, columnId, filterValue) =>
-      row
-        .getValue(columnId)
-        ?.toString()
-        .toLowerCase()
-        .includes(filterValue.toLowerCase()),
+    globalFilterFn: (row, columnId, filterValue) => {
+      const value = row.getValue(columnId)?.toString().toLowerCase();
+      return value ? value.includes(filterValue.toLowerCase()) : false;
+    },
   })
 
   if (loading) return <div className="text-center py-10">Cargando...</div>
@@ -162,6 +146,12 @@ export default function GradeTable() {
             }}
             className="w-full pl-8"
           />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Button onClick={() => setOpenPercentagesDialog(true)}>
+            Editar porcentajes de calificación
+          </Button>
         </div>
       </div>
 
@@ -233,6 +223,11 @@ export default function GradeTable() {
           </Button>
         </div>
       </div>
+      <EditPercentagesDialog
+        open={openPercentagesDialog}
+        onClose={() => setOpenPercentagesDialog(false)}
+        classId={classId}
+      />
     </div>
   )
 }

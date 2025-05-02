@@ -240,12 +240,16 @@ export function SimulationDataTable({ practice }: Props) {
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => {
-									setSelectedSimulation(simulation)
-									setIsEditDialogOpen(true)
+									if (simulation.gradeStatus !== "REGISTERED") {
+										setSelectedSimulation(simulation)
+										setIsEditDialogOpen(true)
+									}
 								}}
+								disabled={simulation.gradeStatus === "REGISTERED"}
 							>
 								<Calendar /> Editar Reserva
 							</DropdownMenuItem>
+
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
@@ -293,7 +297,14 @@ export function SimulationDataTable({ practice }: Props) {
 					</div>
 					<div className="flex items-center space-x-2">
 						<Button onClick={() => setIsAssignRubricOpen(true)}>Asignar rúbrica</Button>
-						<Button onClick={() => setIsDialogOpen(true)}>Modificar Reservas</Button>
+						<div className="flex items-center space-x-2">
+							{/* Mostrar el botón solo si no hay datos en la tabla */}
+							{data.length === 0 && (
+								<Button onClick={() => setIsDialogOpen(true)}>Crear Reservas</Button>
+							)}
+						</div>
+
+
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
