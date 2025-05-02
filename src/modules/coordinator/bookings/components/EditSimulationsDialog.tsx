@@ -4,10 +4,11 @@ import { ScheduleXCalendar, useNextCalendarApp } from "@schedule-x/react";
 import { createViewDay } from "@schedule-x/calendar";
 import { createEventsServicePlugin } from "@schedule-x/events-service";
 import '@schedule-x/theme-shadcn/dist/index.css';
-
 import { getSchedule } from "../services/bookingService";
 import Simulation from "@/modules/core/models/simulation";
 import EditSimulationsForm from "./EditSimulationsForm";
+import { createCalendarControlsPlugin } from "@schedule-x/calendar-controls";
+import { toast } from "sonner";
 
 interface EditSimulationsDialogProps {
   open: boolean;
@@ -16,11 +17,18 @@ interface EditSimulationsDialogProps {
 }
 
 export default function EditSimulationsDialog({ open, onClose, simulation }: EditSimulationsDialogProps) {
+  // Inicializar con la fecha de la simulación o la fecha actual
+  const initialDate = simulation?.startDateTime 
+    ? new Date(simulation.startDateTime)
+    : new Date();
 
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
+
+  // Plugins memoizados
   const eventsServicePlugin = useMemo(() => createEventsServicePlugin(), []);
-  const [selectedDate, setSelectedDate] = useState<string | undefined>(new Date().toISOString().split('T')[0]);
+  const calendarControls = useMemo(() => createCalendarControlsPlugin(), []);
 
-
+  // Configuración del calendario
   const calendarApp = useNextCalendarApp(
     {
       views: [createViewDay()],
@@ -30,41 +38,57 @@ export default function EditSimulationsDialog({ open, onClose, simulation }: Edi
         start: '06:00',
         end: '20:00',
       },
+      defaultView: 'day',
+      selectedDate: selectedDate.toISOString().split('T')[0],
       callbacks: {
         onSelectedDateUpdate(date) {
-          setSelectedDate(date);
+            setSelectedDate(new Date(date));
         },
       }
     },
-    [eventsServicePlugin]
+    [eventsServicePlugin, calendarControls]
   );
 
+  // Sincronizar la fecha cuando cambia la simulación
+  useEffect(() => {
+    if (simulation?.startDateTime) {
+      setSelectedDate(new Date(simulation.startDateTime));
+    }
+  }, [simulation]);
 
+  // Actualizar los controles del calendario
+  useEffect(() => {
+    if (calendarApp && calendarControls && selectedDate) {
+      calendarControls.setDate(selectedDate.toISOString().split('T')[0]);
+    }
+  }, [selectedDate, calendarApp, calendarControls]);
 
+  // Carga de reservas
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        if (!selectedDate) return;
-        const reservationsData = await getSchedule(selectedDate);
-        if (eventsServicePlugin?.set) {
-          eventsServicePlugin.set(
-            reservationsData.map((res, index) => ({
-              id: index.toString(),
-              title: res.room,
-              start: res.startDateTime,
-              end: res.endDateTime,
-              calendarId: "room",
-            }))
-          );
-        }
+        const reservationsData = await getSchedule(selectedDate.toISOString().split('T')[0]);
+        eventsServicePlugin?.set(
+          reservationsData.map((res, index) => ({
+            id: index.toString(),
+            title: res.room,
+            start: res.startDateTime,
+            end: res.endDateTime,
+            calendarId: "room",
+          }))
+        );
       } catch (error) {
         console.error("Error cargando reservas:", error);
+        toast.error("Error al cargar las reservas existentes");
       }
     };
+    
     if (open) {
       fetchReservations();
     }
-  }, [open, eventsServicePlugin, calendarApp, selectedDate]);
+  }, [open, eventsServicePlugin, selectedDate]);
+
+  if (!simulation) return null;
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -74,10 +98,14 @@ export default function EditSimulationsDialog({ open, onClose, simulation }: Edi
           <div className="flex-1 overflow-y-auto">
             {calendarApp && <ScheduleXCalendar calendarApp={calendarApp} />}
           </div>
-          <EditSimulationsForm onClose={onClose} simulation={simulation!} />
+          <EditSimulationsForm 
+            onClose={onClose} 
+            simulation={simulation}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
         </div>
       </DialogContent>
     </Dialog>
   );
-  
 }
