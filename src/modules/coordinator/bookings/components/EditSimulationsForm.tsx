@@ -16,6 +16,8 @@ import Simulation from "@/modules/core/models/simulation";
 interface EditSimulationsFormProps {
   onClose: () => void;
   simulation: Simulation;
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
 }
 
 interface RoomOption {
@@ -23,25 +25,20 @@ interface RoomOption {
   label: string;
 }
 
-export default function EditSimulationsForm({ onClose, simulation }: EditSimulationsFormProps) {
+export default function EditSimulationsForm({ onClose, simulation, selectedDate, setSelectedDate }: EditSimulationsFormProps) {
   const [selectedRooms, setSelectedRooms] = useState<RoomOption[]>(
     simulation.rooms.map(room => ({ 
       value: room.id, 
       label: room.name 
     })) || []
   );
-  
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    new Date(simulation.startDateTime)
-  );
-  
-  const [startTime, setStartTime] = useState<string>(
-    format(new Date(simulation.startDateTime), 'HH:mm')
-  );
-  
-  const [endTime, setEndTime] = useState<string>(
-    format(new Date(simulation.endDateTime), 'HH:mm')
-  );
+
+  // Formatear las horas iniciales desde la simulación
+  const initialStartTime = format(new Date(simulation.startDateTime), 'HH:mm');
+  const initialEndTime = format(new Date(simulation.endDateTime), 'HH:mm');
+
+  const [startTime, setStartTime] = useState<string>(initialStartTime);
+  const [endTime, setEndTime] = useState<string>(initialEndTime);
 
   const [rooms, setRooms] = useState<RoomOption[]>([]);
   const { practiceId } = useParams<{ classId: string; practiceId: string }>();
@@ -60,6 +57,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
         setRooms(formattedRooms);
       } catch (error) {
         console.error("Error cargando salas:", error);
+        toast.error("Error al cargar las salas disponibles");
       }
     };
     fetchRooms();
@@ -72,6 +70,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
         setPractice(res.data);
       } catch (error) {
         console.error("Error cargando la práctica:", error);
+        toast.error("Error al cargar los detalles de la práctica");
       }
     };
     fetchPractice();
@@ -93,6 +92,20 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
     setTimeOptions(times);
   }, [practice?.simulationDuration]);
 
+  const handleTimeChange = (time: string, isStartTime: boolean) => {
+    if (isStartTime) {
+      setStartTime(time);
+      
+      // Actualizar la fecha seleccionada con la nueva hora de inicio
+      const [hours, minutes] = time.split(':').map(Number);
+      const newDate = new Date(selectedDate);
+      newDate.setHours(hours, minutes);
+      setSelectedDate(newDate);
+    } else {
+      setEndTime(time);
+    }
+  };
+
   const saveSimulation = async () => {
     if (!selectedDate || !startTime || !endTime || selectedRooms.length === 0) {
       toast.error("Por favor completa todos los campos.");
@@ -107,7 +120,12 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
       const endDateTime = new Date(selectedDate);
       const [endHours, endMinutes] = endTime.split(':').map(Number);
       endDateTime.setHours(endHours, endMinutes);
-      console.log("simulation", simulation);
+
+      if (endDateTime <= startDateTime) {
+        toast.error("La hora de finalización debe ser posterior a la hora de inicio");
+        return;
+      }
+
       const requestData = {
         practiceId: Number(practiceId),
         startDateTime: startDateTime.toISOString(),
@@ -136,7 +154,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
         <li><span className="font-semibold">Duración de la práctica:</span> {practice?.simulationDuration} minutos</li>
       </ul>
 
-      {/* DatePicker */}
+      {/* DatePicker sincronizado */}
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
@@ -147,7 +165,15 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
           <Calendar 
             mode="single" 
             selected={selectedDate} 
-            onSelect={setSelectedDate} 
+            onSelect={(date) => {
+              if (date) {
+                // Mantener la hora actual al cambiar la fecha
+                const newDate = new Date(date);
+                const [hours, minutes] = startTime.split(':').map(Number);
+                newDate.setHours(hours, minutes);
+                setSelectedDate(newDate);
+              }
+            }} 
             locale={es} 
           />
         </PopoverContent>
@@ -158,7 +184,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
         options={timeOptions}
         placeholderText="Hora de inicio"
         itemName="Hora"
-        onChange={(selected) => setStartTime(selected.value)}
+        onChange={(selected) => handleTimeChange(selected.value, true)}
         selectedValue={startTime}
         defaultValue={startTime}
       />
@@ -168,7 +194,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
         options={timeOptions}
         placeholderText="Hora de finalización"
         itemName="Hora"
-        onChange={(selected) => setEndTime(selected.value)}
+        onChange={(selected) => handleTimeChange(selected.value, false)}
         selectedValue={endTime}
         defaultValue={endTime}
       />
