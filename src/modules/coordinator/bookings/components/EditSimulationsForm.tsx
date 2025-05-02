@@ -41,7 +41,7 @@ export default function EditSimulationsForm({ onClose, simulation, selectedDate,
   const [endTime, setEndTime] = useState<string>(initialEndTime);
 
   const [rooms, setRooms] = useState<RoomOption[]>([]);
-  const { practiceId } = useParams<{ classId: string; practiceId: string }>();
+  const practiceId = useParams<{ id: string }>().id;
   const [practice, setPractice] = useState<Practice | null>(null);
   const [timeOptions, setTimeOptions] = useState<{ key: number; value: string }[]>([]);
   const animatedComponents = makeAnimated();
