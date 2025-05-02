@@ -60,31 +60,31 @@ export default function SimulationPage() {
 					navLinks={[
 						{
 							label: "Asignaturas",
-							href: `/coordinador/asignaturas`,
+							href: `/profesor/asignaturas`,
 						},
 						{
 							label: "Calendario",
-							href: "/coordinador/calendario",
+							href: "/profesor/calendario",
 						},
 						{
 							label: "Rúbricas",
-							href: "/coordinador/rubricas",
+							href: "/profesor/rubricas",
 						},
 						{
 							label: "Miembros de la clase",
-							href: `/coordinador/clases/${classData?.classId}/miembros`,
+							href: `/profesor/clases/${classData?.classId}/miembros`,
 						},
 						{
 							label: "Calificaciones",
-							href: `/coordinador/clases/${classData?.classId}/calificaciones`,
+							href: `/profesor/clases/${classData?.classId}/calificaciones`,
 						},
 						{
 							label: "Volver a la clase",
-							href: `/coordinador/clases/${classData?.classId}/practicas`,
+							href: `/profesor/clases/${classData?.classId}/practicas`,
 						},
 						{
 							label: "Volver a la práctica",
-							href: `/coordinador/clases/${classData?.classId}/practicas/${practice?.id}`,
+							href: `/profesor/clases/${classData?.classId}/practicas/${practice?.id}`,
 						},
 					]}
 				/>
