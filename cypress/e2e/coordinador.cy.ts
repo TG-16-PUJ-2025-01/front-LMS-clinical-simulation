@@ -1,44 +1,82 @@
 describe("Teacher flow tests", () => {
-	// TODO: Hace falta paso para ver miembros, guardarlos y que esos miembros sean a los que se les modifica la nota
-	// Reservas
-	// TODO: Use practice card lengths instead of hardcoded values
-	it.only("PROF-1 Flujo Completo Profe", () => {
+	it.only("CORD-1 Flujo completo de un coordinador", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
 		cy.wait(2000)
 		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
 		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
 		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
-		cy.get("#email").type("profesor@gmail.com")
-		cy.get("#password").type("profesor")
+		cy.get("#email").type("coordinador@gmail.com")
+		cy.get("#password").type("coordinador")
 		cy.get('button[type="submit"]').click()
-		cy.url().should("include", "/profesor/asignaturas")
+		cy.url().should("include", "/coordinador/asignaturas")
 
-		cy.step("Step 2 - Barra de busqueda")
-		cy.get('input[placeholder="Buscar por nombre..."]')
-			.should("be.visible")
-			.click()
-			.type("Fisiopatología Clínica")
+		cy.step("Step 2 - Probar filtros de asignaturas")
+		cy.get('button[role="combobox"]').contains("Buscar por").click()
+		cy.get('div[role="option"][data-value="Asignaturas"]').click()
+		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("Semiología Clínica")
+
+		cy.get('[data-slot="card"]').should("have.length", 2)
+
+		cy.get('button[role="combobox"]').contains("Periodo").click()
+		cy.get('div[role="option"][data-value="30"]').click()
+		cy.contains("p", "No hay resultados").should("be.visible")
+		cy.get('[data-slot="card"]').should("have.length", 0)
+
+		cy.get("button").contains("Reiniciar Filtros").click()
+		cy.get('[data-slot="card"]').should("have.length", 4)
+
+		cy.get('button[role="combobox"]').contains("Año").click()
+		cy.get('div[role="option"][data-value="2025"]').click()
+		cy.get('[data-slot="card"]').should("have.length", 4)
+
+		cy.get('button[role="combobox"]').contains("Periodo").click()
+		cy.get('div[role="option"][data-value="10"]').click()
+		cy.get('[data-slot="card"]').should("have.length", 3)
+
+		cy.get('button[role="combobox"]').contains("Buscar por").click()
+		cy.get('div[role="option"][data-value="Asignaturas"]').click()
+		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("Simu")
 		cy.get('[data-slot="card"]').should("have.length", 1)
-		cy.get('[data-slot="card-title"]').should("contain.text", "Fisiopatología Clínica")
 
-		cy.step("Step 3 - Revisar acceso a clase autorizado")
+		cy.get("button").contains("Reiniciar Filtros").click()
+		cy.get('[data-slot="card"]').should("have.length", 4)
+
+		cy.step("Step 3 - Barra de busqueda")
+		cy.get('button[role="combobox"]').contains("Buscar por").click()
+		cy.get('div[role="option"][data-value="Asignaturas"]').click()
+		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("Terapia")
+		cy.contains("p", "No hay resultados").should("be.visible")
+		cy.get('[data-slot="card"]').should("have.length", 0)
+		cy.get("button").contains("Reiniciar Filtros").click()
+
+		cy.step("Step 4 - Filtros año y periodo")
 		cy.get('button[role="combobox"]').contains("Año").click()
 		cy.get('div[role="option"][data-value="2025"]').click()
 		cy.get('button[role="combobox"]').contains("Periodo").click()
 		cy.get('div[role="option"][data-value="30"]').click()
-		cy.contains("p", "No se encontraron clases").should("be.visible")
+		cy.get('[data-slot="card"]').should("have.length", 1)
+		cy.get('[data-slot="card"]')
+			.last()
+			.within(() => {
+				cy.get('[data-slot="card-title"]').invoke("text").should("contain", "(20008) 2025-30")
+				cy.get('[data-slot="card-description"]')
+					.invoke("text")
+					.should("contain", "María, Carlos, Andrés")
+			})
+		cy.get("section").find("h1").invoke("text").should("contain", "Atención Primaria en Salud")
 
-		cy.step("Step 4 - Reiniciar Filtros")
+		cy.step("Step 5 - Reiniciar filtros")
 		cy.get("button").contains("Reiniciar Filtros").click()
-		cy.get('[data-slot="card"]').should("have.length", 5)
+		cy.get('[data-slot="card"]').should("have.length", 4)
 
-		cy.step("Step 5 - Abrir clase")
-		cy.get('[data-slot="card-title"]').contains("Semiología Clínica").click()
-		cy.url().should("include", "/profesor/clases/1")
+		cy.step("Step 6 - Abrir asignatura")
+		cy.get('[data-slot="card"]').first().click()
+		cy.url().should("include", "/coordinador/clases/1")
 		cy.get("h1").invoke("text").should("contain", "(20001) Semiología Clínica - 2025-10")
+		cy.get('[data-slot="card"]').should("have.length", 4)
 
-		cy.step("Step 6 - Crear Práctica")
+		cy.step("Step 7 - Crear Práctica")
 		cy.get("button").contains("Crear Práctica").click()
 		cy.get('div[role="dialog"]').within(() => {
 			cy.get('label[for="name"]').should("contain", "Nombre")
@@ -63,7 +101,7 @@ describe("Teacher flow tests", () => {
 			cy.get("input#maxStudentsGroup").should("exist")
 		})
 
-		cy.step("Step 7 - Revisar campos con visibilidad condicional")
+		cy.step("Step 8 - Revisar campos con visibilidad condicional")
 		cy.get('div[role="dialog"]').within(() => {
 			cy.get('button[role="combobox"]').click()
 		})
@@ -78,7 +116,7 @@ describe("Teacher flow tests", () => {
 			cy.get("input#maxStudentsGroup").should("not.exist")
 		})
 
-		cy.step("Step 8 - Crear Práctica con campos obligatorios")
+		cy.step("Step 9 - Crear Práctica con campos obligatorios")
 		cy.get("input#name").type("Prueba")
 		cy.get("input#description").type("Descripción de la prueba")
 
@@ -99,7 +137,19 @@ describe("Teacher flow tests", () => {
 
 		cy.get("h1").invoke("text").should("contain", "(20001) Semiología Clínica - Prueba")
 
-		cy.step("Step 9 - Editar práctica")
+		cy.step("Step 10 - Crear Reservas")
+		// TODO: Add test for modifying reservations
+
+		cy.step("Step 11 - Agregar Info Reserva")
+		//TODO: Add test for adding reservation info
+
+		cy.step("Step 12 - Finalizar Reserva")
+		// TODO: Add test for finishing reservation
+
+		cy.step("Step 13 - Modificar Reserva")
+		// TODO: Add test for modifying reservation
+
+		cy.step("Step 14 - Editar práctica")
 		cy.get("nav")
 			.contains("button", "Volver a la clase")
 			.should("be.visible")
@@ -132,7 +182,7 @@ describe("Teacher flow tests", () => {
 					.should("contain", "Descripción de la prueba editada")
 			})
 
-		cy.step("Step 10 - Eliminar práctica")
+		cy.step("Step 15 - Eliminar práctica")
 		cy.get('[data-slot="card"]')
 			.last()
 			.within(() => {
@@ -145,23 +195,7 @@ describe("Teacher flow tests", () => {
 			.should("exist")
 			.and("contain.text", "Práctica eliminada exitosamente")
 
-		cy.step("Step 11 - Abrir práctica")
-		cy.get('[data-slot="card-title"]').contains("Práctica 1").click()
-		cy.get("h1").invoke("text").should("contain", "Práctica 1")
-		cy.get("h1").invoke("text").should("contain", "(20001) Semiología Clínica")
-		cy.get("table tbody tr").should("have.length", 3)
-
-		cy.step("Step 12 - Modal de modificar reservas")
-		// cy.get('button').contains('Modificar Reservas').click();
-		// TODO: Esperar a que andres arregle esta parte
-
-		cy.step("Step 13 - Ingresar datos de reserva")
-		// TODO: Esperar a que andres arregle esta parte
-
-		cy.step("Step 14 - Crear reserva y validar exito")
-		// TODO: Esperar a que andres arregle esta parte
-
-		cy.step("Step 15 - Apartado rúbrica")
+		cy.step("Step 16 - Apartado rúbrica")
 		cy.get("nav").contains("button", "Rúbricas").should("be.visible").and("not.be.disabled").click()
 		cy.get("h1").invoke("text").should("contain", "Rúbricas")
 		cy.get("button").contains("Nueva Rúbrica").click()
@@ -169,7 +203,7 @@ describe("Teacher flow tests", () => {
 		cy.get('[role="dialog"] h2').invoke("text").should("contain", "Crear Rúbrica")
 		cy.get('[role="dialog"] table').should("exist")
 
-		cy.step("Step 16 - Crear rúbrica con campos obligatorios")
+		cy.step("Step 17 - Crear rúbrica con campos obligatorios")
 		cy.get('input[placeholder="Título"]').type("Mi rúbrica de ejemplo")
 
 		cy.get("div.react-select__placeholder")
@@ -252,7 +286,7 @@ describe("Teacher flow tests", () => {
 
 		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
 
-		cy.step("Step 17 - Ver rúbrica")
+		cy.step("Step 18 - Ver rúbrica")
 		cy.get("table tbody tr td").find("button").click()
 
 		cy.contains("Ver").should("be.visible").click()
@@ -262,7 +296,7 @@ describe("Teacher flow tests", () => {
 			cy.get("button").click()
 		})
 
-		cy.step("Step 18 - Editar rúbrica")
+		cy.step("Step 19 - Editar rúbrica")
 		cy.get("table tbody tr td").find("button").click()
 
 		cy.contains("Editar").should("be.visible").click()
@@ -296,7 +330,7 @@ describe("Teacher flow tests", () => {
 			cy.get("button").click()
 		})
 
-		cy.step("Step 19 - Archivar rúbrica")
+		cy.step("Step 20 - Archivar rúbrica")
 		cy.get("table tbody tr td").find("button").click()
 
 		cy.contains("Archivar").should("be.visible").click()
@@ -317,14 +351,14 @@ describe("Teacher flow tests", () => {
 			.find("td")
 			.should("contain.text", "No results.")
 
-		cy.step("Step 20 - Ver rúbricas archivada")
+		cy.step("Step 21 - Ver rúbricas archivada")
 		cy.get('button[type="button"][role="radio"][value="archived"]').click({ force: true })
 
 		cy.get("table tbody tr td").eq(0).should("contain.text", "Rúbrica Modificada")
 
 		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
 
-		cy.step("Step 21 - Desarchivar rúbrica")
+		cy.step("Step 22 - Desarchivar rúbrica")
 		cy.get("table tbody tr td").find("button").click()
 
 		cy.contains("Desarchivar").should("be.visible").click()
@@ -344,8 +378,8 @@ describe("Teacher flow tests", () => {
 
 		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
 
-		cy.step("Step 22 - Calificar simulación")
-		cy.visit("/profesor/clases/1/practicas/1")
+		cy.step("Step 23 - Calificar simulación") // TODO: Hasta aca voy
+		cy.visit("/coordinador/clases/1/practicas/1")
 
 		cy.get("table tbody tr").eq(0).find("button").click()
 
@@ -357,7 +391,7 @@ describe("Teacher flow tests", () => {
 			.invoke("text")
 			.should("contain", "La práctica no tiene rúbrica asignada")
 
-		cy.step("Step 23 - Modal de asignar rúbrica")
+		cy.step("Step 24 - Modal de asignar rúbrica")
 		cy.get("nav")
 			.contains("button", "Volver a la práctica")
 			.should("be.visible")
@@ -365,7 +399,7 @@ describe("Teacher flow tests", () => {
 			.click()
 		cy.get("section button").contains("Asignar rúbrica").click()
 
-		cy.step("Step 24 - Asignar rúbrica a práctica")
+		cy.step("Step 25 - Asignar rúbrica a práctica")
 		cy.get('div[role="dialog"]').within(() => {
 			cy.get("h2").invoke("text").should("contain", "Asignar Rúbrica")
 			cy.get("button").contains("Guardar").should("be.visible").and("be.disabled")
@@ -373,7 +407,7 @@ describe("Teacher flow tests", () => {
 			cy.get("button").contains("Guardar").click()
 		})
 
-		cy.step("Step 25 - Verificar asignación de rúbrica")
+		cy.step("Step 26 - Verificar asignación de rúbrica")
 		cy.get("table tbody tr").eq(0).find("button").click()
 
 		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Pendiente")
@@ -382,13 +416,13 @@ describe("Teacher flow tests", () => {
 
 		cy.contains("Calificar").should("be.visible").click()
 
-		cy.url().should("include", "profesor/simulacion/1")
+		cy.url().should("include", "coordinador/simulacion/1")
 
 		cy.get("h1")
 			.invoke("text")
 			.should("contain", "(20001) Semiología Clínica - Práctica 1 (Grupo 1)")
 
-		cy.step("Step 26 - Reproducir video de simulación")
+		cy.step("Step 27 - Reproducir video de simulación")
 		cy.wait(5000)
 
 		cy.get("section > div.grid > section:nth-child(1) textarea")
@@ -412,7 +446,7 @@ describe("Teacher flow tests", () => {
 			.invoke("text")
 			.should("contain", "Segundo comentario de prueba")
 
-		cy.step("Step 27 - Calificar rúbrica")
+		cy.step("Step 28 - Calificar rúbrica")
 		cy.get("table tbody tr").eq(0).find("textarea").type("Mal, no lo hiciste bien")
 		cy.get("table tbody tr").eq(0).find("input").type("2")
 
@@ -436,7 +470,7 @@ describe("Teacher flow tests", () => {
 			.should("be.visible")
 			.and("contain.text", "Cambios sincronizados")
 
-		cy.step("Step 28 - Verificar cambios guardados automáticamente")
+		cy.step("Step 29 - Verificar cambios guardados automáticamente")
 		cy.reload()
 		cy.get("table tbody tr")
 			.eq(0)
@@ -465,7 +499,7 @@ describe("Teacher flow tests", () => {
 			.invoke("val")
 			.should("eq", "En general, bien hecho")
 
-		cy.step("Step 29 - Verificar niveles en rúbrica")
+		cy.step("Step 30 - Verificar niveles en rúbrica")
 		cy.get("section > div.grid > section:nth-child(2) button").contains("Ver rúbrica").click()
 
 		cy.get('div[role="dialog"]').should("be.visible")
@@ -530,7 +564,7 @@ describe("Teacher flow tests", () => {
 					})
 			})
 
-		cy.step("Step 30 - Publicar rúbrica")
+		cy.step("Step 31 - Publicar rúbrica")
 		cy.get('div[role="dialog"]').within(() => {
 			cy.get("button").click()
 		})
@@ -544,7 +578,7 @@ describe("Teacher flow tests", () => {
 					.and("contain.text", "Rúbrica publicada exitosamente")
 			})
 
-		cy.step("Step 31 - Verificar publicación de rúbrica")
+		cy.step("Step 32 - Verificar publicación de rúbrica")
 		cy.get("nav")
 			.contains("button", "Volver a la práctica")
 			.should("be.visible")
@@ -554,11 +588,11 @@ describe("Teacher flow tests", () => {
 		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Calificado")
 		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
 		/*
-		cy.get("table tbody tr").eq(0).find("td").eq(4).should("contain.text", formattedDate)
-		cy.get("table tbody tr").eq(0).find("td").eq(5).should("contain.text", "3.2")
-		*/
+            cy.get("table tbody tr").eq(0).find("td").eq(4).should("contain.text", formattedDate)
+            cy.get("table tbody tr").eq(0).find("td").eq(5).should("contain.text", "3.2")
+            */
 
-		cy.step("Step 32 - Ver calificaciónes")
+		cy.step("Step 33 - Ver calificaciónes")
 		cy.get("nav")
 			.contains("button", "Calificaciones")
 			.should("be.visible")
@@ -569,127 +603,19 @@ describe("Teacher flow tests", () => {
 
 		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
 		/*
-		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "3.2")
-		cy.get("table tbody tr").eq(4).find("td").eq(1).should("contain.text", "3.2")
-		cy.get("table tbody tr").eq(7).find("td").eq(1).should("contain.text", "3.2")
-		*/
+            cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "3.2")
+            cy.get("table tbody tr").eq(4).find("td").eq(1).should("contain.text", "3.2")
+            cy.get("table tbody tr").eq(7).find("td").eq(1).should("contain.text", "3.2")
+            */
 
-		cy.step("Step 33 - Modificar porcentajes prácticas")
+		cy.step("Step 34 - Modificar porcentajes prácticas")
 		//TODO: Falta que se implemente la funcionalidad de modificar porcentajes de prácticas
 
-		cy.step("Step 34 - Revisión calculo de porcentajes")
+		cy.step("Step 35 - Revisión calculo de porcentajes")
 		//TODO: Falta que se implemente la funcionalidad de de calculo de practicas basada en los porcentajes
 
-		cy.step("Step 35 - Modificar reservas")
+		cy.step("Step 36 - Modificar reservas")
 		// TODO: No deberia de dejar, porque ya se califico la práctica
 		// TODO: Esperar a que esto este arreglado
 	})
-
-	it("PROF-2 Acceso No Autorizado Profesor", () => {
-		cy.step("Step 1 - Login")
-		cy.visit("/")
-		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
-		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
-		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
-		cy.get("#email").type("profesor@gmail.com")
-		cy.get("#password").type("profesor")
-		cy.get('button[type="submit"]').click()
-		cy.url().should("include", "/profesor/asignaturas")
-
-		cy.step("Step 2 - Revisar acceso a clase autorizado")
-		cy.visit("/profesor/clases/1/practicas")
-		cy.url().should("include", "/profesor/clases/1/practicas")
-		cy.get("h1").invoke("text").should("contain", "(20001) Semiología Clínica - 2025-10")
-
-		cy.step("Step 3 - Revisar acceso a clase no autorizado")
-		cy.visit("/profesor/clases/3/practicas")
-		cy.url().should("include", "/login")
-		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
-		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
-		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
-
-		cy.step("Step 4 - Revisar acceso a practicas autorizadas")
-		cy.get("#email").type("profesor@gmail.com")
-		cy.get("#password").type("profesor")
-		cy.get('button[type="submit"]').click()
-		cy.url().should("include", "/profesor/asignaturas")
-		cy.visit("/profesor/clases/1/practicas/1")
-		cy.url().should("include", "/profesor/clases/1/practicas/1")
-		cy.get("h1").invoke("text").should("contain", "Practica 1")
-
-		cy.step("Step 5 - Revisar acceso a practicas no autorizadas")
-		cy.visit("/profesor/clases/1/practicas/5")
-		cy.url().should("include", "/login")
-		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
-		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
-		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
-
-		cy.step("Step 6 - Revisar acceso a listado de calificaciones autorizadas")
-		cy.get("#email").type("profesor@gmail.com")
-		cy.get("#password").type("profesor")
-		cy.get('button[type="submit"]').click()
-		cy.url().should("include", "/profesor/asignaturas")
-		cy.visit("/profesor/clases/1/calificaciones")
-		cy.url().should("include", "/profesor/clases/1/calificaciones")
-		cy.get("h1").invoke("text").should("contain", "Calificaciones")
-
-		cy.step("Step 7 - Revisar acceso a listado de calificaciones no autorizadas")
-		cy.visit("/profesor/clases/3/calificaciones")
-		cy.url().should("include", "/login")
-		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
-		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
-		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
-
-		cy.step("Step 8 - Revisar acceso a listado de miembros autorizadas")
-		cy.get("#email").type("profesor@gmail.com")
-		cy.get("#password").type("profesor")
-		cy.get('button[type="submit"]').click()
-		cy.url().should("include", "/profesor/asignaturas")
-		cy.visit("/profesor/clases/1/miembros")
-		cy.url().should("include", "/profesor/clases/1/miembros")
-		cy.get("h1").invoke("text").should("contain", "Miembros de la Clase")
-
-		cy.step("Step 9 - Revisar acceso a listado de miembros no autorizadas")
-		cy.clearCookies()
-		cy.clearLocalStorage()
-		cy.visit("/profesor/clases/3/miembros")
-		cy.url().should("include", "/login")
-		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
-		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
-		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
-
-		cy.step("Step 10 - Revisar acceso a listado de simulaciones autorizadas")
-		cy.get("#email").type("profesor@gmail.com")
-		cy.get("#password").type("profesor")
-		cy.get('button[type="submit"]').click()
-		cy.url().should("include", "/profesor/asignaturas")
-		cy.visit("/profesor/simulacion/1")
-		cy.url().should("include", "/profesor/simulacion/1")
-		cy.get("h1").invoke("text").should("contain", "Practica 1 (Grupo 1)")
-
-		cy.step("Step 11 - Revisar acceso a listado de simulaciones no autorizadas")
-		cy.visit("/profesor/simulacion/16") // TODO: Revisar si la simulacion 16 existe (no existe)
-		cy.url().should("include", "/login")
-		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
-		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
-		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
-
-		cy.step("Step 12 - Revisar no acceso si no se ha iniciado sesion")
-		cy.visit("/profesor/asignaturas")
-		cy.url().should("include", "/login")
-		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
-		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
-		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
-	})
-
-	/*
-  / Posibles Nuevos Casos
-  / - Verificar que no se permita ingresar una calificacion fuera del rango permitido (menor a 0, mayor a 5)
-  / - Intentar crear practica con campos faltantes (o nombre ya existente)
-  / - Crear rubrica para otra clase y que no aparezca en la lista de rubricas a asignar
-  / - Crear rubrica y asignar a una clase, verificar que aparezca en la lista de rubricas asignadas
-  / - Diversos filtros en el menu principal
-  / - Modificar reservas y posteriormente editarlas (depronto)
-  / - Rubricas, errores y validaciones con respecto a estas
-  */
 })
