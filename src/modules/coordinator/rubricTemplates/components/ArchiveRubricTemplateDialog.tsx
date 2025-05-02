@@ -27,19 +27,19 @@ export default function ArchiveRubricTemplateDialog({
 		try {
 			if (rubricTemplateToArchive?.archived) {
 				await unarchiveRubricTemplate(rubricTemplateToArchive!.rubricTemplateId!)
-				toast.success("Rubrica desarchivada correctamente")
+				toast.success("Rúbrica desarchivada exitosamente")
 			} else {
 				await archiveRubricTemplate(rubricTemplateToArchive!.rubricTemplateId!)
-				toast.success("Rubrica archivada correctamente")
+				toast.success("Rúbrica archivada exitosamente")
 			}
 			onClose(false)
 		} catch (error) {
 			console.error(error)
 
 			if (rubricTemplateToArchive?.archived) {
-				toast.error("Error al desarchivar la rubrica")
+				toast.error("Error al desarchivar la rúbrica")
 			} else {
-				toast.error("Error al archivar la rubrica")
+				toast.error("Error al archivar la rúbrica")
 			}
 		}
 	}
@@ -49,9 +49,9 @@ export default function ArchiveRubricTemplateDialog({
 			{rubricTemplateToArchive?.archived ? (
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>¿Seguro que desea desarchivar la rubrica?</AlertDialogTitle>
+						<AlertDialogTitle>¿Seguro que desea desarchivar la rúbrica?</AlertDialogTitle>
 						<AlertDialogDescription>
-							Puede volver a archivar la rubrica en cualquier momento
+							Puede volver a archivar la rúbrica en cualquier momento
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -64,7 +64,7 @@ export default function ArchiveRubricTemplateDialog({
 			) : (
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>¿Seguro que desea archivar la rubrica?</AlertDialogTitle>
+						<AlertDialogTitle>¿Seguro que desea archivar la rúbrica?</AlertDialogTitle>
 						<AlertDialogDescription>
 							Solo será visible por usted y por los administradores, puede desarchivarla en
 							cualquier momento

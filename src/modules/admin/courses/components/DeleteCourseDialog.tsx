@@ -23,7 +23,7 @@ export default function DeleteCourseDialog({ open, onClose, course }: Props) {
 		try {
 			await deleteCourse(course!.courseId as number)
 			onClose(false)
-			toast.success("Asignatura eliminada correctamente")
+			toast.success("Asignatura eliminada exitosamente")
 		} catch (error) {
 			toast.error("Error al eliminar la asignatura")
 		}

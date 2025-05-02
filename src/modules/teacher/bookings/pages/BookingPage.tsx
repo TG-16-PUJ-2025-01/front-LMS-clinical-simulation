@@ -1,27 +1,33 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useParams } from "react-router-dom"
-import Practice from "@/modules/core/models/practice"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
-import { getPracticeById } from "@/modules/shared/practices/services/PracticeService"
 import { SimulationDataTable } from "@/modules/shared/bookings/components/SimulationDataTable"
 import NavBar from "@/modules/core/components/Headers/NavBar"
+import { usePracticeStore } from "@/modules/core/stores/practiceStore"
+import { useClassStore } from "@/modules/core/stores/classStore"
 
 export default function PracticeDetailsPage() {
 	const { classId, practiceId } = useParams()
-	const [practice, setPractice] = useState<Practice | null>(null)
+	const practice = usePracticeStore((state) => state.practice)
+	const setPractice = usePracticeStore((state) => state.setPractice)
+	const classData = useClassStore((state) => state.class)
+	const setClassData = useClassStore((state) => state.setClass)
 
 	useEffect(() => {
 		const fetchPractice = async () => {
 			if (!practiceId || isNaN(Number(practiceId))) return
-			const res = await getPracticeById(Number(practiceId))
-			setPractice(res.data)
+			setPractice(Number(practiceId))
 		}
 		fetchPractice()
 	}, [practiceId])
 
-	if (!practice) {
-		return <p>Cargando...</p>
-	}
+	useEffect(() => {
+		const fetchClass = async () => {
+			if (!classId || Number(classId) === classData?.classId) return
+			setClassData(Number(classId))
+		}
+		fetchClass()
+	}, [classId])
 
 	return (
 		<>
@@ -41,18 +47,24 @@ export default function PracticeDetailsPage() {
 							href: "/profesor/rubricas",
 						},
 						{
-							label: `Volver a clase`,
-							href: `/profesor/clases/${classId}/practicas`,
+							label: "Miembros de la clase",
+							href: `/profesor/clases/${classId}/miembros`,
 						},
 						{
-                            label: "Calificaciones",
-                            href: `/profesor/clases/${classId}/calificaciones`,
-                        },
+							label: "Calificaciones",
+							href: `/profesor/clases/${classId}/calificaciones`,
+						},
+						{
+							label: `Volver a la clase`,
+							href: `/profesor/clases/${classId}/practicas`,
+						},
 					]}
 				/>
 			</LayoutSlot>
-			<LayoutSlot name="title">{practice.name}</LayoutSlot>
-			<SimulationDataTable practice={practice}/>
+			<LayoutSlot name="title">
+				({classData?.javerianaId ?? ""}) {classData?.course.name ?? ""} - {practice?.name ?? ""}
+			</LayoutSlot>
+			{!practice ? <p>Cargando...</p> : <SimulationDataTable practice={practice} />}
 		</>
 	)
 }

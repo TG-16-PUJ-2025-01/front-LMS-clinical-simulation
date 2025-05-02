@@ -191,10 +191,10 @@ export default function CreateRubricTemplateDialog({ open, onClose }: Props) {
 
 			onClose(false)
 
-			toast.success("Rubrica creada correctamente")
+			toast.success("Rúbrica creada exitosamente")
 		} catch (error) {
 			console.error(error)
-			toast.error("Error al crear la rubrica")
+			toast.error("Error al crear la rúbrica")
 		}
 	}
 

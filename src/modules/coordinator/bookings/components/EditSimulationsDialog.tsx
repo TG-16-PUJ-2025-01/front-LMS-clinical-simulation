@@ -8,7 +8,7 @@ import { getSchedule } from "../services/bookingService";
 import Simulation from "@/modules/core/models/simulation";
 import EditSimulationsForm from "./EditSimulationsForm";
 import { createCalendarControlsPlugin } from "@schedule-x/calendar-controls";
-import { add } from "date-fns";
+import { toast } from "sonner";
 
 interface EditSimulationsDialogProps {
   open: boolean;
@@ -42,14 +42,7 @@ export default function EditSimulationsDialog({ open, onClose, simulation }: Edi
       selectedDate: selectedDate.toISOString().split('T')[0],
       callbacks: {
         onSelectedDateUpdate(date) {
-          if (date) {
-            // Mantener la hora actual al cambiar la fecha
-            const newDate = new Date(date);
-            const hours = selectedDate.getHours();
-            const minutes = selectedDate.getMinutes();
-            newDate.setHours(hours, minutes);
-            setSelectedDate(newDate);
-          }
+            setSelectedDate(new Date(date));
         },
       }
     },
@@ -97,12 +90,6 @@ export default function EditSimulationsDialog({ open, onClose, simulation }: Edi
 
   if (!simulation) return null;
 
-  const addOneDay = (date: Date): Date => {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + 1);
-    return newDate;
-  };
-
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col gap-4">
@@ -114,7 +101,7 @@ export default function EditSimulationsDialog({ open, onClose, simulation }: Edi
           <EditSimulationsForm 
             onClose={onClose} 
             simulation={simulation}
-            selectedDate={addOneDay(selectedDate)}
+            selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
           />
         </div>

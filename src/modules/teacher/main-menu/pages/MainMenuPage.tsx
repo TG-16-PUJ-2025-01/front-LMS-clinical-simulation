@@ -1,4 +1,3 @@
-import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
@@ -76,20 +75,6 @@ export default function MainMenuPage() {
 
 	return (
 		<>
-			<LayoutSlot name="header">
-				<NavBar
-					navLinks={[
-						{
-							label: "Asignaturas",
-							href: `/profesor/asignaturas`,
-						},
-						{
-							label: "Calendario",
-							href: "/profesor/calendario",
-						},
-					]}
-				/>
-			</LayoutSlot>
 			<LayoutSlot name="title">Tus Clases</LayoutSlot>
 			<div className="mb-4 flex items-center justify-between gap-4">
 				<div className="relative w-1/2 max-w-sm">
@@ -126,9 +111,9 @@ export default function MainMenuPage() {
 					</Button>
 				</div>
 			</div>
-			<div className="flex justify-center">
+			<div className="flex min-h-[60vh] justify-center">
 				{data.length === 0 ? (
-					<p className="text-gray-500">No se encontraron clases</p>
+					<p className="mt-6 text-gray-500">No se encontraron clases</p>
 				) : (
 					<div className="mt-6 grid w-full grid-cols-[repeat(auto-fit,300px)] justify-between gap-y-6">
 						{data.map((classItem) => (

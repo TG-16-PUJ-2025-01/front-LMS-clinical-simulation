@@ -21,7 +21,7 @@ export default function VerifyPasswordResetForm({ email, onSuccess, onBack }: Ve
         try {
             const response = await verifyPasswordReset(email, token);
             if (response === 200) {
-                setMessage("Token verificado correctamente.");
+                setMessage("Token verificado exitosamente.");
                 setError("");
                 onSuccess(token);
             } else {

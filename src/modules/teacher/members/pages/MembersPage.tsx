@@ -1,26 +1,19 @@
-import { getClass } from "@/modules/admin/classes/services/classService"
 import NavBar from "@/modules/core/components/Headers/NavBar"
 import LayoutSlot from "@/modules/core/components/Slots/LayoutSlot"
-import Class from "@/modules/core/models/class"
+import { useClassStore } from "@/modules/core/stores/classStore"
 import { StudentsClassDataTable } from "@/modules/shared/members/components/MembersClassDataTable"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useParams } from "react-router-dom"
-import { toast } from "sonner"
 
 export default function MembersPage() {
 	const { id } = useParams()
-	const [classData, setClassData] = useState<Class | null>(null)
+	const classData = useClassStore((state) => state.class)
+	const setClassData = useClassStore((state) => state.setClass)
 
 	useEffect(() => {
 		const fetchClass = async () => {
-			if (!id) return
-			try {
-				const res = await getClass(Number(id))
-				setClassData(res.data)
-			} catch (error) {
-				console.error(error)
-				toast.error("No se encuentra la clase")
-			}
+			if (!id || Number(id) === classData?.classId) return
+			setClassData(Number(id))
 		}
 		fetchClass()
 	}, [id])
@@ -43,17 +36,23 @@ export default function MembersPage() {
 							href: "/profesor/rubricas",
 						},
 						{
+							label: "Miembros de la clase",
+							href: `/profesor/clases/${id}/miembros`,
+						},
+						{
 							label: "Calificaciones",
 							href: `/profesor/clases/${id}/calificaciones`,
 						},
 						{
-							label: `(${classData?.javerianaId ?? ""}) ${classData?.course.name ?? ""}`,
+							label: "Volver a la clase",
 							href: `/profesor/clases/${id}/practicas`,
 						},
 					]}
 				/>
 			</LayoutSlot>
-			<LayoutSlot name="title">Miembros de la Clase</LayoutSlot>
+			<LayoutSlot name="title">
+				({classData?.javerianaId ?? ""}) {classData?.course.name ?? ""} - Miembros de la Clase
+			</LayoutSlot>
 			<StudentsClassDataTable />
 		</>
 	)

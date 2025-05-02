@@ -13,9 +13,10 @@ interface ViewGroupsDialog {
 	open: boolean
 	onClose: () => void
 	practiceId: number
+	maxNumStudentsPerGroup: number
 }
 
-export default function ViewGroupsDialog({ open, onClose, practiceId }: ViewGroupsDialog) {
+export default function ViewGroupsDialog({ open, onClose, practiceId, maxNumStudentsPerGroup }: ViewGroupsDialog) {
 	const handleEnroll = async (simulationId: number) => {
 		try {
 			await joinSimulation(simulationId)
@@ -37,7 +38,7 @@ export default function ViewGroupsDialog({ open, onClose, practiceId }: ViewGrou
 						hay cupos o que la simulación ya fue realizada.
 					</DialogDescription>
 				</DialogHeader>
-				<GroupsDataTable practiceId={practiceId} onEnroll={handleEnroll} />
+				<GroupsDataTable practiceId={practiceId} onEnroll={handleEnroll} maxNumStudentsPerGroup={maxNumStudentsPerGroup} />
 			</DialogContent>
 		</Dialog>
 	)

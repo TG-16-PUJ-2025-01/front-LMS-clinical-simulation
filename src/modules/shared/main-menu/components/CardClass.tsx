@@ -25,7 +25,7 @@ export function CardClass({ classData, onClick }: CardProps) {
 			<CardContent className="flex flex-row items-end p-2">
 				<div className="flex flex-1 flex-col gap-2 text-xl">
 					<CardTitle>
-						{classData.course.name} - {classData.course.javerianaId}
+						{classData.course.name} - {classData.javerianaId}
 					</CardTitle>
 					<CardDescription>
 						<p>
@@ -35,7 +35,7 @@ export function CardClass({ classData, onClick }: CardProps) {
 							<strong>Profesores:</strong> {classData.professors.map((p) => p.name).join(", ")}
 						</p>
 						<p>
-							<strong>Número de Clase:</strong> {classData.javerianaId}
+							<strong>Número de Asignatura:</strong> {classData.course.javerianaId}
 						</p>
 					</CardDescription>
 				</div>

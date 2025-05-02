@@ -44,10 +44,12 @@ import DeleteStudentClassDialog from "./deleteStudentDialog"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Class from "@/modules/core/models/class"
-import { AxiosError } from "axios"
+import { all, AxiosError } from "axios"
+import { FileLoader } from "../../fileLoader/FileLoaderButon"
+import { FileDownloader } from "../../fileLoader/fileDownloaderButton"
+
 
 export function StudentsClassDataTable() {
-	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
@@ -73,64 +75,33 @@ export function StudentsClassDataTable() {
 	})
 
 	//PARA HOJAS DE EXCEL
-	const [excelFile, setExcelFile] = useState<string | ArrayBuffer | File | null>(null)
 	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
-	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const fileTypes = [
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			"application/vnd.ms-excel",
-			"text/csv",
-		]
-		const files = e.target.files
-		if (files && files.length > 0) {
-			const selectedFile = files[0]
-			console.log(selectedFile.type)
-
-			if (fileTypes.includes(selectedFile.type)) {
-				//setExcelFile(selectedFile)
-				e.target.value = "" // Aquí forzamos el cambio del input
-				const reader = new FileReader()
-				reader.readAsArrayBuffer(selectedFile)
-				reader.onload = (e) => {
-					if (e.target?.result) {
-						setExcelFile(e.target.result)
-					}
-				}
-			} else {
-				toast.error("Tipo de archivo no permitido")
-				setExcelFile(null)
-			}
-		}
-	}
-
-	useEffect(() => {
-		if (excelFile !== null && typeof excelFile !== "string") {
+	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
 			console.log("Leyendo archivo Excel...")
-
-			const workbook = XLSX.read(excelFile, { type: "buffer" })
+		
+			const workbook = XLSX.read(fileBuffer, { type: "buffer" })
 			const workbookSheetName = workbook.SheetNames[0]
 			const worksheet = workbook.Sheets[workbookSheetName]
 			const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
-
-			//processar datos
-			// Validar formato esperado del archivo Excel
+		
 			const validFormat = data.every(
 				(item) => "institutionalId" in item && "rol" in item && typeof item.rol === "string"
 			)
-
+		
 			if (!validFormat) {
 				toast.error("El formato del archivo Excel no es el esperado.")
 				setExcelData(null)
 				return
 			}
+		
 
-			const results: Class[] = []
+			let results: Class[] = []
 
 			let allCorrect = true
 
 			const processData = async () => {
-				const promises = data.map(async (item) => {
+				const promises = data.map(async (item, index) => {
 					if (item.rol.toLowerCase() === "profesor") {
 						// Llama al servicio y agrega al resultado
 						try {
@@ -141,9 +112,7 @@ export function StudentsClassDataTable() {
 							results.push(updatedClass)
 						} catch (error) {
 							console.log(error)
-							toast.error(
-								error instanceof AxiosError ? error.response?.data.data : "Error desconocido"
-							)
+							toast.error(error instanceof AxiosError ? error.response?.data.data : `Error desconocido en la fila ${index + 1}`)
 							allCorrect = false
 						}
 					} else if (item.rol.toLowerCase() === "estudiante") {
@@ -152,13 +121,12 @@ export function StudentsClassDataTable() {
 							const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
 							results.push(updatedClass)
 						} catch (error) {
-							toast.error(
-								error instanceof AxiosError ? error.response?.data.data : "Error desconocido"
-							)
+
+							toast.error(error instanceof AxiosError ? error.response?.data.data : `Error desconocido en la fila ${index + 1}`)
 							allCorrect = false
 						}
 					} else {
-						toast.error(`El rol ${item.rol.toLowerCase()} no es válido`)
+						toast.error(`El rol ${item.rol.toLowerCase()} no es válido en la fila ${index + 1}`)
 						allCorrect = false
 					}
 				})
@@ -180,9 +148,8 @@ export function StudentsClassDataTable() {
 
 			// Ejecutar la función asíncrona principal
 			processData()
-		}
-	}, [excelFile])
-
+	}
+	
 	useEffect(() => {
 		if (openDialog) return
 
@@ -386,23 +353,9 @@ export function StudentsClassDataTable() {
 						<Button onClick={() => handleOpenDialog("students")}>Añadir estudiantes</Button>
 						<Button onClick={() => handleOpenDialog("professors")}>Añadir profesores</Button>
 						<div>
-							{/* Botón que abre el input de archivo */}
-							<Button
-								className="bg-green-800 hover:bg-green-500"
-								onClick={() => fileInputRef.current?.click()} // Abre el input al hacer clic
-							>
-								<Sheet className="h-4 w-4 text-white" />
-								Cargar archivo
-							</Button>
-
-							{/* Input de archivo oculto */}
-							<input
-								type="file"
-								ref={fileInputRef}
-								onChange={handleFile}
-								style={{ display: "none" }} // Ocultar el input visualmente
-							/>
+							<FileLoader onFileLoaded={handleExcelFile}  buttonText="Subir Archivo" />
 						</div>
+						<FileDownloader fileName="class members" />
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">

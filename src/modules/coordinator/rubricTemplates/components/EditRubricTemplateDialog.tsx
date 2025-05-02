@@ -147,10 +147,10 @@ export default function EditRubricTemplateDialog({ open, onClose, rubricTemplate
 			});
 
 			onClose(false)
-			toast.success("Rubrica actualizada correctamente")
+			toast.success("Rúbrica actualizada exitosamente")
 		} catch (error) {
 			console.error(error)
-			toast.error("Error al actualizar la rubrica")
+			toast.error("Error al actualizar la rúbrica")
 		}
 	}
 
@@ -160,7 +160,7 @@ export default function EditRubricTemplateDialog({ open, onClose, rubricTemplate
 				<DialogHeader>
 					<DialogTitle>Editar Rúbrica</DialogTitle>
 					<DialogDescription>
-						Puedes editar los siguientes atributos de la rubrica
+						Puedes editar los siguientes atributos de la rúbrica
 					</DialogDescription>
 				</DialogHeader>
 				{rubricTemplateData && (
