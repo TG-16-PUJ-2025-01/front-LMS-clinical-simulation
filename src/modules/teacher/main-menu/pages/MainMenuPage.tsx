@@ -107,7 +107,7 @@ export default function MainMenuPage() {
 						}
 					/>
 					<Button variant="default" onClick={resetFilters}>
-						Resetear Filtros
+						Reiniciar Filtros
 					</Button>
 				</div>
 			</div>
