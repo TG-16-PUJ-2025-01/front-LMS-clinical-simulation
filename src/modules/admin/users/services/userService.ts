@@ -28,6 +28,11 @@ export async function createUser(newUser: CreateUserDTO): Promise<ApiResponse<Us
     return data;
 }
 
+export async function createUserByExcel(newUser: CreateUserDTO): Promise<ApiResponse<User>> {
+    const { data } = await axios.post(`${API_URL}/user/add/excel`, newUser);
+    return data;
+}
+
 export async function updateUser(id: number, updatedUser: CreateUserDTO): Promise<ApiResponse<User>> {
     const { data } = await axios.put(`${API_URL}/user/update/${id}`, updatedUser);
     return data;

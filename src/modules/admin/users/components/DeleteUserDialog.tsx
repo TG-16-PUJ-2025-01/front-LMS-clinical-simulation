@@ -24,7 +24,7 @@ export default function DeleteUserDialog({ open, onClose, user }: Props) {
 		try {
 			await deleteUser(user!.id as number)
 			onClose(false)
-			toast.success("Usuario eliminado correctamente")
+			toast.success("Usuario eliminado exitosamente")
 		} catch {
 			toast.error("Error al eliminar el usuario")
 		}

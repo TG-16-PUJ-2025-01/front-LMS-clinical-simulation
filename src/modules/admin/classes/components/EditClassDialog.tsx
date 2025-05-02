@@ -123,7 +123,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 			})
 
 			onClose(false)
-			toast.success("Clase actualizada correctamente")
+			toast.success("Clase actualizada exitosamente")
 		} catch (error) {
 			toast.error("Error al actualizar la clase")
 		}

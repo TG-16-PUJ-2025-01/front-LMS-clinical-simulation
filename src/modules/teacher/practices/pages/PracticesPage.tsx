@@ -10,15 +10,15 @@ import EditPracticeDialog from "../../../shared/practices/components/EditPractic
 import AddPracticeDialog from "../../../shared/practices/components/AddPracticeDialog"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
-import { getClass } from "@/modules/admin/classes/services/classService"
-import Class from "@/modules/core/models/class"
+import { useClassStore } from "@/modules/core/stores/classStore"
 
 export default function PracticesPage() {
 	const navigate = useNavigate()
 	const { id } = useParams()
 	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "add" | null>(null)
 	const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null)
-	const [classData, setClassData] = useState<Class | null>(null)
+	const classData = useClassStore((state) => state.class)
+	const setClassData = useClassStore((state) => state.setClass)
 
 	const [data, setData] = useState<Practice[]>([])
 
@@ -40,14 +40,8 @@ export default function PracticesPage() {
 
 	useEffect(() => {
 		const fetchClass = async () => {
-			if (!id) return
-			try {
-				const res = await getClass(Number(id))
-				setClassData(res.data)
-			} catch (error) {
-				console.error(error)
-				toast.error("No se encuentra la clase")
-			}
+			if (!id || Number(id) === classData?.classId) return
+			setClassData(Number(id))
 		}
 		fetchClass()
 	}, [id])
@@ -86,7 +80,7 @@ export default function PracticesPage() {
 							href: "/profesor/rubricas",
 						},
 						{
-							label: "Miembros de la Clase",
+							label: "Miembros de la clase",
 							href: `/profesor/clases/${id}/miembros`,
 						},
 						{
@@ -137,6 +131,7 @@ export default function PracticesPage() {
 				open={openDialog === "add"}
 				onClose={handleCloseDialog}
 				onPracticeCreated={handlePracticeNavigation}
+				numberOfParticipants={classData?.numberOfParticipants ?? 0}
 			/>
 		</>
 	)

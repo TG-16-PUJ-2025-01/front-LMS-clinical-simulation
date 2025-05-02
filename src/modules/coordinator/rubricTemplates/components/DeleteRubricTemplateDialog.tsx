@@ -27,16 +27,16 @@ export default function DeleteRubricTemplateDialog({
 		try {
 			await deleteRubricTemplate(rubricTemplateToDelete!.rubricTemplateId!)
 			onClose(false)
-			toast.success("Rubrica eliminada correctamente")
+			toast.success("Rúbrica eliminada exitosamente")
 		} catch (error) {
 			if (
 				error instanceof Error &&
 				(error as { response?: { status?: number } }).response?.status === 400
 			) {
-				toast.error("No se puede eliminar la rubrica porque esta siendo utilizada en cursos")
+				toast.error("No se puede eliminar la rúbrica porque esta siendo utilizada en cursos")
 			} else {
 				console.error(error)
-				toast.error("Error al eliminar la rubrica")
+				toast.error("Error al eliminar la rúbrica")
 			}
 		}
 	}
@@ -45,9 +45,9 @@ export default function DeleteRubricTemplateDialog({
 		<AlertDialog open={open}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>¿Seguro que desea eliminar la rubrica?</AlertDialogTitle>
+					<AlertDialogTitle>¿Seguro que desea eliminar la rúbrica?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y deberá volver a crear dicha rubrica
+						Esta acción no es reversible y deberá volver a crear dicha rúbrica
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>

@@ -39,52 +39,60 @@ interface Props {
 	open: boolean
 	onClose: (open: boolean) => void
 	onPracticeCreated: (practice: Practice) => void
+	numberOfParticipants: number
 }
 
-const formSchema = z
-	.object({
-		name: z.string().nonempty({ message: "El nombre no puede estar vacío" }),
-		description: z.string().nonempty({ message: "La descripción no puede estar vacía" }),
-		type: z.string().nonempty({ message: "El tipo no puede estar vacío" }),
-		gradeable: z.boolean(),
-		simulationDuration: z.number().int().min(1, {
-			message: "La duración de la simulación debe ser mayor o igual a 15",
-		}),
-		numberOfGroups: z.number().int().optional(),
-		maxStudentsGroup: z.number().int().optional(),
-	})
-	.refine(
-		(data) => {
-			if (data.type === "GRUPAL") {
-				return data.numberOfGroups
+const getFormSchema = (numberOfParticipants: number) =>
+	z
+		.object({
+			name: z.string().nonempty({ message: "El nombre no puede estar vacío" }),
+			description: z.string().nonempty({ message: "La descripción no puede estar vacía" }),
+			type: z.string().nonempty({ message: "El tipo no puede estar vacío" }),
+			gradeable: z.boolean(),
+			simulationDuration: z.number().int().min(1, {
+				message: "La duración de la simulación debe ser mayor o igual a 15",
+			}),
+			numberOfGroups: z.number().int().optional(),
+			maxStudentsGroup: z.number().int().optional(),
+		})
+		.refine(
+			(data) => {
+				if (data.type === "GRUPAL") {
+					return data.numberOfGroups && data.maxStudentsGroup
+				}
+				return true
+			},
+			{
+				message: "Debe ingresar el número de grupos y el máximo de estudiantes por grupo",
+				path: ["numberOfGroups"],
 			}
-			return true
-		},
-		{
-			message: "Debe ingresar el número de grupos y el máximo de estudiantes por grupo",
-			path: ["numberOfGroups"],
-		}
-	)
-	.refine(
-		(data) => {
-			if (data.type === "GRUPAL") {
-				return data.maxStudentsGroup
+		)
+		.refine(
+			(data) => {
+				if (data.type === "GRUPAL") {
+					return data.numberOfGroups! * data.maxStudentsGroup! >= numberOfParticipants
+				}
+				return true
+			},
+			{
+				message:
+					"El número total de estudiantes por grupo no cubre el número de participantes de la clase",
+				path: ["numberOfGroups"],
 			}
-			return true
-		},
-		{
-			message: "No debe ingresar el número de grupos ni el máximo de estudiantes por grupo",
-			path: ["maxStudentsGroup"],
-		}
-	)
+		)
 
-export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: Props) {
+export default function AddPracticeDialog({
+	open,
+	onClose,
+	onPracticeCreated,
+	numberOfParticipants,
+}: Props) {
 	const [isGroupPractice, setIsGroupPractice] = useState<boolean>(true)
 	const [, setPractice] = useState<Practice | null>(null)
 	const { id } = useParams()
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<z.infer<ReturnType<typeof getFormSchema>>>({
+		resolver: zodResolver(getFormSchema(numberOfParticipants)),
 		defaultValues: {
 			name: "",
 			description: "",
@@ -102,7 +110,7 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 		}
 	}, [open, form])
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
+	async function onSubmit(values: z.infer<ReturnType<typeof getFormSchema>>) {
 		try {
 			const newPractice: PracticeDto = {
 				name: values.name,
@@ -147,14 +155,11 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 								name="name"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel htmlFor="name" className="m-0 text-right">Nombre</FormLabel>
+										<FormLabel htmlFor="name" className="m-0 text-right">
+											Nombre
+										</FormLabel>
 										<FormControl>
-											<Input
-												id="name"
-												placeholder="Nombre"
-												className="col-span-3 m-0"
-												{...field}
-											/>
+											<Input id="name" placeholder="Nombre" className="col-span-3 m-0" {...field} />
 										</FormControl>
 										<FormMessage className="col-span-4 m-0 -mt-2 text-right" />
 									</FormItem>
@@ -165,7 +170,9 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 								name="description"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel htmlFor="description" className="m-0 text-right">Descripción</FormLabel>
+										<FormLabel htmlFor="description" className="m-0 text-right">
+											Descripción
+										</FormLabel>
 										<FormControl>
 											<Input
 												id="description"
@@ -183,7 +190,9 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 								name="type"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel htmlFor="type" className="m-0 text-right">Tipo</FormLabel>
+										<FormLabel htmlFor="type" className="m-0 text-right">
+											Tipo
+										</FormLabel>
 										<FormControl>
 											<Select
 												name="type"
@@ -211,7 +220,9 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 								name="gradeable"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel htmlFor="gradeable" className="text-right">Evaluación</FormLabel>
+										<FormLabel htmlFor="gradeable" className="text-right">
+											Evaluación
+										</FormLabel>
 										<div className="col-span-3 flex items-center gap-2">
 											<FormControl>
 												<Checkbox
@@ -232,7 +243,9 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 								name="simulationDuration"
 								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
-										<FormLabel htmlFor="simulationDuration" className="m-0 text-right">Duración Simulación</FormLabel>
+										<FormLabel htmlFor="simulationDuration" className="m-0 text-right">
+											Duración Simulación
+										</FormLabel>
 										<FormControl>
 											<div className="col-span-3 flex items-center">
 												<Input
@@ -254,13 +267,15 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 								)}
 							/>
 							{isGroupPractice && (
-								<>
+								<div className="space-y-4">
 									<FormField
 										control={form.control}
 										name="numberOfGroups"
 										render={({ field }) => (
 											<FormItem className="grid grid-cols-4 items-center gap-4">
-												<FormLabel htmlFor="numberOfGroups" className="m-0 text-right">Número de grupos</FormLabel>
+												<FormLabel htmlFor="numberOfGroups" className="m-0 text-right">
+													Número de grupos
+												</FormLabel>
 												<FormControl>
 													<Input
 														id="numberOfGroups"
@@ -283,7 +298,9 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 										name="maxStudentsGroup"
 										render={({ field }) => (
 											<FormItem className="grid grid-cols-4 items-center gap-4">
-												<FormLabel htmlFor="maxStudentsGroup" className="m-0 text-right">Máximo estudiantes por grupo</FormLabel>
+												<FormLabel htmlFor="maxStudentsGroup" className="m-0 text-right">
+													Máximo estudiantes por grupo
+												</FormLabel>
 												<FormControl>
 													<Input
 														id="maxStudentsGroup"
@@ -301,7 +318,36 @@ export default function AddPracticeDialog({ open, onClose, onPracticeCreated }: 
 											</FormItem>
 										)}
 									/>
-								</>
+									{/* Mensaje dinámico */}
+									<div className="col-span-4 mt-4 text-sm text-gray-600">
+										{form.watch("numberOfGroups") && form.watch("maxStudentsGroup") ? (
+											<>
+												<p>
+													Capacidad total:{" "}
+													<strong>
+														{(form.watch("numberOfGroups") ?? 0) *
+															(form.watch("maxStudentsGroup") ?? 0)}
+													</strong>{" "}
+													estudiantes
+												</p>
+												{(form.watch("numberOfGroups") ?? 0) *
+													(form.watch("maxStudentsGroup") ?? 0) <
+												numberOfParticipants ? (
+													<p className="text-red-500">
+														La capacidad total no cubre el número de participantes de la clase (
+														{numberOfParticipants}).
+													</p>
+												) : (
+													<p className="text-green-500">
+														La capacidad total cubre el número de participantes de la clase.
+													</p>
+												)}
+											</>
+										) : (
+											<p>Ingrese el número de grupos y el máximo de estudiantes por grupo.</p>
+										)}
+									</div>
+								</div>
 							)}
 						</div>
 						<DialogFooter>

@@ -233,7 +233,7 @@ export function RubricTemplateDataTable() {
 							</div>
 						</RadioGroup>
 					</div>
-					<Button onClick={() => handleOpenDialog("create")}>Nueva Rubrica</Button>
+					<Button onClick={() => handleOpenDialog("create")}>Nueva Rúbrica</Button>
 				</div>
 				<div className="mt-4 rounded-md border">
 					<Table>

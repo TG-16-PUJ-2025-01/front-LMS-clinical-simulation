@@ -40,6 +40,7 @@ import Practice from "@/modules/core/models/practice"
 import CreateSimulationsDialog from "../../../coordinator/bookings/components/CreateSimulationsDialog"
 import EditSimulationsDialog from "../../../coordinator/bookings/components/EditSimulationsDialog"
 import ViewMembersDialog from "../../../coordinator/bookings/components/ViewMembersDialog"
+import { usePreferencesStore } from "@/modules/core/stores/preferencesStore"
 
 interface Props {
 	practice: Practice
@@ -52,6 +53,7 @@ export function SimulationDataTable({ practice }: Props) {
 	const [rowSelection, setRowSelection] = useState({})
 	const { practiceId } = useParams()
 	const navigate = useNavigate()
+	const preferredRole = usePreferencesStore((state) => state.preferredRole)
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -232,7 +234,7 @@ export function SimulationDataTable({ practice }: Props) {
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
 							<DropdownMenuItem
-								onClick={() => navigate(`/coordinador/simulacion/${simulation.simulationId}`)}
+								onClick={() => navigate(`/${preferredRole!.toLowerCase()}/simulacion/${simulation.simulationId}`)}
 							>
 								<Pencil /> Calificar
 							</DropdownMenuItem>
@@ -368,6 +370,7 @@ export function SimulationDataTable({ practice }: Props) {
 				open={isViewMembersOpen}
 				onClose={() => setIsViewMembersOpen(false)}
 				simulationId={selectedSimulation?.simulationId ?? 0}
+				maxStudents={practice.maxStudentsGroup ?? 0}
 			/>
 			<AssignRubricDialog
 				open={isAssignRubricOpen}
