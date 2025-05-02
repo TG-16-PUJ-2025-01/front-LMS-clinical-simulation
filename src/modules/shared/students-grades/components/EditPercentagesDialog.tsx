@@ -20,12 +20,6 @@ type Props = {
   classId: number
 }
 
-type Practice = {
-  id: number
-  name: string
-  gradePercentage: number
-}
-
 type PracticePercentage = {
   practiceId: number
   name: string
@@ -43,11 +37,11 @@ export function EditPercentagesDialog({ open, onClose, classId }: Props) {
         .then((response) => {
           if (response.data) {
             const practicesData = response.data
-              .filter((practice: any) => practice.gradeable) // Solo las prácticas calificables
+              .filter((practice: any) => practice.gradeable)
               .map((practice: any) => ({
                 practiceId: practice.id,
                 name: practice.name,
-                percentage: practice.gradePercentage ?? 0 // Manejo de null por si acaso
+                percentage: practice.gradePercentage ?? 0
               }))
             setPractices(practicesData)
           }
@@ -71,7 +65,6 @@ export function EditPercentagesDialog({ open, onClose, classId }: Props) {
     try {
       setLoading(true)
       
-      // Crear el payload exactamente como lo espera el backend
       const payload = {
         practicesPercentages: practices.map(({ practiceId, percentage }) => ({
           practiceId,
