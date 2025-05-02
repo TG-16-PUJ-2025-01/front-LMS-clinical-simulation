@@ -5,7 +5,6 @@ import ApiResponse from "@/modules/core/models/apiResponse"
 
 interface EditVideo {
 	name: string
-	expirationDate: Date
 }
 
 export async function getVideos(
@@ -30,7 +29,6 @@ export async function getVideos(
 		data: data.data.map((video: Video) => ({
 			...video,
 			recordingDate: new Date(video.recordingDate),
-			expirationDate: new Date(video.expirationDate),
 		})),
 	}
 }
@@ -43,7 +41,6 @@ export async function updateVideo(videoId: number, video: EditVideo): Promise<Ap
 		data: {
 			...data.data,
 			recordingDate: new Date(data.data.recordingDate),
-			expirationDate: new Date(data.data.expirationDate),
 		},
 	}
 }
@@ -61,7 +58,6 @@ export async function setVideoAsUnavailable(videoId: number): Promise<ApiRespons
 		data: {
 			...data.data,
 			recordingDate: new Date(data.data.recordingDate),
-			expirationDate: new Date(data.data.expirationDate),
 		},
 	}
 }
