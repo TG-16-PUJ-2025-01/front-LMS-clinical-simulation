@@ -1,17 +1,18 @@
-import { API_URL } from "@/modules/core/config/env"
 import Video from "@/modules/core/models/video"
 import { VideoOff } from "lucide-react"
 import { useRef } from "react"
 import { Button } from "@/modules/core/components/ui/button"
 import { formatTimestamp } from "@/modules/core/lib/utils"
 import GradeStatus from "@/modules/core/models/gradeStatus"
+import { setVideoAsUnavailable } from "@/modules/admin/videos/services/videoService"
 
 interface Props {
 	video?: Video
 	gradeStatus?: GradeStatus
+	sync?: () => void
 }
 
-export default function VideoTab({ video, gradeStatus }: Props) {
+export default function VideoTab({ video, gradeStatus, sync }: Props) {
 	const videoRef = useRef<HTMLVideoElement>(null)
 
 	return (
@@ -19,9 +20,21 @@ export default function VideoTab({ video, gradeStatus }: Props) {
 			{video?.name ? (
 				<video
 					ref={videoRef}
-					src={`${API_URL}/streaming/video/${video?.name}`}
+					src={video?.videoUrl}
 					className="aspect-video w-full rounded-md"
 					controls
+					onError={(e) => {
+						const videoElement = e.currentTarget;
+						if (videoElement.error?.code === MediaError.MEDIA_ERR_NETWORK) {
+							console.error("Network error occurred while loading the video.");
+						} else if (videoElement.error?.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
+							console.error("The video source is not supported or a 404 error occurred.");
+							setVideoAsUnavailable(video?.videoId ?? 0)
+							sync?.()
+						} else {
+							console.error("An unknown error occurred while loading the video.");
+						}
+					}}
 				></video>
 			) : (
 				<div className="flex aspect-video w-full flex-col items-center justify-center gap-6">

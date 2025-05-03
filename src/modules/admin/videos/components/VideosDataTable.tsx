@@ -143,31 +143,6 @@ export function VideosDataTable() {
 			),
 		},
 		{
-			accessorKey: "expirationDate",
-			header: ({ column }) => {
-				return (
-					<div className="relative w-full">
-						<Button
-							variant="ghost"
-							className="mx-auto flex"
-							onClick={() => {
-								column.toggleSorting(column.getIsSorted() === "asc")
-								setPagination({ ...pagination, pageIndex: 0 })
-							}}
-						>
-							Fecha de Expiración
-							{column.getIsSorted() && <ArrowUpDown />}
-						</Button>
-					</div>
-				)
-			},
-			cell: ({ row }) => (
-				<div className="text-center">
-					{(row.getValue("expirationDate") as Date).toLocaleDateString()}
-				</div>
-			),
-		},
-		{
 			accessorKey: "duration",
 			header: ({ column }) => {
 				return (
