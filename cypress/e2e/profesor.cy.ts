@@ -99,7 +99,26 @@ describe("Teacher flow tests", () => {
 
 		cy.get("h1").invoke("text").should("contain", "(20001) Semiología Clínica - Prueba")
 
-		cy.step("Step 9 - Editar práctica")
+		cy.step("Step 9 - Crear reservas")
+		cy.get("button").contains("Crear Reserva").click()
+		cy.get('div[role="dialog"]').within(() => {
+			cy.get("h2").invoke("text").should("contain", "Reservar las prácticas")
+			cy.contains('No hay reservas en el carrito aún').should('be.visible');
+		})
+
+		//TODO: Finish steps 10-12 and fix steps afterwards
+		cy.step("Step 10 - Datos reserva")
+		cy.get('div[role="dialog"]').within(() => {
+			cy.get("button").contains("Selecciona una fecha").click()
+		})
+
+		cy.step("Step 11 - Crear reserva y validar exito")
+
+		cy.step("Step 12 - Editar Reserva")
+
+		cy.pause();
+
+		cy.step("Step 13 - Editar práctica")
 		cy.get("nav")
 			.contains("button", "Volver a la clase")
 			.should("be.visible")
@@ -132,7 +151,7 @@ describe("Teacher flow tests", () => {
 					.should("contain", "Descripción de la prueba editada")
 			})
 
-		cy.step("Step 10 - Eliminar práctica")
+		cy.step("Step 14 - Eliminar práctica")
 		cy.get('[data-slot="card"]')
 			.last()
 			.within(() => {
@@ -145,23 +164,13 @@ describe("Teacher flow tests", () => {
 			.should("exist")
 			.and("contain.text", "Práctica eliminada exitosamente")
 
-		cy.step("Step 11 - Abrir práctica")
+		cy.step("Step 15 - Abrir práctica")
 		cy.get('[data-slot="card-title"]').contains("Práctica 1").click()
 		cy.get("h1").invoke("text").should("contain", "Práctica 1")
 		cy.get("h1").invoke("text").should("contain", "(20001) Semiología Clínica")
 		cy.get("table tbody tr").should("have.length", 3)
 
-		cy.step("Step 12 - Modal de modificar reservas")
-		// cy.get('button').contains('Modificar Reservas').click();
-		// TODO: Esperar a que andres arregle esta parte
-
-		cy.step("Step 13 - Ingresar datos de reserva")
-		// TODO: Esperar a que andres arregle esta parte
-
-		cy.step("Step 14 - Crear reserva y validar exito")
-		// TODO: Esperar a que andres arregle esta parte
-
-		cy.step("Step 15 - Apartado rúbrica")
+		cy.step("Step 16 - Apartado rúbrica")
 		cy.get("nav").contains("button", "Rúbricas").should("be.visible").and("not.be.disabled").click()
 		cy.get("h1").invoke("text").should("contain", "Rúbricas")
 		cy.get("button").contains("Nueva Rúbrica").click()
@@ -169,7 +178,7 @@ describe("Teacher flow tests", () => {
 		cy.get('[role="dialog"] h2').invoke("text").should("contain", "Crear Rúbrica")
 		cy.get('[role="dialog"] table').should("exist")
 
-		cy.step("Step 16 - Crear rúbrica con campos obligatorios")
+		cy.step("Step 17 - Crear rúbrica con campos obligatorios")
 		cy.get('input[placeholder="Título"]').type("Mi rúbrica de ejemplo")
 
 		cy.get("div.react-select__placeholder")
