@@ -248,7 +248,7 @@ describe("Teacher flow tests", () => {
 		cy.get("table tbody tr td").eq(0).should("contain.text", "Mi rúbrica de ejemplo")
 
 		const today = new Date()
-		const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
+		let formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
 
 		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
 
@@ -551,12 +551,14 @@ describe("Teacher flow tests", () => {
 			.and("not.be.disabled")
 			.click()
 
+		formattedDate = `${today.getDate().toString().padStart(2, "0")}/${(today.getMonth() + 1)
+			.toString()
+			.padStart(2, "0")}/${today.getFullYear()}`
+
 		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Calificado")
 		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
-		/*
 		cy.get("table tbody tr").eq(0).find("td").eq(4).should("contain.text", formattedDate)
 		cy.get("table tbody tr").eq(0).find("td").eq(5).should("contain.text", "3.2")
-		*/
 
 		cy.step("Step 32 - Ver calificaciónes")
 		cy.get("nav")
@@ -567,12 +569,9 @@ describe("Teacher flow tests", () => {
 
 		cy.get("h1").invoke("text").should("contain", "Calificaciones")
 
-		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
-		/*
 		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "3.2")
 		cy.get("table tbody tr").eq(4).find("td").eq(1).should("contain.text", "3.2")
 		cy.get("table tbody tr").eq(7).find("td").eq(1).should("contain.text", "3.2")
-		*/
 
 		cy.step("Step 33 - Modificar porcentajes prácticas")
 		//TODO: Falta que se implemente la funcionalidad de modificar porcentajes de prácticas
