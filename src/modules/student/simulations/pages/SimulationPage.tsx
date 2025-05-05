@@ -108,7 +108,11 @@ export default function SimulationPage() {
 									</li>
 								))}
 							</ul>
-							<VideoTab video={selectedVideo} gradeStatus={simulation?.gradeStatus} />
+							<VideoTab
+								video={selectedVideo}
+								gradeStatus={simulation?.gradeStatus}
+								sync={() => setIsSync(false)}
+							/>
 						</div>
 					) : (
 						<div className="flex aspect-video w-full flex-col items-center justify-center gap-6">
