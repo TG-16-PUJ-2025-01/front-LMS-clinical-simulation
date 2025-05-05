@@ -36,11 +36,12 @@ import { createUserByExcel, getUsers } from "../services/userService"
 import EditUserDialog from "./EditUserDialog"
 import User from "@/modules/core/models/user"
 import { UpdateMailConfigDialog } from "./UpdateMailConfigDialog"
-import { FileLoader } from "@/modules/shared/fileLoader/fileLoaderButon"
+import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Role from "@/modules/core/models/role"
 import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
+import { AxiosError } from "axios"
 
 export function UsersDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -97,7 +98,7 @@ export function UsersDataTable() {
 						totalPages: res.metadata.totalPages,
 					})
 				}
-			} catch (error) {
+			} catch (error: any) {
 				console.error("Error fetching users:", error)
 				setError(error.response?.data?.message || "Error al cargar los usuarios")
 				setData([])
@@ -170,7 +171,7 @@ export function UsersDataTable() {
 					console.error(`Error al crear el usuario en la fila ${index + 1}:`, error)
 
 					// Puedes incluso extraer más detalle del error si viene con mensaje del backend
-					toast.error(`Error en la fila ${index + 1}`)  
+					toast.error(`Error en la fila ${index + 1}`)
 				}
 			})
 
@@ -349,7 +350,7 @@ export function UsersDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center justify-between">
+				<div className="flex items-center justify-between gap-2">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -363,7 +364,7 @@ export function UsersDataTable() {
 						/>
 					</div>
 
-					<div className="mt-4 flex space-x-2">
+					<div className="flex space-x-2">
 						<Button onClick={() => setOpenMailConfigDialog(true)}>
 							Configurar servidor de correo
 						</Button>
