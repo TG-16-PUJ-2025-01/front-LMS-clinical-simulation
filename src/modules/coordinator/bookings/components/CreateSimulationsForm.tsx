@@ -93,7 +93,6 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
       return;
     }
 
-    console.log(selectedRooms);
 
     const newReservation: Reservation = {
       date: format(selectedDate, "yyyy-MM-dd"),
