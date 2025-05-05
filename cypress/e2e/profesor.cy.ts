@@ -103,20 +103,37 @@ describe("Teacher flow tests", () => {
 		cy.get("button").contains("Crear Reserva").click()
 		cy.get('div[role="dialog"]').within(() => {
 			cy.get("h2").invoke("text").should("contain", "Reservar las prácticas")
-			cy.contains('No hay reservas en el carrito aún').should('be.visible');
+			cy.contains("No hay reservas en el carrito aún").should("be.visible")
 		})
 
 		//TODO: Finish steps 10-12 and fix steps afterwards
 		cy.step("Step 10 - Datos reserva")
 		cy.get('div[role="dialog"]').within(() => {
 			cy.get("button").contains("Selecciona una fecha").click()
+			cy.contains("button", "25").click()
+			cy.get("h2").click() // Close date picker
+			cy.get("button").contains("Seleccionar hora de inicio").click()
+			cy.get('[data-value="10:00"]').click()
+			cy.get("h2").click()
+			cy.get("button").contains("Seleccionar hora de finalización").click()
+			cy.get('[data-value="11:30"]').click()
+			cy.get("h2").click() // Close time picker
+
+			cy.get("#react-select-3-placeholder").click({ force: true })
+			cy.contains("Consultorio 1").click()
+
+			cy.get("button").contains("Añadir reserva al carrito").click()
+
+			cy.get("div.border.p-2.rounded.h-full.overflow-auto p").should("contain.text", "Sala 1")
+			.and("contain.text", "10:00 - 11:30")
 		})
 
 		cy.step("Step 11 - Crear reserva y validar exito")
+		cy.get("button").contains("Finalizar reserva").click()
 
 		cy.step("Step 12 - Editar Reserva")
 
-		cy.pause();
+		cy.pause()
 
 		cy.step("Step 13 - Editar práctica")
 		cy.get("nav")
