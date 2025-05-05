@@ -22,8 +22,8 @@ export function CoursesDataTable() {
 	const [period, setPeriod] = useState<string>("")
 	const navigate = useNavigate()
 
-	const searchBy = ["Asignaturas", "Clases", "Profesores"]
-	const periodList = ["1", "2", "3", ""]
+	const searchBy = ["Asignaturas", "Profesores"]
+	const periodList = ["1", "2", "3"]
 	const currentYear = new Date().getFullYear()
 	const yearList = Array.from({ length: 21 }, (_, i) => currentYear - i)
 
@@ -61,38 +61,6 @@ export function CoursesDataTable() {
 		<>
 			<div className="flex items-center space-x-4">
 				<Combobox
-					placeholderText="Año"
-					options={yearList.map((key, index) => ({
-						key: index,
-						value: key.toString(),
-					}))}
-					itemName="por"
-					onChange={(selected) => {
-						if (selected?.value === year) {
-							setYear("") // Deselecciona si se selecciona lo mismo dos veces
-						} else {
-							setYear(selected?.value.toString() ?? "") // Actualiza el valor
-						}
-					}}
-				/>
-
-				<Combobox
-					placeholderText="Periodo"
-					options={periodList.map((key, index) => ({
-						key: index,
-						value: key,
-					}))}
-					itemName="por"
-					onChange={(selected) => {
-						if (selected?.value === period) {
-							setPeriod("") // Deselecciona si se selecciona lo mismo dos veces
-						} else {
-							setPeriod(selected?.value.toString() ?? "") // Actualiza el valor
-						}
-					}}
-				/>
-
-				<Combobox
 					placeholderText="Buscar por..."
 					options={searchBy.map((key, index) => ({
 						key: index, // Unique numeric key
@@ -118,9 +86,45 @@ export function CoursesDataTable() {
 						disabled={searchByKey === ""}
 					/>
 				</div>
+
+				<div className="flex w-1/2 items-center justify-end space-x-4">
+					<Combobox
+						placeholderText="Año"
+						options={yearList.map((key, index) => ({
+							key: index,
+							value: key.toString(),
+						}))}
+						itemName="por"
+						onChange={(selected) => {
+							if (selected?.value === year) {
+								setYear("") // Deselecciona si se selecciona lo mismo dos veces
+							} else {
+								setYear(selected?.value.toString() ?? "") // Actualiza el valor
+							}
+						}}
+					/>
+
+					<span className="text-xl font-bold">-</span>
+
+					<Combobox
+						placeholderText="Periodo"
+						options={periodList.map((key, index) => ({
+							key: index,
+							value: key,
+						}))}
+						itemName="por"
+						onChange={(selected) => {
+							if (selected?.value === period) {
+								setPeriod("") // Deselecciona si se selecciona lo mismo dos veces
+							} else {
+								setPeriod(selected?.value.toString() ?? "") // Actualiza el valor
+							}
+						}}
+					/>
+				</div>
 			</div>
 
-			<div className="mt-8 w-full min-h-[60vh] flex flex-col gap-4">
+			<div className="mt-8 flex min-h-[60vh] w-full flex-col gap-4">
 				{data.length === 0 && (
 					<div className="flex h-full items-center justify-center">
 						<p className="text-center text-gray-500">No hay resultados</p>

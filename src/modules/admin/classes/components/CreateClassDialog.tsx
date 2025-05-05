@@ -226,8 +226,8 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 												}))}
 												itemName="curso"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("course.courseid", selected.key)
+													field.onChange(selected?.value)
+													form.setValue("course.courseid", selected?.key)
 												}}
 											/>
 										</FormControl>
@@ -260,12 +260,12 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 													})}
 													itemName="año"
 													onChange={(selected) => {
-														form.setValue("year", Number(selected.value))
+														form.setValue("year", Number(selected?.value))
 														form.trigger(["year", "yearPeriod"])
 													}}
 												/>
 											</FormControl>
-											<span className="text-xs">-</span>
+											<span className="text-xl font-bold">-</span>
 											<FormControl>
 												<Combobox
 													placeholderText="Período"
@@ -275,7 +275,7 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 													}))}
 													itemName="período"
 													onChange={(selected) => {
-														form.setValue("yearPeriod", selected.value.toString())
+														form.setValue("yearPeriod", selected?.value.toString() ?? "")
 														form.trigger(["year", "yearPeriod"])
 													}}
 												/>
