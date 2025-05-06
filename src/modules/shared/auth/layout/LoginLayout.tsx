@@ -5,7 +5,7 @@ export default function LoginLayout({ className, ...props }: React.ComponentProp
 	return (
 		<div className={cn("flex min-h-screen", className)} {...props}>
 			<AuthFlow/>
-			<div className="flex-1 bg-cover bg-center hidden md:block" style={{ backgroundImage: "url('/src/assets/img-login.jpg')" }}></div>
+			<div className="flex-1 bg-cover bg-center hidden md:block" style={{ backgroundImage: "url('/img-login.jpg')" }}></div>
 		</div>
 	);
 }

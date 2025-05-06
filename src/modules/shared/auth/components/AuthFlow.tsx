@@ -50,7 +50,7 @@ export default function AuthFlow() {
         <div className="flex-1 flex flex-col justify-center items-center p-6 bg-gray-50">
             <div className="flex flex-col items-center gap-2 mb-8">
                 <img
-                    src="/src/assets/logo-javeriana2.svg"
+                    src="/logo-javeriana2.svg"
                     className="w-80 h-full"
                     alt="Logo Javeriana"
                 />

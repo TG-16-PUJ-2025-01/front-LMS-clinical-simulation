@@ -23,7 +23,7 @@ export default function NavBar({ showSelect = true, navLinks = [] }: NavBarProps
 				{/* Left Elements */}
 				<div className="flex items-center gap-8">
 					{/* Logo */}
-					<img src="/src/assets/logo.svg" alt="Logo" className="h-14" />
+					<img src="/logo.svg" alt="Logo" className="h-14" />
 					{/* Nav */}
 					<nav className="hidden gap-6 md:flex">
 						{navLinks.map((link) => (
