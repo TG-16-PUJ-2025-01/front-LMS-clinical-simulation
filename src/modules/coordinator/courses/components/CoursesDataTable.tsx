@@ -146,30 +146,6 @@ export function CoursesDataTable() {
 						Reiniciar Filtros
 					</Button>
 				</div>
-
-				<div className="flex w-1/2 items-center justify-end space-x-4">
-					<Combobox
-						placeholderText="Año"
-						options={yearOptions}
-						selectedValue={selectedYear ? selectedYear.toString() : ""}
-						itemName="año"
-						onChange={(selected) => {
-							setSelectedYear(selected?.value.toString() ?? "")
-						}}
-					/>
-
-					<span className="text-xl font-bold">-</span>
-
-					<Combobox
-						placeholderText="Periodo"
-						options={periodOptions}
-						selectedValue={selectedPeriod ? selectedPeriod.toString() : ""}
-						itemName="periodo"
-						onChange={(selected) => {
-							setSelectedPeriod(selected?.value.toString() ?? "")
-						}}
-					/>
-				</div>
 			</div>
 
 			<div className="mt-4 flex min-h-[60vh] w-full flex-col gap-4">

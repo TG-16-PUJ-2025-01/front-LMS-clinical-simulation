@@ -131,16 +131,16 @@ describe("Teacher flow tests", () => {
 		cy.reload()
 		cy.get("table tbody tr").should("have.length", 3)
 
-		cy.get("table tbody tr").eq(0).find("td").eq(1).should("contain.text", "05:00")
-		cy.get("table tbody tr").eq(0).find("td").eq(2).should("contain.text", "05:30")
+		cy.get("table tbody tr").eq(0).find("td").eq(1).should("contain.text", "10:00")
+		cy.get("table tbody tr").eq(0).find("td").eq(2).should("contain.text", "10:30")
 		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Pendiente")
 
-		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "05:30")
-		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "06:00")
+		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "10:30")
+		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "11:00")
 		cy.get("table tbody tr").eq(1).find("td").eq(3).should("contain.text", "Pendiente")
 
-		cy.get("table tbody tr").eq(2).find("td").eq(1).should("contain.text", "06:00")
-		cy.get("table tbody tr").eq(2).find("td").eq(2).should("contain.text", "06:30")
+		cy.get("table tbody tr").eq(2).find("td").eq(1).should("contain.text", "11:00")
+		cy.get("table tbody tr").eq(2).find("td").eq(2).should("contain.text", "11:30")
 		cy.get("table tbody tr").eq(2).find("td").eq(3).should("contain.text", "Pendiente")
 
 		cy.step("Step 12 - Editar Reserva")
@@ -149,10 +149,10 @@ describe("Teacher flow tests", () => {
 
 		cy.contains("Editar Reserva").should("be.visible").click()
 
-		cy.get("button").contains("5:30").click()
+		cy.get("button").contains("10:30").click()
 		cy.get('[data-value="15:00"]').click()
 		cy.get("h2").click() // Close time picker
-		cy.get("button").contains("6:00").click()
+		cy.get("button").contains("11:00").click()
 		cy.get('[data-value="15:30"]').click()
 
 		cy.get("button").contains("Guardar Cambios").click()
@@ -161,8 +161,8 @@ describe("Teacher flow tests", () => {
 			.should("exist")
 			.and("contain.text", "Reserva actualizada exitosamente")
 
-		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "05:30")
-		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "06:00")
+		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "10:30")
+		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "11:00")
 		cy.get("table tbody tr").eq(1).find("td").eq(3).should("contain.text", "Pendiente")
 
 		cy.step("Step 13 - Editar práctica")
