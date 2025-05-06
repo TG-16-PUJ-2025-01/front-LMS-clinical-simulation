@@ -19,7 +19,7 @@ interface CreateSimulationsFormProps {
 
 interface Room {
   value: number;
-  name: string;
+  label: string;
 }
 
 interface Reservation {
@@ -45,7 +45,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
     const fetchRooms = async () => {
       try {
         const roomsData = await getAllRooms();
-        const formattedRooms = roomsData.map((room) => ({ value: room.id, name: room.name }));
+        const formattedRooms = roomsData.map((room) => ({ value: room.id, label: room.name }));
         setRooms(formattedRooms);
       } catch (error) {
         console.error("Error cargando salas:", error);
