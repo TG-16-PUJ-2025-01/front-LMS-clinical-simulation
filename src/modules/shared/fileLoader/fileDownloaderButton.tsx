@@ -45,7 +45,7 @@ export function FileDownloader({ fileName }: { fileName: string }) {
 
 	return (
 		<div>
-			<Button className={"bg-green-800 hover:bg-green-500"} onClick={handleDownload}>
+			<Button className="bg-green-800 hover:bg-green-800/90" onClick={handleDownload}>
 				<Download className="h-4 w-4 text-white mr-2" />
                 Descargar plantilla
 			</Button>

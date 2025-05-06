@@ -11,7 +11,7 @@ import {
 
 import { deleteUser } from "../services/userService"
 import { toast } from "sonner"
-import { User } from "@/modules/core/models/user"
+import User from "@/modules/core/models/user"
 
 interface Props {
 	open: boolean

@@ -62,11 +62,24 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 	//un for del 1 hasta el 14
 	const semesters = Array.from({ length: 14 }, (_, i) => i + 1)
 
-	const programs = [{key: 1, value:"pregrado"}, {key: 2, value:"maestria"}, {key: 3, value:"doctorado"}]
+	const programs = [
+		{ key: 1, value: "pregrado" },
+		{ key: 2, value: "maestria" },
+		{ key: 3, value: "doctorado" },
+	]
 
-	const departments = [{key: 1, value:"enfermeria clinica"}, {key: 2, value:"medicina interna"}, {key: 3, value:"medicina familiar"}, {key: 4, value:"medicina critica"}]
+	const departments = [
+		{ key: 1, value: "enfermeria clinica" },
+		{ key: 2, value: "medicina interna" },
+		{ key: 3, value: "medicina familiar" },
+		{ key: 4, value: "medicina critica" },
+	]
 
-	const faculties = [{key: 1, value:"medicina"}, {key: 2, value:"enfermeria"},{key: 3, value: "odontologia"}]
+	const faculties = [
+		{ key: 1, value: "medicina" },
+		{ key: 2, value: "enfermeria" },
+		{ key: 3, value: "odontologia" },
+	]
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -81,7 +94,6 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 			program: "",
 			department: "",
 			faculty: "",
-
 		},
 	})
 
@@ -98,7 +110,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			console.log("Valores enviados:", values); 
+			console.log("Valores enviados:", values)
 			await createCourse({
 				javerianaId: values.id,
 				name: values.name,
@@ -108,7 +120,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 				department: values.department,
 				faculty: values.faculty,
 			})
-	
+
 			onClose(false)
 			toast.success("Asignatura creada exitosamente")
 		} catch (error) {
@@ -122,7 +134,9 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
 					<DialogTitle>Crear Asignatura</DialogTitle>
-					<DialogDescription>Para crear una asignatura llena los siguientes campos</DialogDescription>
+					<DialogDescription>
+						Para crear una asignatura llena los siguientes campos
+					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<Form {...form}>
@@ -156,17 +170,20 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 							<FormField
 								control={form.control}
 								name="coordinator.name"
-								render={({field}) => (
+								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Coordinador</FormLabel>
 										<FormControl>
 											<Combobox
 												placeholderText="Selecciona un coordinador"
-												options={coordinators.map((val) => ({ key: val.id, value: `${val.name} ${val.lastName}` }))}
+												options={coordinators.map((val) => ({
+													key: val.id,
+													value: `${val.name} ${val.lastName}`,
+												}))}
 												itemName="coordinador"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("coordinator.coordinatorId", selected.key)
+													field.onChange(selected?.value)
+													form.setValue("coordinator.coordinatorId", selected?.key ?? 0)
 												}}
 											/>
 										</FormControl>
@@ -177,7 +194,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 							<FormField
 								control={form.control}
 								name="semester"
-								render={({field}) => (
+								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Semestre</FormLabel>
 										<FormControl>
@@ -186,8 +203,8 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 												options={semesters.map((val) => ({ key: val, value: `${val}` }))}
 												itemName="semester"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("semester", selected.key ?? 0)
+													field.onChange(selected?.value)
+													form.setValue("semester", selected?.key ?? 0)
 												}}
 											/>
 										</FormControl>
@@ -198,7 +215,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 							<FormField
 								control={form.control}
 								name="faculty"
-								render={({field}) => (
+								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Facultad</FormLabel>
 										<FormControl>
@@ -207,8 +224,8 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 												options={faculties.map((val) => ({ key: val.key, value: `${val.value}` }))}
 												itemName="faculty"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("faculty", selected.value )
+													field.onChange(selected?.value)
+													form.setValue("faculty", selected?.value ?? "")
 												}}
 											/>
 										</FormControl>
@@ -219,17 +236,20 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 							<FormField
 								control={form.control}
 								name="department"
-								render={({field}) => (
+								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Departamento</FormLabel>
 										<FormControl>
 											<Combobox
 												placeholderText="Facultad"
-												options={departments.map((val) => ({ key: val.key, value: `${val.value}` }))}
+												options={departments.map((val) => ({
+													key: val.key,
+													value: `${val.value}`,
+												}))}
 												itemName="department"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("department", selected.value )
+													field.onChange(selected?.value)
+													form.setValue("department", selected?.value ?? "")
 												}}
 											/>
 										</FormControl>
@@ -240,7 +260,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 							<FormField
 								control={form.control}
 								name="program"
-								render={({field}) => (
+								render={({ field }) => (
 									<FormItem className="grid grid-cols-4 items-center gap-4">
 										<FormLabel className="m-0 text-right">Programa</FormLabel>
 										<FormControl>
@@ -249,8 +269,8 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 												options={programs.map((val) => ({ key: val.key, value: `${val.value}` }))}
 												itemName="program"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("program", selected.value )
+													field.onChange(selected?.value)
+													form.setValue("program", selected?.value ?? "")
 												}}
 											/>
 										</FormControl>

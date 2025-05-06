@@ -25,7 +25,6 @@ import { getAllCoordinators, updateCourse } from "../services/courseService"
 import { toast } from "sonner"
 import User from "@/modules/core/models/user"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
-import { se } from "date-fns/locale"
 
 interface Props {
 	open: boolean
@@ -131,7 +130,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 			onClose(false)
 
 			toast.success("Asignatura actualizada exitosamente")
-		} catch (error) {
+		} catch {
 			toast.error("Error al actualizar la asignatura")
 		}
 	}
@@ -189,8 +188,8 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 												}))}
 												itemName="coordinador"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("coordinator.id", selected.key)
+													field.onChange(selected?.value)
+													form.setValue("coordinator.id", selected?.key ?? 0)
 												}}
 											/>
 										</FormControl>
@@ -210,8 +209,8 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 												options={semesters.map((val) => ({ key: val, value: `${val}` }))}
 												itemName="semester"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("semester", selected.key ?? 1)
+													field.onChange(selected?.value)
+													form.setValue("semester", selected?.key ?? 1)
 												}}
 											/>
 										</FormControl>
@@ -231,8 +230,8 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 												options={faculties.map((val) => ({ key: val.key, value: `${val.value}` }))}
 												itemName="faculty"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("faculty", selected.value)
+													field.onChange(selected?.value)
+													form.setValue("faculty", selected?.value ?? "")
 												}}
 											/>
 										</FormControl>
@@ -255,8 +254,8 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 												}))}
 												itemName="department"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("department", selected.value)
+													field.onChange(selected?.value)
+													form.setValue("department", selected?.value ?? "")
 												}}
 											/>
 										</FormControl>
@@ -276,8 +275,8 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 												options={programs.map((val) => ({ key: val.key, value: `${val.value}` }))}
 												itemName="program"
 												onChange={(selected) => {
-													field.onChange(selected.value)
-													form.setValue("program", selected.value)
+													field.onChange(selected?.value)
+													form.setValue("program", selected?.value ?? "")
 												}}
 											/>
 										</FormControl>

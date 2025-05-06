@@ -10,7 +10,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, FileDown, MoreHorizontal, Pencil, Search, Sheet, Trash2, User } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -32,7 +32,7 @@ import {
 import Class from "@/modules/core/models/class"
 import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import CreateClassDialog from "./CreateClassDialog"
 import {  createClassByExcel, getClasses } from "../services/classService"
 import { useNavigate } from "react-router-dom"
@@ -119,7 +119,7 @@ export function ClassesDataTable() {
 
 		setExcelData(data)
 
-		let results: Class[] = []
+		const results: Class[] = []
 
 		let allCorrect = true
 
@@ -136,7 +136,7 @@ export function ClassesDataTable() {
 							.map((key) => item[key])
 							.filter((id) => id !== undefined && id !== null && id !== ""),
 					})
-				} catch (error) {
+				} catch {
 					allCorrect = false
 					toast.error(`Datos invalidos en la fila ${index + 1}.`)
 				}

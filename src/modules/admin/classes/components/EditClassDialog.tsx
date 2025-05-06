@@ -175,7 +175,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 												}))}
 												itemName="course"
 												onChange={(selected) => {
-													const newCourse = { courseId: selected.key, name: selected.value }
+													const newCourse = { courseId: selected?.key ?? 0, name: selected?.value ?? "" }
 													form.setValue("course", newCourse)
 													field.onChange(newCourse)
 												}}
@@ -202,11 +202,11 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 													})}
 													itemName="año"
 													onChange={(selected) => {
-														form.setValue("year", Number(selected.value))
+														form.setValue("year", Number(selected?.value))
 													}}
 												/>
 											</FormControl>
-											<span className="text-xs">-</span>
+											<span className="text-xl font-bold">-</span>
 											<FormControl>
 												<Combobox
 													placeholderText={form.getValues("yearPeriod") || "Período"}
@@ -216,7 +216,7 @@ export default function EditClassDialog({ open, onClose, classData }: Props) {
 													}))}
 													itemName="período"
 													onChange={(selected) => {
-														form.setValue("yearPeriod", selected.value.toString())
+														form.setValue("yearPeriod", selected?.value.toString() ?? "")
 													}}
 												/>
 											</FormControl>

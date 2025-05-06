@@ -2,6 +2,7 @@ import { Sheet } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import { useRef } from "react"
 import { toast } from "sonner"
+import { cn } from "@/modules/core/lib/utils"
 
 interface FileLoaderProps {
 	onFileLoaded: (file: ArrayBuffer) => void
@@ -9,7 +10,11 @@ interface FileLoaderProps {
 	className?: string
 }
 
-export function FileLoader({ onFileLoaded, buttonText = "Cargar archivo", className }: FileLoaderProps) {
+export function FileLoader({
+	onFileLoaded,
+	buttonText = "Cargar archivo",
+	className,
+}: FileLoaderProps) {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,8 +47,11 @@ export function FileLoader({ onFileLoaded, buttonText = "Cargar archivo", classN
 
 	return (
 		<div>
-			<Button className={className || "bg-green-800 hover:bg-green-500"} onClick={() => fileInputRef.current?.click()}>
-				<Sheet className="h-4 w-4 text-white mr-2" />
+			<Button
+				className={cn("bg-green-800 hover:bg-green-800/90", className)}
+				onClick={() => fileInputRef.current?.click()}
+			>
+				<Sheet className="mr-2 h-4 w-4 text-white" />
 				{buttonText}
 			</Button>
 			<input type="file" ref={fileInputRef} onChange={handleFile} style={{ display: "none" }} />

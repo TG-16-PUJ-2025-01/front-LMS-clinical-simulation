@@ -11,7 +11,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Search, Sheet, Trash2 } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -30,7 +30,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import UserModel from "@/modules/core/models/user"
 import {
 	getClassMembers,
@@ -44,13 +44,11 @@ import DeleteStudentClassDialog from "./deleteStudentDialog"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Class from "@/modules/core/models/class"
-import { all, AxiosError } from "axios"
+import { AxiosError } from "axios"
 import { FileLoader } from "../../fileLoader/FileLoaderButon"
 import { FileDownloader } from "../../fileLoader/fileDownloaderButton"
 
-
 export function StudentsClassDataTable() {
-
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -78,78 +76,81 @@ export function StudentsClassDataTable() {
 	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
 	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
-			console.log("Leyendo archivo Excel...")
-		
-			const workbook = XLSX.read(fileBuffer, { type: "buffer" })
-			const workbookSheetName = workbook.SheetNames[0]
-			const worksheet = workbook.Sheets[workbookSheetName]
-			const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
-		
-			const validFormat = data.every(
-				(item) => "institutionalId" in item && "rol" in item && typeof item.rol === "string"
-			)
-		
-			if (!validFormat) {
-				toast.error("El formato del archivo Excel no es el esperado.")
-				setExcelData(null)
-				return
-			}
-		
+		console.log("Leyendo archivo Excel...")
 
-			let results: Class[] = []
+		const workbook = XLSX.read(fileBuffer, { type: "buffer" })
+		const workbookSheetName = workbook.SheetNames[0]
+		const worksheet = workbook.Sheets[workbookSheetName]
+		const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
 
-			let allCorrect = true
+		const validFormat = data.every(
+			(item) => "institutionalId" in item && "rol" in item && typeof item.rol === "string"
+		)
 
-			const processData = async () => {
-				const promises = data.map(async (item, index) => {
-					if (item.rol.toLowerCase() === "profesor") {
-						// Llama al servicio y agrega al resultado
-						try {
-							const updatedClass = await updateClassProfessorMember(
-								Number(id),
-								item.institutionalId
-							)
-							results.push(updatedClass)
-						} catch (error) {
-							console.log(error)
-							toast.error(error instanceof AxiosError ? error.response?.data.data : `Error desconocido en la fila ${index + 1}`)
-							allCorrect = false
-						}
-					} else if (item.rol.toLowerCase() === "estudiante") {
-						// Llama al servicio y agrega al resultado
-						try {
-							const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
-							results.push(updatedClass)
-						} catch (error) {
+		if (!validFormat) {
+			toast.error("El formato del archivo Excel no es el esperado.")
+			setExcelData(null)
+			return
+		}
 
-							toast.error(error instanceof AxiosError ? error.response?.data.data : `Error desconocido en la fila ${index + 1}`)
-							allCorrect = false
-						}
-					} else {
-						toast.error(`El rol ${item.rol.toLowerCase()} no es válido en la fila ${index + 1}`)
+		let results: Class[] = []
+
+		let allCorrect = true
+
+		const processData = async () => {
+			const promises = data.map(async (item, index) => {
+				if (item.rol.toLowerCase() === "profesor") {
+					// Llama al servicio y agrega al resultado
+					try {
+						const updatedClass = await updateClassProfessorMember(Number(id), item.institutionalId)
+						results.push(updatedClass)
+					} catch (error) {
+						console.log(error)
+						toast.error(
+							error instanceof AxiosError
+								? error.response?.data.data
+								: `Error desconocido en la fila ${index + 1}`
+						)
 						allCorrect = false
 					}
-				})
-
-				// Esperar a que todas las promesas se resuelvan
-				await Promise.all(promises)
-
-				// Evaluar después de que todos los await se hayan completado
-				setExcelData(data)
-
-				console.log("Datos leídos del Excel:", results.length)
-
-				if (!allCorrect) {
-					toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
+				} else if (item.rol.toLowerCase() === "estudiante") {
+					// Llama al servicio y agrega al resultado
+					try {
+						const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
+						results.push(updatedClass)
+					} catch (error) {
+						toast.error(
+							error instanceof AxiosError
+								? error.response?.data.data
+								: `Error desconocido en la fila ${index + 1}`
+						)
+						allCorrect = false
+					}
 				} else {
-					toast.success("Archivo Excel procesado exitosamente.")
+					toast.error(`El rol ${item.rol.toLowerCase()} no es válido en la fila ${index + 1}`)
+					allCorrect = false
 				}
-			}
+			})
 
-			// Ejecutar la función asíncrona principal
-			processData()
+			// Esperar a que todas las promesas se resuelvan
+			await Promise.all(promises)
+
+			// Evaluar después de que todos los await se hayan completado
+			setExcelData(data)
+
+			console.log("Datos leídos del Excel:", results.length)
+
+			if (!allCorrect) {
+				toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
+			} else {
+				toast.success("Archivo Excel procesado exitosamente.")
+			}
+		}
+
+		// Ejecutar la función asíncrona principal
+		processData()
 	}
-	
+
 	useEffect(() => {
 		if (openDialog) return
 
@@ -336,7 +337,7 @@ export function StudentsClassDataTable() {
 	return (
 		<>
 			<div className="w-full">
-				<div className="flex items-center justify-between">
+				<div className="flex items-center justify-between gap-2">
 					<div className="relative w-1/2 max-w-sm">
 						<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 						<Input
@@ -353,7 +354,7 @@ export function StudentsClassDataTable() {
 						<Button onClick={() => handleOpenDialog("students")}>Añadir estudiantes</Button>
 						<Button onClick={() => handleOpenDialog("professors")}>Añadir profesores</Button>
 						<div>
-							<FileLoader onFileLoaded={handleExcelFile}  buttonText="Subir Archivo" />
+							<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
 						</div>
 						<FileDownloader fileName="class members" />
 					</div>

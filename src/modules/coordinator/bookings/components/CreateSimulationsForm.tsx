@@ -35,7 +35,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
-  const [rooms, setRooms] = useState<{ value: number; label: string }[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const { practiceId } = useParams<{ classId: string; practiceId: string }>();
   const [practice, setPractice] = useState<Practice | null>(null);
   const [timeOptions, setTimeOptions] = useState<{ key: number; value: string }[]>([]);
@@ -45,7 +45,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
     const fetchRooms = async () => {
       try {
         const roomsData = await getAllRooms();
-        const formattedRooms = roomsData.map((room) => ({ value: room.id, label: room.name }));
+        const formattedRooms = roomsData.map((room) => ({ value: room.id, name: room.name }));
         setRooms(formattedRooms);
       } catch (error) {
         console.error("Error cargando salas:", error);
@@ -93,7 +93,6 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
       return;
     }
 
-    console.log(selectedRooms);
 
     const newReservation: Reservation = {
       date: format(selectedDate, "yyyy-MM-dd"),
@@ -201,7 +200,7 @@ export default function CreateSimulationsForm({ onClose }: CreateSimulationsForm
         isMulti
         options={rooms}
         value={selectedRooms}
-        onChange={setSelectedRooms}
+        onChange={(newValue) => setSelectedRooms(newValue as Room[])}
         placeholder="Seleccionar salas"
         className="w-full min-w-40 rounded-md p-0"
         styles={{

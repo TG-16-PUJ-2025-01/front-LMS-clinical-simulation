@@ -9,7 +9,7 @@ import {
 } from "@/modules/core/components/ui/dialog"
 import { Input } from "@/modules/core/components/ui/input"
 import { useEffect, useState } from "react"
-import { Search, X, Sheet } from "lucide-react"
+import { Search, X } from "lucide-react"
 import {
 	getStudentsNotInClass,
 	updateClassMembers,
@@ -40,7 +40,7 @@ interface Props {
 
 export default function AddMembersDialog({ open, onClose, classId, isStudent }: Props) {
 	const [filter, setFilter] = useState<string>("")
-	const [students, setStudents] = useState<User[]>([])
+	const [, setStudents] = useState<User[]>([])
 	const [filteredStudents, setFilteredStudents] = useState<User[]>([])
 	const [isSearchFocused, setIsSearchFocused] = useState(false)
 	const [selectedStudents, setSelectedStudents] = useState<User[]>([])
@@ -69,18 +69,17 @@ export default function AddMembersDialog({ open, onClose, classId, isStudent }: 
 			}
 			fetchNonMembers()
 		}
-	}, [filter, classId, open])
+	}, [filter, classId, open, isStudent])
 
 	const handleConfirm = async () => {
 		//borrar el contenido de todas las listas
 		setSelectedStudents([]) // Borra la lista de estudiantes seleccionados
 		// Aquí podrías agregar lógica para añadir los estudiantes seleccionados
-		selectedStudents
 
 		try {
 			await updateClassMembers(classId, selectedStudents)
 			toast.success("Miembros anadidos a la clase exitosamente")
-		} catch (error) {
+		} catch {
 			toast.error("Error al anadir miembros en la clase")
 		}
 		onClose(false)

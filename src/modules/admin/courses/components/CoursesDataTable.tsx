@@ -90,7 +90,7 @@ export function CoursesDataTable() {
 		{
 			accessorKey: "javerianaId",
 			header: ({ column }) => (
-				<div className="relative w-full">
+				<div className="relative w-full min-w-32">
 					<Button
 						variant="ghost"
 						className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
@@ -166,7 +166,7 @@ export function CoursesDataTable() {
 			accessorFn: ({ program }) => `${program}`,
 			header: ({ column }) => {
 				return (
-					<div className="relative w-full">
+					<div className="relative w-full min-w-20">
 						<Button
 							variant="ghost"
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
@@ -185,7 +185,7 @@ export function CoursesDataTable() {
 			accessorFn: ({ semester }) => `${semester}`,
 			header: ({ column }) => {
 				return (
-					<div className="relative w-full">
+					<div className="relative w-full min-w-12">
 						<Button
 							variant="ghost"
 							className="absolute top-1/2 left-1/2 mx-auto flex -translate-1/2"
