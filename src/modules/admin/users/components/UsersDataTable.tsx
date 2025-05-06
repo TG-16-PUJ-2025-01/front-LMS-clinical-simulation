@@ -41,7 +41,6 @@ import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Role from "@/modules/core/models/role"
 import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
-import { AxiosError } from "axios"
 
 export function UsersDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -71,7 +70,7 @@ export function UsersDataTable() {
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0)
 
-	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
+	const [, setExcelData] = useState<Record<string, any>[] | null>(null)
 
 	useEffect(() => {
 		if (openDialog) return
@@ -120,8 +119,6 @@ export function UsersDataTable() {
 		const worksheet = workbook.Sheets[workbookSheetName]
 		const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
 
-		let validFormat = true
-
 		if (!neededFields(data)) {
 			toast.error("El formato del archivo Excel no es el esperado.")
 			setExcelData(null)
@@ -130,14 +127,14 @@ export function UsersDataTable() {
 
 		setExcelData(data)
 
-		let results: User[] = []
+		const results: User[] = []
 
 		let allCorrect = true
 
 		const processData = async () => {
 			const promises = data.map(async (item, index) => {
 				// Evaluar si el rol es el correcto
-				let roles = Object.keys(item)
+				const roles = Object.keys(item)
 					.filter((key) => key.trim().startsWith("rol"))
 					.map((key) => item[key])
 					.filter((id) => id !== undefined && id !== null && id !== "")
@@ -451,7 +448,14 @@ export function UsersDataTable() {
 			<EditUserDialog
 				open={openDialog === "edit"}
 				onClose={handleCloseDialog}
-				user={selectedUser ?? undefined}
+				user={{
+					institutionalId: selectedUser?.institutionalId.toString() ?? "",
+					name: selectedUser?.name ?? "",
+					lastName: selectedUser?.lastName ?? "",
+					email: selectedUser?.email ?? "",
+					roles: selectedUser?.roles ?? [],
+					id: selectedUser?.id ?? 0,
+				}}
 			/>
 			<DeleteUserDialog
 				open={openDialog === "delete"}
