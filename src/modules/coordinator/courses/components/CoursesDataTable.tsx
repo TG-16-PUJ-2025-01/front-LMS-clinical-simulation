@@ -33,7 +33,6 @@ export function CoursesDataTable() {
 	const [selectedPeriod, setSelectedPeriod] = useState<string>("")
 	const [filter, setFilter] = useState<string>("")
 
-
 	const resetFilters = () => {
 		setSelectedYear("")
 		setSelectedPeriod("")
@@ -72,10 +71,9 @@ export function CoursesDataTable() {
 		const fetchYearOptions = async () => {
 			try {
 				const res = await getCoordinatorCourses("", "", "", false)
-				const years = res.data
-                .flatMap((course: CourseDTO) => 
-                    course.classes.map((classItem) => parseInt(classItem.period.split("-")[0]))
-                );
+				const years = res.data.flatMap((course: CourseDTO) =>
+					course.classes.map((classItem) => parseInt(classItem.period.split("-")[0]))
+				)
 				const oldestYear = Math.min(...years)
 				const newestYear = Math.max(...years)
 				const generatedYearOptions = Array.from(
@@ -152,17 +150,11 @@ export function CoursesDataTable() {
 				<div className="flex w-1/2 items-center justify-end space-x-4">
 					<Combobox
 						placeholderText="Año"
-						options={yearList.map((key, index) => ({
-							key: index,
-							value: key.toString(),
-						}))}
-						itemName="por"
+						options={yearOptions}
+						selectedValue={selectedYear ? selectedYear.toString() : ""}
+						itemName="año"
 						onChange={(selected) => {
-							if (selected?.value === year) {
-								setYear("") // Deselecciona si se selecciona lo mismo dos veces
-							} else {
-								setYear(selected?.value.toString() ?? "") // Actualiza el valor
-							}
+							setSelectedYear(selected?.value.toString() ?? "")
 						}}
 					/>
 
@@ -170,17 +162,11 @@ export function CoursesDataTable() {
 
 					<Combobox
 						placeholderText="Periodo"
-						options={periodList.map((key, index) => ({
-							key: index,
-							value: key,
-						}))}
-						itemName="por"
+						options={periodOptions}
+						selectedValue={selectedPeriod ? selectedPeriod.toString() : ""}
+						itemName="periodo"
 						onChange={(selected) => {
-							if (selected?.value === period) {
-								setPeriod("") // Deselecciona si se selecciona lo mismo dos veces
-							} else {
-								setPeriod(selected?.value.toString() ?? "") // Actualiza el valor
-							}
+							setSelectedPeriod(selected?.value.toString() ?? "")
 						}}
 					/>
 				</div>
