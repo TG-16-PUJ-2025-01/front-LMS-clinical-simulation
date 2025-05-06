@@ -138,16 +138,72 @@ describe("Teacher flow tests", () => {
 		cy.get("h1").invoke("text").should("contain", "(20001) Semiología Clínica - Prueba")
 
 		cy.step("Step 10 - Crear Reservas")
-		// TODO: Add test for modifying reservations
+		cy.get("button").contains("Crear Reserva").click()
+		cy.get('div[role="dialog"]').within(() => {
+			cy.get("h2").invoke("text").should("contain", "Reservar las prácticas")
+			cy.contains("No hay reservas en el carrito aún").should("be.visible")
+		})
 
-		cy.step("Step 11 - Agregar Info Reserva")
-		//TODO: Add test for adding reservation info
+		cy.step("Step 11 - Datos reserva")
+		cy.get('div[role="dialog"]').within(() => {
+			cy.get("button").contains("Selecciona una fecha").click()
+			cy.contains("button", "25").click()
+			cy.get("h2").click() // Close date picker
+			cy.get("button").contains("Seleccionar hora de inicio").click()
+			cy.get('[data-value="10:00"]').click()
+			cy.get("h2").click()
+			cy.get("button").contains("Seleccionar hora de finalización").click()
+			cy.get('[data-value="11:30"]').click()
+			cy.get("h2").click() // Close time picker
 
-		cy.step("Step 12 - Finalizar Reserva")
-		// TODO: Add test for finishing reservation
+			cy.get("#react-select-3-placeholder").click({ force: true })
+			cy.contains("Consultorio 1").click()
 
-		cy.step("Step 13 - Modificar Reserva")
-		// TODO: Add test for modifying reservation
+			cy.get("button").contains("Añadir reserva al carrito").click()
+
+			cy.get("div.border.p-2.rounded.h-full.overflow-auto p")
+				.should("contain.text", "Sala 1")
+				.and("contain.text", "10:00 - 11:30")
+		})
+
+		cy.step("Step 12 - Crear reserva y validar exito")
+		cy.get("button").contains("Finalizar reserva").click()
+
+		cy.reload()
+		cy.get("table tbody tr").should("have.length", 3)
+
+		cy.get("table tbody tr").eq(0).find("td").eq(1).should("contain.text", "05:00")
+		cy.get("table tbody tr").eq(0).find("td").eq(2).should("contain.text", "05:30")
+		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Pendiente")
+
+		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "05:30")
+		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "06:00")
+		cy.get("table tbody tr").eq(1).find("td").eq(3).should("contain.text", "Pendiente")
+
+		cy.get("table tbody tr").eq(2).find("td").eq(1).should("contain.text", "06:00")
+		cy.get("table tbody tr").eq(2).find("td").eq(2).should("contain.text", "06:30")
+		cy.get("table tbody tr").eq(2).find("td").eq(3).should("contain.text", "Pendiente")
+
+		cy.step("Step 13 - Editar Reserva")
+		cy.get("table tbody tr").eq(1).find("button").click()
+
+		cy.contains("Editar Reserva").should("be.visible").click()
+
+		cy.get("button").contains("5:30").click()
+		cy.get('[data-value="15:00"]').click()
+		cy.get("h2").click() // Close time picker
+		cy.get("button").contains("6:00").click()
+		cy.get('[data-value="15:30"]').click()
+
+		cy.get("button").contains("Guardar Cambios").click()
+
+		cy.get("li[data-sonner-toast][data-visible='true']")
+			.should("exist")
+			.and("contain.text", "Reserva actualizada exitosamente")
+
+		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "05:30")
+		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "06:00")
+		cy.get("table tbody tr").eq(1).find("td").eq(3).should("contain.text", "Pendiente")
 
 		cy.step("Step 14 - Editar práctica")
 		cy.get("nav")
@@ -184,7 +240,7 @@ describe("Teacher flow tests", () => {
 
 		cy.step("Step 15 - Eliminar práctica")
 		cy.get('[data-slot="card"]')
-			.last()
+			.eq(3)
 			.within(() => {
 				cy.get('button[aria-haspopup="menu"]').click()
 			})
@@ -282,7 +338,7 @@ describe("Teacher flow tests", () => {
 		cy.get("table tbody tr td").eq(0).should("contain.text", "Mi rúbrica de ejemplo")
 
 		const today = new Date()
-		const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
+		let formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
 
 		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
 
@@ -585,12 +641,14 @@ describe("Teacher flow tests", () => {
 			.and("not.be.disabled")
 			.click()
 
+		formattedDate = `${today.getDate().toString().padStart(2, "0")}/${(today.getMonth() + 1)
+			.toString()
+			.padStart(2, "0")}/${today.getFullYear()}`
+
 		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Calificado")
-		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
-		/*
-            cy.get("table tbody tr").eq(0).find("td").eq(4).should("contain.text", formattedDate)
-            cy.get("table tbody tr").eq(0).find("td").eq(5).should("contain.text", "3.2")
-            */
+
+		cy.get("table tbody tr").eq(0).find("td").eq(4).should("contain.text", formattedDate)
+		cy.get("table tbody tr").eq(0).find("td").eq(5).should("contain.text", "3.2")
 
 		cy.step("Step 33 - Ver calificaciónes")
 		cy.get("nav")
@@ -601,21 +659,25 @@ describe("Teacher flow tests", () => {
 
 		cy.get("h1").invoke("text").should("contain", "Calificaciones")
 
-		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
-		/*
-            cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "3.2")
-            cy.get("table tbody tr").eq(4).find("td").eq(1).should("contain.text", "3.2")
-            cy.get("table tbody tr").eq(7).find("td").eq(1).should("contain.text", "3.2")
-            */
+		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(4).find("td").eq(2).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(7).find("td").eq(2).should("contain.text", "3.2")
 
 		cy.step("Step 34 - Modificar porcentajes prácticas")
-		//TODO: Falta que se implemente la funcionalidad de modificar porcentajes de prácticas
+		cy.get("button").contains("Editar porcentajes de calificación").click()
+
+		cy.get('div[role="dialog"]').within(() => {
+			cy.get("input").eq(0).clear().type("10") // Represents 100%
+			cy.get("input").eq(1).clear().type("0")
+			cy.get("input").eq(2).clear().type("0")
+			cy.get("input").eq(3).clear().type("0")
+
+			cy.get("button").contains("Guardar").click()
+		})
 
 		cy.step("Step 35 - Revisión calculo de porcentajes")
-		//TODO: Falta que se implemente la funcionalidad de de calculo de practicas basada en los porcentajes
-
-		cy.step("Step 36 - Modificar reservas")
-		// TODO: No deberia de dejar, porque ya se califico la práctica
-		// TODO: Esperar a que esto este arreglado
+		cy.get("table tbody tr").eq(1).find("td").eq(5).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(4).find("td").eq(5).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(7).find("td").eq(5).should("contain.text", "3.2")
 	})
 })
