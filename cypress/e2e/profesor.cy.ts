@@ -1,7 +1,4 @@
 describe("Teacher flow tests", () => {
-	// TODO: Hace falta paso para ver miembros, guardarlos y que esos miembros sean a los que se les modifica la nota
-	// Reservas
-	// TODO: Use practice card lengths instead of hardcoded values
 	it.only("PROF-1 Flujo Completo Profe", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
@@ -106,7 +103,6 @@ describe("Teacher flow tests", () => {
 			cy.contains("No hay reservas en el carrito aún").should("be.visible")
 		})
 
-		//TODO: Finish steps 10-12 and fix steps afterwards
 		cy.step("Step 10 - Datos reserva")
 		cy.get('div[role="dialog"]').within(() => {
 			cy.get("button").contains("Selecciona una fecha").click()
@@ -124,16 +120,50 @@ describe("Teacher flow tests", () => {
 
 			cy.get("button").contains("Añadir reserva al carrito").click()
 
-			cy.get("div.border.p-2.rounded.h-full.overflow-auto p").should("contain.text", "Sala 1")
-			.and("contain.text", "10:00 - 11:30")
+			cy.get("div.border.p-2.rounded.h-full.overflow-auto p")
+				.should("contain.text", "Sala 1")
+				.and("contain.text", "10:00 - 11:30")
 		})
 
 		cy.step("Step 11 - Crear reserva y validar exito")
 		cy.get("button").contains("Finalizar reserva").click()
 
+		cy.reload()
+		cy.get("table tbody tr").should("have.length", 3)
+
+		cy.get("table tbody tr").eq(0).find("td").eq(1).should("contain.text", "05:00")
+		cy.get("table tbody tr").eq(0).find("td").eq(2).should("contain.text", "05:30")
+		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Pendiente")
+
+		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "05:30")
+		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "06:00")
+		cy.get("table tbody tr").eq(1).find("td").eq(3).should("contain.text", "Pendiente")
+
+		cy.get("table tbody tr").eq(2).find("td").eq(1).should("contain.text", "06:00")
+		cy.get("table tbody tr").eq(2).find("td").eq(2).should("contain.text", "06:30")
+		cy.get("table tbody tr").eq(2).find("td").eq(3).should("contain.text", "Pendiente")
+
 		cy.step("Step 12 - Editar Reserva")
 
-		cy.pause()
+		cy.get("table tbody tr").eq(1).find("button").click()
+
+		cy.contains("Editar Reserva").should("be.visible").click()
+
+		cy.get("button").contains("5:30").click()
+		cy.get('[data-value="15:00"]').click()
+		cy.get("h2").click() // Close time picker
+		cy.get("button").contains("6:00").click()
+		cy.get('[data-value="15:30"]').click()
+
+		cy.get("button").contains("Guardar Cambios").click()
+
+		cy.get("li[data-sonner-toast][data-visible='true']")
+			.should("exist")
+			.and("contain.text", "Reserva actualizada exitosamente")
+
+		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "05:30")
+		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "06:00")
+		cy.get("table tbody tr").eq(1).find("td").eq(3).should("contain.text", "Pendiente")
 
 		cy.step("Step 13 - Editar práctica")
 		cy.get("nav")
@@ -170,7 +200,7 @@ describe("Teacher flow tests", () => {
 
 		cy.step("Step 14 - Eliminar práctica")
 		cy.get('[data-slot="card"]')
-			.last()
+			.eq(3)
 			.within(() => {
 				cy.get('button[aria-haspopup="menu"]').click()
 			})
@@ -582,7 +612,6 @@ describe("Teacher flow tests", () => {
 			.padStart(2, "0")}/${today.getFullYear()}`
 
 		cy.get("table tbody tr").eq(0).find("td").eq(3).should("contain.text", "Calificado")
-		// TODO: No se esta actualizando la fecha de calificación, ni el puntaje
 		cy.get("table tbody tr").eq(0).find("td").eq(4).should("contain.text", formattedDate)
 		cy.get("table tbody tr").eq(0).find("td").eq(5).should("contain.text", "3.2")
 
@@ -595,19 +624,26 @@ describe("Teacher flow tests", () => {
 
 		cy.get("h1").invoke("text").should("contain", "Calificaciones")
 
-		cy.get("table tbody tr").eq(1).find("td").eq(1).should("contain.text", "3.2")
-		cy.get("table tbody tr").eq(4).find("td").eq(1).should("contain.text", "3.2")
-		cy.get("table tbody tr").eq(7).find("td").eq(1).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(1).find("td").eq(2).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(4).find("td").eq(2).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(7).find("td").eq(2).should("contain.text", "3.2")
 
 		cy.step("Step 33 - Modificar porcentajes prácticas")
-		//TODO: Falta que se implemente la funcionalidad de modificar porcentajes de prácticas
+		cy.get("button").contains("Editar porcentajes de calificación").click()
+
+		cy.get('div[role="dialog"]').within(() => {
+			cy.get("input").eq(0).clear().type("10") // Represents 100%
+			cy.get("input").eq(1).clear().type("0")
+			cy.get("input").eq(2).clear().type("0")
+			cy.get("input").eq(3).clear().type("0")
+
+			cy.get("button").contains("Guardar").click()
+		})
 
 		cy.step("Step 34 - Revisión calculo de porcentajes")
-		//TODO: Falta que se implemente la funcionalidad de de calculo de practicas basada en los porcentajes
-
-		cy.step("Step 35 - Modificar reservas")
-		// TODO: No deberia de dejar, porque ya se califico la práctica
-		// TODO: Esperar a que esto este arreglado
+		cy.get("table tbody tr").eq(1).find("td").eq(5).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(4).find("td").eq(5).should("contain.text", "3.2")
+		cy.get("table tbody tr").eq(7).find("td").eq(5).should("contain.text", "3.2")
 	})
 
 	it("PROF-2 Acceso No Autorizado Profesor", () => {
@@ -693,7 +729,7 @@ describe("Teacher flow tests", () => {
 		cy.get("h1").invoke("text").should("contain", "Practica 1 (Grupo 1)")
 
 		cy.step("Step 11 - Revisar acceso a listado de simulaciones no autorizadas")
-		cy.visit("/profesor/simulacion/16") // TODO: Revisar si la simulacion 16 existe (no existe)
+		cy.visit("/profesor/simulacion/16")
 		cy.url().should("include", "/login")
 		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
 		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")

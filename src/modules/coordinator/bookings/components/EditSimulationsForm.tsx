@@ -116,7 +116,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
       };
 
       await editSimulationById(simulation.simulationId, requestData);
-      toast.success("Simulación actualizada con éxito.");
+      toast.success("Reserva actualizada exitosamente");
       onClose();
     } catch (err) {
       console.error("Error al actualizar simulación:", err);
