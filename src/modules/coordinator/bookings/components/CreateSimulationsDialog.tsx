@@ -16,9 +16,9 @@ interface BookingDialogProps {
 
 export default function CreateSimulationsDialog({ open, onClose }: BookingDialogProps) {
 	const eventsServicePlugin = useMemo(() => createEventsServicePlugin(), [])
-	const calendarControls = useMemo(() => createCalendarControlsPlugin(), []);
+	const calendarControls = useMemo(() => createCalendarControlsPlugin(), [])
 	const [selectedDate, setSelectedDate] = useState<string | undefined>(
-		new Date().toISOString().split("T")[0]
+		new Date().toLocaleDateString("en-CA")
 	)
 
 	const calendarApp = useNextCalendarApp(
@@ -38,6 +38,10 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
 		},
 		[eventsServicePlugin, calendarControls]
 	)
+
+	useEffect(() => {
+		console.log("Selected date changed:", selectedDate)
+	}, [selectedDate])
 
 	useEffect(() => {
 		const fetchReservations = async () => {

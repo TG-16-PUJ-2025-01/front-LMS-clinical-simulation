@@ -31,11 +31,7 @@ interface Reservation {
 	roomIds: number[]
 }
 
-export default function CreateSimulationsForm({
-	onClose,
-	selectedDate,
-	setDate,
-}: CreateSimulationsFormProps) {
+export default function CreateSimulationsForm({ onClose, setDate }: CreateSimulationsFormProps) {
 	const [reservations, setReservations] = useState<Reservation[]>([])
 	const [selectedRooms, setSelectedRooms] = useState<Room[]>([])
 	const [startTime, setStartTime] = useState<string>("")
@@ -44,11 +40,8 @@ export default function CreateSimulationsForm({
 	const { practiceId } = useParams<{ classId: string; practiceId: string }>()
 	const [practice, setPractice] = useState<Practice | null>(null)
 	const [timeOptions, setTimeOptions] = useState<{ key: number; value: string }[]>([])
+	const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
 	const animatedComponents = makeAnimated()
-
-	const [localSelectedDate, setLocalSelectedDate] = useState<Date | undefined>(
-		selectedDate ? new Date(selectedDate) : undefined
-	)
 
 	useEffect(() => {
 		const fetchRooms = async () => {
@@ -91,13 +84,6 @@ export default function CreateSimulationsForm({
 		setTimeOptions(times)
 	}, [practice?.simulationDuration])
 
-	useEffect(() => {
-		if (localSelectedDate) {
-			const formattedDate = format(localSelectedDate, "yyyy-MM-dd")
-			setDate(formattedDate)
-		}
-	}, [localSelectedDate, setDate])
-
 	const addReservation = () => {
 		if (!selectedDate || !startTime || !endTime || selectedRooms.length === 0) {
 			toast.error("Por favor, completa todos los campos antes de agregar la reserva.")
@@ -116,7 +102,6 @@ export default function CreateSimulationsForm({
 			roomIds: selectedRooms.map((room) => room.value),
 		}
 
-		// Verificar si ya existe una reserva con la misma fecha y horarios
 		const isDuplicate = reservations.some(
 			(res) =>
 				res.date === newReservation.date &&
@@ -149,6 +134,8 @@ export default function CreateSimulationsForm({
 				endDateTime: `${res.date}T${res.endTime}:00`,
 			})),
 		}
+
+		console.log("Request data:", requestData)
 
 		try {
 			await createSimulations(requestData)
@@ -190,26 +177,25 @@ export default function CreateSimulationsForm({
 				</li>
 			</ul>
 
-			{/* DatePicker */}
 			<Popover>
 				<PopoverTrigger asChild>
 					<Button variant="outline" className="w-full justify-between">
-						{localSelectedDate
-							? format(localSelectedDate, "PPP", { locale: es })
-							: "Selecciona una fecha"}
+						{selectedDate ? format(selectedDate, "PPP", { locale: es }) : "Selecciona una fecha"}
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent className="w-auto p-0">
 					<Calendar
 						mode="single"
-						selected={localSelectedDate}
-						onSelect={setLocalSelectedDate}
+						selected={selectedDate}
+						onSelect={(date) => {
+							setSelectedDate(date ?? undefined)
+							setDate(format(date ?? new Date(), "yyyy-MM-dd"))
+						}}
 						locale={es}
 					/>
 				</PopoverContent>
 			</Popover>
 
-			{/* Selección de horas */}
 			<Combobox
 				options={timeOptions}
 				placeholderText="Seleccionar hora de inicio"
@@ -226,7 +212,6 @@ export default function CreateSimulationsForm({
 				selectedValue={endTime}
 			/>
 
-			{/* Selección de sala con react-select */}
 			<Select
 				components={animatedComponents}
 				isMulti
