@@ -17,6 +17,7 @@ interface CreateSimulationsFormProps {
 	onClose: () => void
 	selectedDate: string | undefined
 	setDate: (date: string) => void
+  onReservationsUpdated: () => void
 }
 
 interface Room {
@@ -29,9 +30,10 @@ interface Reservation {
 	startTime: string
 	endTime: string
 	roomIds: number[]
+	spaces: number
 }
 
-export default function CreateSimulationsForm({ onClose, setDate }: CreateSimulationsFormProps) {
+export default function CreateSimulationsForm({ onClose, setDate, onReservationsUpdated }: CreateSimulationsFormProps) {
 	const [reservations, setReservations] = useState<Reservation[]>([])
 	const [selectedRooms, setSelectedRooms] = useState<Room[]>([])
 	const [startTime, setStartTime] = useState<string>("")
@@ -95,11 +97,20 @@ export default function CreateSimulationsForm({ onClose, setDate }: CreateSimula
 			return
 		}
 
+		const [startHour, startMinute] = startTime.split(":").map(Number)
+		const [endHour, endMinute] = endTime.split(":").map(Number)
+		const reservationDuration = endHour * 60 + endMinute - (startHour * 60 + startMinute)
+
+		const spaces = practice?.simulationDuration
+			? Math.ceil(reservationDuration / practice.simulationDuration)
+			: 0
+
 		const newReservation: Reservation = {
 			date: format(selectedDate, "yyyy-MM-dd"),
 			startTime,
 			endTime,
 			roomIds: selectedRooms.map((room) => room.value),
+			spaces,
 		}
 
 		const isDuplicate = reservations.some(
@@ -121,6 +132,14 @@ export default function CreateSimulationsForm({ onClose, setDate }: CreateSimula
 	}
 
 	const saveReservations = async () => {
+		const totalSpacesInCart = reservations.reduce((sum, res) => sum + res.spaces, 0)
+		const totalSpacesRequired = practice?.numberOfGroups || 0
+
+		if (totalSpacesInCart < totalSpacesRequired) {
+			toast.error("No ha reservado los suficientes espacios para los estudiantes.")
+			return
+		}
+
 		if (reservations.length === 0) {
 			toast.error("No hay reservas para guardar.")
 			return
@@ -141,6 +160,7 @@ export default function CreateSimulationsForm({ onClose, setDate }: CreateSimula
 			await createSimulations(requestData)
 			toast.success("Reservas guardadas con éxito.")
 			setReservations([])
+      onReservationsUpdated();
 			onClose()
 		} catch (err) {
 			console.error("Error al enviar reservas:", err)
@@ -153,6 +173,9 @@ export default function CreateSimulationsForm({ onClose, setDate }: CreateSimula
 			? practice.numberOfGroups * practice.simulationDuration
 			: 0
 	}
+
+	const totalSpacesInCart = reservations.reduce((sum, res) => sum + res.spaces, 0)
+	const totalSpacesRequired = practice?.numberOfGroups || 0
 
 	return (
 		<div className="flex w-2/5 flex-col space-y-4 rounded-lg border p-4">
@@ -243,23 +266,41 @@ export default function CreateSimulationsForm({ onClose, setDate }: CreateSimula
 
 			<div className="h-full overflow-auto rounded border p-2">
 				{reservations.length > 0 ? (
-					reservations.map((res, index) => (
-						<div key={index} className="flex items-center justify-between border-b p-1">
-							<p>
-								{res.date} ({res.startTime} - {res.endTime}) - Sala {res.roomIds}
-							</p>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => setReservations((prev) => prev.filter((_, i) => i !== index))}
-							>
-								<Trash2 className="h-4 w-4 text-red-500" />
-							</Button>
-						</div>
-					))
+					reservations.map((res, index) => {
+						const roomNames = res.roomIds
+							.map((id) => rooms.find((room) => room.value === id)?.label)
+							.filter((name) => name)
+
+						return (
+							<div key={index} className="flex items-center justify-between border-b p-1">
+								<p>
+									{res.date} ({res.startTime} - {res.endTime}) - {roomNames.join(", ")} - (
+									{res.spaces} espacios)
+								</p>
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => setReservations((prev) => prev.filter((_, i) => i !== index))}
+								>
+									<Trash2 className="h-4 w-4 text-red-500" />
+								</Button>
+							</div>
+						)
+					})
 				) : (
 					<p className="text-gray-500">No hay reservas en el carrito aún</p>
 				)}
+			</div>
+
+			<div className="text-sm text-gray-700">
+				<p>
+					<span className="font-semibold">Número de espacios en el carrito:</span>{" "}
+					{totalSpacesInCart}
+				</p>
+				<p>
+					<span className="font-semibold">Número de espacios mínimos a reservar:</span>{" "}
+					{totalSpacesRequired}
+				</p>
 			</div>
 
 			<Button onClick={saveReservations} className="azul-javeriana w-full text-white">

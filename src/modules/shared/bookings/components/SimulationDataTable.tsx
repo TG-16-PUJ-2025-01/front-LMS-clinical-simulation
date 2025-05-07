@@ -73,23 +73,23 @@ export function SimulationDataTable({ practice }: Props) {
 		totalPages: 0,
 	})
 
-	useEffect(() => {
-		const fetchSimulations = async () => {
-			const res = await getSimulationsByPracticeId(
-				Number(practiceId),
-				pagination.pageIndex,
-				pagination.pageSize,
-				filter,
-				sorting[0]?.id || "simulationId",
-				!(sorting[0]?.desc ?? false)
-			)
-			setData(res.data)
-			setPaginationInfo({
-				total: res.metadata.total,
-				totalPages: res.metadata.totalPages,
-			})
-		}
+	const fetchSimulations = async () => {
+		const res = await getSimulationsByPracticeId(
+			Number(practiceId),
+			pagination.pageIndex,
+			pagination.pageSize,
+			filter,
+			sorting[0]?.id || "simulationId",
+			!(sorting[0]?.desc ?? false)
+		)
+		setData(res.data)
+		setPaginationInfo({
+			total: res.metadata.total,
+			totalPages: res.metadata.totalPages,
+		})
+	}
 
+	useEffect(() => {
 		fetchSimulations()
 	}, [pagination, filter, sorting, practiceId])
 
@@ -234,7 +234,9 @@ export function SimulationDataTable({ practice }: Props) {
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
 							<DropdownMenuItem
-								onClick={() => navigate(`/${preferredRole!.toLowerCase()}/simulacion/${simulation.simulationId}`)}
+								onClick={() =>
+									navigate(`/${preferredRole!.toLowerCase()}/simulacion/${simulation.simulationId}`)
+								}
 							>
 								<Pencil /> Calificar
 							</DropdownMenuItem>
@@ -249,7 +251,6 @@ export function SimulationDataTable({ practice }: Props) {
 							>
 								<Calendar /> Editar Reserva
 							</DropdownMenuItem>
-
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
@@ -303,8 +304,6 @@ export function SimulationDataTable({ practice }: Props) {
 								<Button onClick={() => setIsDialogOpen(true)}>Crear Reservas</Button>
 							)}
 						</div>
-
-
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
@@ -370,7 +369,11 @@ export function SimulationDataTable({ practice }: Props) {
 					</div>
 				</div>
 			</div>
-			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+			<CreateSimulationsDialog
+				open={isDialogOpen}
+				onClose={() => setIsDialogOpen(false)}
+				onReservationsUpdated={fetchSimulations}
+			/>
 			<EditSimulationsDialog
 				open={isEditDialogOpen}
 				onClose={() => setIsEditDialogOpen(false)}

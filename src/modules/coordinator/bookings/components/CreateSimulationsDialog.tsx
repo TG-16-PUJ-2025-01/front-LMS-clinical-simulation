@@ -12,9 +12,10 @@ import { createCalendarControlsPlugin } from "@schedule-x/calendar-controls"
 interface BookingDialogProps {
 	open: boolean
 	onClose: () => void
+	onReservationsUpdated: () => void
 }
 
-export default function CreateSimulationsDialog({ open, onClose }: BookingDialogProps) {
+export default function CreateSimulationsDialog({ open, onClose, onReservationsUpdated }: BookingDialogProps) {
 	const eventsServicePlugin = useMemo(() => createEventsServicePlugin(), [])
 	const calendarControls = useMemo(() => createCalendarControlsPlugin(), [])
 	const [selectedDate, setSelectedDate] = useState<string | undefined>(
@@ -81,6 +82,7 @@ export default function CreateSimulationsDialog({ open, onClose }: BookingDialog
 						onClose={onClose}
 						selectedDate={selectedDate}
 						setDate={(date) => calendarControls.setDate(date)}
+						onReservationsUpdated={onReservationsUpdated}
 					/>
 				</div>
 			</DialogContent>
