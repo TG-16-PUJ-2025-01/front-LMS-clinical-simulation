@@ -95,15 +95,24 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
 			return
 		}
 
+		const [startHours, startMinutes] = startTime.split(":").map(Number)
+		const [endHours, endMinutes] = endTime.split(":").map(Number)
+		const reservationDuration = endHours * 60 + endMinutes - (startHours * 60 + startMinutes)
+
+		if (practice?.simulationDuration && reservationDuration !== practice.simulationDuration) {
+			toast.error(
+				`La duración de la reserva debe ser exactamente ${practice.simulationDuration} minutos.`
+			)
+			return
+		}
+
 		try {
 			const startDateTime = new Date(selectedDate)
-			const [startHours, startMinutes] = startTime.split(":").map(Number)
 			startDateTime.setHours(startHours, startMinutes)
 
 			const endDateTime = new Date(selectedDate)
-			const [endHours, endMinutes] = endTime.split(":").map(Number)
 			endDateTime.setHours(endHours, endMinutes)
-			console.log("simulation", simulation)
+
 			const requestData = {
 				practiceId: Number(practiceId),
 				startDateTime: startDateTime.toISOString(),
