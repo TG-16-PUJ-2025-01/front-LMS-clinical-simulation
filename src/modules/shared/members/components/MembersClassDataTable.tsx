@@ -11,7 +11,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Search, Trash2 } from "lucide-react"
+import { ArrowUpDown, Download, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -47,6 +47,7 @@ import Class from "@/modules/core/models/class"
 import { AxiosError } from "axios"
 import { FileLoader } from "../../fileLoader/FileLoaderButon"
 import { FileDownloader } from "../../fileLoader/fileDownloaderButton"
+import ExceltutorialTemplate from "./ExcelTemplateTutorial"
 
 export function StudentsClassDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -56,7 +57,7 @@ export function StudentsClassDataTable() {
 	const [rowSelection, setRowSelection] = useState({})
 	const { id } = useParams()
 
-	const [openDialog, setOpenDialog] = useState<"delete" | "students" | "professors" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"delete" | "students" | "professors" | "tutorial" |null>(null)
 	const [selectedStudent, setSelectedStudent] = useState<UserModel | undefined>(undefined)
 	const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
 
@@ -175,7 +176,7 @@ export function StudentsClassDataTable() {
 		fetchMembers()
 	}, [pagination, filter, sorting, openDialog, id, excelData])
 
-	const handleOpenDialog = (type: "delete" | "students" | "professors", Usermodel?: UserModel) => {
+	const handleOpenDialog = (type: "delete" | "students" | "professors" | "tutorial", Usermodel?: UserModel) => {
 		setOpenDialog(type)
 		setSelectedStudent(Usermodel ?? undefined)
 		setSelectedClassId(id ? Number(id) : null)
@@ -356,7 +357,10 @@ export function StudentsClassDataTable() {
 						<div>
 							<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
 						</div>
-						<FileDownloader fileName="class members" />
+						<Button className="bg-green-800 hover:bg-green-800/90" onClick={() => handleOpenDialog("tutorial")}>
+							<Download className="mr-2 h-4 w-4 text-white" />
+							Descargar plantilla
+						</Button>
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
@@ -434,6 +438,7 @@ export function StudentsClassDataTable() {
 				studentToDelete={selectedStudent}
 				classId={selectedClassId ?? 0}
 			/>
+			<ExceltutorialTemplate open={openDialog === "tutorial"} onClose={handleCloseDialog} />
 		</>
 	)
 }
