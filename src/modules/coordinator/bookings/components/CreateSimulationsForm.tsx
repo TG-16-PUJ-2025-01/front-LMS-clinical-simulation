@@ -17,7 +17,7 @@ interface CreateSimulationsFormProps {
 	onClose: () => void
 	selectedDate: string | undefined
 	setDate: (date: string) => void
-  onReservationsUpdated: () => void
+	onReservationsUpdated: () => void
 }
 
 interface Room {
@@ -33,7 +33,11 @@ interface Reservation {
 	spaces: number
 }
 
-export default function CreateSimulationsForm({ onClose, setDate, onReservationsUpdated }: CreateSimulationsFormProps) {
+export default function CreateSimulationsForm({
+	onClose,
+	setDate,
+	onReservationsUpdated,
+}: CreateSimulationsFormProps) {
 	const [reservations, setReservations] = useState<Reservation[]>([])
 	const [selectedRooms, setSelectedRooms] = useState<Room[]>([])
 	const [startTime, setStartTime] = useState<string>("")
@@ -160,7 +164,7 @@ export default function CreateSimulationsForm({ onClose, setDate, onReservations
 			await createSimulations(requestData)
 			toast.success("Reservas guardadas con éxito.")
 			setReservations([])
-      onReservationsUpdated();
+			onReservationsUpdated()
 			onClose()
 		} catch (err) {
 			console.error("Error al enviar reservas:", err)
