@@ -14,23 +14,24 @@ interface EditSimulationsDialogProps {
 	open: boolean
 	onClose: () => void
 	simulation: Simulation | null
+	onReservationsUpdated: () => void
 }
 
 export default function EditSimulationsDialog({
 	open,
 	onClose,
 	simulation,
+	onReservationsUpdated,
 }: EditSimulationsDialogProps) {
-	// Inicializar con la fecha de la simulación o la fecha actual
-	const initialDate = simulation?.startDateTime ? new Date(simulation.startDateTime) : new Date()
+	const initialDate = simulation?.startDateTime
+		? new Date(simulation.startDateTime).toLocaleDateString("en-CA")
+		: new Date().toLocaleDateString("en-CA")
 
-	const [selectedDate, setSelectedDate] = useState<Date>(initialDate)
+	const [selectedDate, setSelectedDate] = useState<string>(initialDate)
 
-	// Plugins memoizados
 	const eventsServicePlugin = useMemo(() => createEventsServicePlugin(), [])
 	const calendarControls = useMemo(() => createCalendarControlsPlugin(), [])
 
-	// Configuración del calendario
 	const calendarApp = useNextCalendarApp(
 		{
 			views: [createViewDay()],
@@ -41,35 +42,31 @@ export default function EditSimulationsDialog({
 				end: "20:00",
 			},
 			defaultView: "day",
-			selectedDate: selectedDate.toISOString().split("T")[0],
+			selectedDate: selectedDate,
 			callbacks: {
 				onSelectedDateUpdate(date) {
-					setSelectedDate(new Date(date))
+					setSelectedDate(date)
 				},
 			},
 		},
 		[eventsServicePlugin, calendarControls]
 	)
 
-	// Sincronizar la fecha cuando cambia la simulación
+	useEffect(() => {
+		console.log("Selected date changed:", selectedDate)
+		calendarControls.setDate(selectedDate)
+	}, [selectedDate])
+
 	useEffect(() => {
 		if (simulation?.startDateTime) {
-			setSelectedDate(new Date(simulation.startDateTime))
+			setSelectedDate(new Date(simulation.startDateTime).toLocaleDateString("en-CA"))
 		}
 	}, [simulation])
 
-	// Actualizar los controles del calendario
-	useEffect(() => {
-		if (calendarApp && calendarControls && selectedDate) {
-			calendarControls.setDate(selectedDate.toISOString().split("T")[0])
-		}
-	}, [selectedDate, calendarApp, calendarControls])
-
-	// Carga de reservas
 	useEffect(() => {
 		const fetchReservations = async () => {
 			try {
-				const reservationsData = await getSchedule(selectedDate.toISOString().split("T")[0])
+				const reservationsData = await getSchedule(selectedDate)
 				eventsServicePlugin?.set(
 					reservationsData.map((res, index) => ({
 						id: index.toString(),
@@ -103,8 +100,8 @@ export default function EditSimulationsDialog({
 					<EditSimulationsForm
 						onClose={onClose}
 						simulation={simulation}
-						// selectedDate={selectedDate}
-						// setSelectedDate={setSelectedDate}
+						setDate={(date) => calendarControls.setDate(date)}
+						onReservationsUpdated={onReservationsUpdated}
 					/>
 				</div>
 			</DialogContent>

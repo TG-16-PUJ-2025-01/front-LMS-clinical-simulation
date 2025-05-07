@@ -378,6 +378,7 @@ export function SimulationDataTable({ practice }: Props) {
 				open={isEditDialogOpen}
 				onClose={() => setIsEditDialogOpen(false)}
 				simulation={selectedSimulation}
+				onReservationsUpdated={fetchSimulations}
 			/>
 
 			<ViewMembersDialog

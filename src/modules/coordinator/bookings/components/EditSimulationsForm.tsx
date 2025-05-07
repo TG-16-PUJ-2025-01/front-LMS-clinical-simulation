@@ -16,6 +16,8 @@ import Simulation from "@/modules/core/models/simulation"
 interface EditSimulationsFormProps {
 	onClose: () => void
 	simulation: Simulation
+	setDate: (date: string) => void
+	onReservationsUpdated: () => void
 }
 
 interface RoomOption {
@@ -23,7 +25,7 @@ interface RoomOption {
 	label: string
 }
 
-export default function EditSimulationsForm({ onClose, simulation }: EditSimulationsFormProps) {
+export default function EditSimulationsForm({ onClose, simulation, setDate, onReservationsUpdated }: EditSimulationsFormProps) {
 	const [selectedRooms, setSelectedRooms] = useState<RoomOption[]>(
 		simulation.rooms.map((room) => ({
 			value: room.id,
@@ -122,6 +124,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
 
 			await editSimulationById(simulation.simulationId, requestData)
 			toast.success("Reserva actualizada exitosamente")
+			onReservationsUpdated()
 			onClose()
 		} catch (err) {
 			console.error("Error al actualizar simulación:", err)
@@ -159,6 +162,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
 						onSelect={(date) => {
 							if (!date) return
 							setSelectedDate(date)
+							setDate(format(date ?? new Date(), "yyyy-MM-dd"))
 						}}
 						locale={es}
 					/>
