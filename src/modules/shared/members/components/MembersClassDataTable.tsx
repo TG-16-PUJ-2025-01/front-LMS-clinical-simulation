@@ -46,7 +46,6 @@ import * as XLSX from "xlsx"
 import Class from "@/modules/core/models/class"
 import { AxiosError } from "axios"
 import { FileLoader } from "../../fileLoader/FileLoaderButon"
-import { FileDownloader } from "../../fileLoader/fileDownloaderButton"
 import ExceltutorialTemplate from "./ExcelTemplateTutorial"
 
 export function StudentsClassDataTable() {
@@ -85,7 +84,7 @@ export function StudentsClassDataTable() {
 		const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
 
 		const validFormat = data.every(
-			(item) => "institutionalId" in item && "rol" in item && typeof item.rol === "string"
+			(item) => "institutionalId" in item && ("profesor" in item && item["profesor"].toString().trim() !== "" || "estudiante" in item  && item["estudiante"].toString().trim() !== "" ) && !("profesor" in item && "estudiante" in item)
 		)
 
 		if (!validFormat) {
@@ -100,7 +99,7 @@ export function StudentsClassDataTable() {
 
 		const processData = async () => {
 			const promises = data.map(async (item, index) => {
-				if (item.rol.toLowerCase() === "profesor") {
+				if ("profesor" in item) {
 					// Llama al servicio y agrega al resultado
 					try {
 						const updatedClass = await updateClassProfessorMember(Number(id), item.institutionalId)
@@ -114,7 +113,7 @@ export function StudentsClassDataTable() {
 						)
 						allCorrect = false
 					}
-				} else if (item.rol.toLowerCase() === "estudiante") {
+				} else if ("estudiante" in item) {
 					// Llama al servicio y agrega al resultado
 					try {
 						const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)

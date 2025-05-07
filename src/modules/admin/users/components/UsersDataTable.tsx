@@ -49,7 +49,9 @@ export function UsersDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "tutorial" | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "tutorial" | null>(
+		null
+	)
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
 	const [openMailConfigDialog, setOpenMailConfigDialog] = useState(false)
@@ -132,30 +134,33 @@ export function UsersDataTable() {
 
 		let allCorrect = true
 
+		const roleFieldMap: Record<string, Role> = {
+			administrador: Role.ADMIN,
+			profesor: Role.PROFESOR,
+			estudiante: Role.ESTUDIANTE,
+			coordinador: Role.COORDINADOR,
+		}
+
 		const processData = async () => {
 			const promises = data.map(async (item, index) => {
-				// Evaluar si el rol es el correcto
-				const roles = Object.keys(item)
-					.filter((key) => key.trim().startsWith("rol"))
-					.map((key) => item[key])
-					.filter((id) => id !== undefined && id !== null && id !== "")
+
+				console.log("Procesando fila:", index + 1, item)
+				
+				const roles: Role[] = []
+
+				for (const field in roleFieldMap) {
+					if (item[field] && item[field].toString().trim() !== "") {
+						roles.push(roleFieldMap[field])
+					}
+				}
 
 				if (roles.length === 0) {
 					allCorrect = false
 					toast.error(
-						`Error en la fila ${index + 1}: el rol no es correcto, por favor verifique el archivo.`
+						`Error en la fila ${index + 1}: debe contener al menos un rol (administrador, profesor, estudiante o coordinador).`
 					)
 					return
 				}
-
-				const isValidRole = roles.every((role) => Object.values(Role).includes(role))
-
-				if (!isValidRole) {
-					allCorrect = false
-					toast.error(`Error en la fila ${index + 1}: el rol no es válido.`)
-					return
-				}
-
 				try {
 					await createUserByExcel({
 						institutionalId: item.idInstitucional,
@@ -195,6 +200,8 @@ export function UsersDataTable() {
 	function neededFields(data: Record<string, any>[]) {
 		const requiredFields = ["idInstitucional", "nombre", "apellido", "email"]
 
+		const atLeastOneFields = ["administrador", "profesor", "estudiante", "coordinador"]
+
 		for (let i = 0; i < data.length; i++) {
 			const row = data[i]
 
@@ -207,9 +214,9 @@ export function UsersDataTable() {
 
 			const hasAllFields = requiredFields.every((field) => rowKeys.includes(field))
 
-			const hasRoleField = rowKeys.some((key) => key.startsWith("rol"))
+			const hasAtLeastOneRole = atLeastOneFields.some((field) => rowKeys.includes(field))
 
-			if (!hasAllFields && !hasRoleField) {
+			if (!hasAllFields || !hasAtLeastOneRole) {
 				return false
 			}
 		}
@@ -368,8 +375,11 @@ export function UsersDataTable() {
 						</Button>
 						<Button onClick={() => handleOpenDialog("create")}>Nuevo usuario</Button>
 						<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
-						
-						<Button className="bg-green-800 hover:bg-green-800/90" onClick={() => handleOpenDialog("tutorial")}>
+
+						<Button
+							className="bg-green-800 hover:bg-green-800/90"
+							onClick={() => handleOpenDialog("tutorial")}
+						>
 							<Download className="mr-2 h-4 w-4 text-white" />
 							Descargar plantilla
 						</Button>
@@ -475,7 +485,6 @@ export function UsersDataTable() {
 			/>
 
 			<ExceltutorialTemplate open={openDialog === "tutorial"} onClose={handleCloseDialog} />
-			
 		</>
 	)
 }
