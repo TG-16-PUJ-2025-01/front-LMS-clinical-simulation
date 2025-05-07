@@ -117,14 +117,17 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
+
+
+
 			await updateCourse(course!.courseId as number, {
 				javerianaId: values.javerianaId,
 				name: values.name,
 				coordinatorId: values.coordinator.id!,
-				semester: course!.semester,
-				program: course!.program,
-				department: course!.department,
-				faculty: course!.faculty,
+				semester: values.semester,
+				program: values.program,
+				department: values.department,
+				faculty: values.faculty,
 			})
 
 			onClose(false)
@@ -211,6 +214,7 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 												onChange={(selected) => {
 													field.onChange(selected?.value)
 													form.setValue("semester", selected?.key ?? 1)
+
 												}}
 											/>
 										</FormControl>
