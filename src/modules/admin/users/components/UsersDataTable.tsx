@@ -9,7 +9,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
+import { ArrowUpDown, Download, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -41,6 +41,7 @@ import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Role from "@/modules/core/models/role"
 import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
+import ExceltutorialTemplate from "./ExcelTemplateTutorial"
 
 export function UsersDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -48,7 +49,7 @@ export function UsersDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "tutorial" | null>(null)
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
 	const [openMailConfigDialog, setOpenMailConfigDialog] = useState(false)
@@ -216,7 +217,7 @@ export function UsersDataTable() {
 		return true
 	}
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete", user?: User) => {
+	const handleOpenDialog = (type: "create" | "edit" | "delete" | "tutorial", user?: User) => {
 		setEditDialog(type)
 		setSelectedUser(user ?? null)
 	}
@@ -367,7 +368,11 @@ export function UsersDataTable() {
 						</Button>
 						<Button onClick={() => handleOpenDialog("create")}>Nuevo usuario</Button>
 						<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
-						<FileDownloader fileName="users" />
+						
+						<Button className="bg-green-800 hover:bg-green-800/90" onClick={() => handleOpenDialog("tutorial")}>
+							<Download className="mr-2 h-4 w-4 text-white" />
+							Descargar plantilla
+						</Button>
 					</div>
 				</div>
 
@@ -468,6 +473,9 @@ export function UsersDataTable() {
 				open={openMailConfigDialog}
 				onClose={() => setOpenMailConfigDialog(false)}
 			/>
+
+			<ExceltutorialTemplate open={openDialog === "tutorial"} onClose={handleCloseDialog} />
+			
 		</>
 	)
 }

@@ -1,4 +1,3 @@
-import { Button } from "@/modules/core/components/ui/button"
 import {
 	Dialog,
 	DialogContent,
@@ -7,18 +6,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/modules/core/components/ui/dialog"
-import { Input } from "@/modules/core/components/ui/input"
-import makeAnimated from "react-select/animated"
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/modules/core/components/ui/form"
 
-import { useEffect, useState } from "react"
 import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
 
 interface Props {
@@ -26,7 +14,6 @@ interface Props {
 	onClose: (open: boolean) => void
 }
 
-const animatedComponents = makeAnimated()
 
 export default function ExceltutorialTemplate({ open, onClose }: Props) {
 	return (
