@@ -144,7 +144,11 @@ export default function AddPracticeDialog({
 				<DialogHeader>
 					<DialogTitle>Agregar Práctica</DialogTitle>
 					<DialogDescription>
-						Puedes agregar una nueva práctica con los siguientes atributos
+						Puedes agregar una nueva práctica con los siguientes atributos. <br />
+						<strong>
+							Si seleccionas el tipo "Grupal", asegúrate de que la capacidad total cubra el número
+							de participantes de la clase ({numberOfParticipants} estudiantes).
+						</strong>
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" noValidate>
@@ -327,7 +331,6 @@ export default function AddPracticeDialog({
 											</FormItem>
 										)}
 									/>
-									{/* Mensaje dinámico */}
 									<div className="col-span-4 mt-4 text-sm text-gray-600">
 										{form.watch("numberOfGroups") && form.watch("maxStudentsGroup") ? (
 											<>
