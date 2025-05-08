@@ -25,7 +25,12 @@ interface RoomOption {
 	label: string
 }
 
-export default function EditSimulationsForm({ onClose, simulation, setDate, onReservationsUpdated }: EditSimulationsFormProps) {
+export default function EditSimulationsForm({
+	onClose,
+	simulation,
+	setDate,
+	onReservationsUpdated,
+}: EditSimulationsFormProps) {
 	const [selectedRooms, setSelectedRooms] = useState<RoomOption[]>(
 		simulation.rooms.map((room) => ({
 			value: room.id,
@@ -126,9 +131,19 @@ export default function EditSimulationsForm({ onClose, simulation, setDate, onRe
 			toast.success("Reserva actualizada exitosamente")
 			onReservationsUpdated()
 			onClose()
-		} catch (err) {
-			console.error("Error al actualizar simulación:", err)
-			toast.error("No se pudo actualizar la simulación.")
+		} catch (err: any) {
+			const statusCode = err.response?.status
+			switch (statusCode) {
+				case 409:
+					toast.error("La sala ya está reservada para esa fecha y hora.")
+					break
+				case 422:
+					toast.error("La capacidad de la sala no es suficiente para el grupo.")
+					break
+				default:
+					toast.error("Ocurrió un error inesperado. Por favor, inténtalo de nuevo.")
+					break
+			}
 		}
 	}
 
