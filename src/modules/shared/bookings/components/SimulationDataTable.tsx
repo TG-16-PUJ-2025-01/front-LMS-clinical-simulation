@@ -151,6 +151,29 @@ export function SimulationDataTable({ practice }: Props) {
 			},
 		},
 		{
+			accessorKey: "rooms",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="flex w-full items-center justify-center"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Salas
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const rooms = row.getValue("rooms") as { name: string }[];
+				return (
+					<div className="text-center">
+						{rooms.map((room) => room.name).join(", ")}
+					</div>
+				);
+			},
+		},
+		{
 			accessorKey: "gradeStatus",
 			header: ({ column }) => (
 				<div className="relative w-full">
@@ -299,7 +322,6 @@ export function SimulationDataTable({ practice }: Props) {
 					<div className="flex items-center space-x-2">
 						<Button onClick={() => setIsAssignRubricOpen(true)}>Asignar rúbrica</Button>
 						<div className="flex items-center space-x-2">
-							{/* Mostrar el botón solo si no hay datos en la tabla */}
 							{data.length === 0 && (
 								<Button onClick={() => setIsDialogOpen(true)}>Crear Reservas</Button>
 							)}
