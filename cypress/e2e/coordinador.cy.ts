@@ -333,17 +333,17 @@ describe("Teacher flow tests", () => {
 			.should("exist")
 			.and("contain.text", "Rúbrica creada exitosamente")
 
-		cy.get("table tbody tr").should("have.length", 1)
+		cy.get("table tbody tr").should("have.length", 3)
 
-		cy.get("table tbody tr td").eq(0).should("contain.text", "Mi rúbrica de ejemplo")
+		cy.get("table tbody tr").eq(2).find("td").eq(0).should("contain.text", "Mi rúbrica de ejemplo")
 
 		const today = new Date()
 		let formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
 
-		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
+		cy.get("table tbody tr").eq(2).find("td").eq(1).should("contain.text", formattedDate)
 
 		cy.step("Step 18 - Ver rúbrica")
-		cy.get("table tbody tr td").find("button").click()
+		cy.get("table tbody tr").eq(2).find("td").eq(2).find("button").click()
 
 		cy.contains("Ver").should("be.visible").click()
 
@@ -353,7 +353,7 @@ describe("Teacher flow tests", () => {
 		})
 
 		cy.step("Step 19 - Editar rúbrica")
-		cy.get("table tbody tr td").find("button").click()
+		cy.get("table tbody tr").eq(2).find("td").eq(2).find("button").click()
 
 		cy.contains("Editar").should("be.visible").click()
 
@@ -369,9 +369,9 @@ describe("Teacher flow tests", () => {
 			.should("exist")
 			.and("contain.text", "Rúbrica actualizada exitosamente")
 
-		cy.get("table tbody tr td").eq(0).should("contain.text", "Rúbrica Modificada")
+		cy.get("table tbody tr").eq(2).find("td").eq(0).should("contain.text", "Rúbrica Modificada")
 
-		cy.get("table tbody tr td").find("button").click()
+		cy.get("table tbody tr").eq(2).find("td").eq(2).find("button").click()
 
 		cy.contains("Ver").should("be.visible").click()
 
@@ -387,7 +387,7 @@ describe("Teacher flow tests", () => {
 		})
 
 		cy.step("Step 20 - Archivar rúbrica")
-		cy.get("table tbody tr td").find("button").click()
+		cy.get("table tbody tr").eq(2).find("td").eq(2).find("button").click()
 
 		cy.contains("Archivar").should("be.visible").click()
 
@@ -402,10 +402,7 @@ describe("Teacher flow tests", () => {
 
 		cy.wait(2000)
 
-		cy.get("table tbody tr")
-			.should("have.length", 1)
-			.find("td")
-			.should("contain.text", "No results.")
+		cy.get("table tbody tr").should("have.length", 2)
 
 		cy.step("Step 21 - Ver rúbricas archivada")
 		cy.get('button[type="button"][role="radio"][value="archived"]').click({ force: true })
@@ -430,11 +427,11 @@ describe("Teacher flow tests", () => {
 
 		cy.get('button[type="button"][role="radio"][value="all"]').click({ force: true })
 
-		cy.get("table tbody tr td").eq(0).should("contain.text", "Rúbrica Modificada")
+		cy.get("table tbody tr").eq(2).find("td").eq(0).should("contain.text", "Rúbrica Modificada")
 
-		cy.get("table tbody tr td").eq(1).should("contain.text", formattedDate)
+		cy.get("table tbody tr").eq(2).find("td").eq(1).should("contain.text", formattedDate)
 
-		cy.step("Step 23 - Calificar simulación") // TODO: Hasta aca voy
+		cy.step("Step 23 - Calificar simulación")
 		cy.visit("/coordinador/clases/1/practicas/1")
 
 		cy.get("table tbody tr").eq(0).find("button").click()
