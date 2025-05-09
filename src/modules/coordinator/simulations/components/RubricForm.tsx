@@ -171,13 +171,12 @@ export function RubricForm({
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		await Promise.all([
-			saveRubric({
-				evaluatedCriterias: data.evaluatedCriterias,
-				total: data.total,
-			}),
-			publishSimulationGrade(Number(id)),
-		])
+		await saveRubric({
+			evaluatedCriterias: data.evaluatedCriterias,
+			total: data.total,
+		})
+		await publishSimulationGrade(Number(id))
+
 		setSaving(false)
 		setEditing(false)
 		setGradeStatus(GradeStatus.REGISTERED)
@@ -332,10 +331,7 @@ export function RubricForm({
 											) : editing ? (
 												<Button type="submit">Guardar</Button>
 											) : (
-												<Button
-													type="button"
-													onClick={() => setTimeout(() => setEditing(true))}
-												>
+												<Button type="button" onClick={() => setTimeout(() => setEditing(true))}>
 													Actualizar
 												</Button>
 											)}
