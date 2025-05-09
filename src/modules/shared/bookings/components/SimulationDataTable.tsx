@@ -73,23 +73,23 @@ export function SimulationDataTable({ practice }: Props) {
 		totalPages: 0,
 	})
 
-	useEffect(() => {
-		const fetchSimulations = async () => {
-			const res = await getSimulationsByPracticeId(
-				Number(practiceId),
-				pagination.pageIndex,
-				pagination.pageSize,
-				filter,
-				sorting[0]?.id || "simulationId",
-				!(sorting[0]?.desc ?? false)
-			)
-			setData(res.data)
-			setPaginationInfo({
-				total: res.metadata.total,
-				totalPages: res.metadata.totalPages,
-			})
-		}
+	const fetchSimulations = async () => {
+		const res = await getSimulationsByPracticeId(
+			Number(practiceId),
+			pagination.pageIndex,
+			pagination.pageSize,
+			filter,
+			sorting[0]?.id || "simulationId",
+			!(sorting[0]?.desc ?? false)
+		)
+		setData(res.data)
+		setPaginationInfo({
+			total: res.metadata.total,
+			totalPages: res.metadata.totalPages,
+		})
+	}
 
+	useEffect(() => {
 		fetchSimulations()
 	}, [pagination, filter, sorting, practiceId])
 
@@ -148,6 +148,29 @@ export function SimulationDataTable({ practice }: Props) {
 			cell: ({ row }) => {
 				const date = new Date(row.getValue("endDateTime"))
 				return <div className="text-center capitalize">{format(date, "dd/MM/yyyy HH:mm")}</div>
+			},
+		},
+		{
+			accessorKey: "rooms",
+			header: ({ column }) => (
+				<div className="relative w-full">
+					<Button
+						variant="ghost"
+						className="flex w-full items-center justify-center"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					>
+						Salas
+						{column.getIsSorted() && <ArrowUpDown />}
+					</Button>
+				</div>
+			),
+			cell: ({ row }) => {
+				const rooms = row.getValue("rooms") as { name: string }[];
+				return (
+					<div className="text-center">
+						{rooms.map((room) => room.name).join(", ")}
+					</div>
+				);
 			},
 		},
 		{
@@ -234,7 +257,9 @@ export function SimulationDataTable({ practice }: Props) {
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
 							<DropdownMenuItem
-								onClick={() => navigate(`/${preferredRole!.toLowerCase()}/simulacion/${simulation.simulationId}`)}
+								onClick={() =>
+									navigate(`/${preferredRole!.toLowerCase()}/simulacion/${simulation.simulationId}`)
+								}
 							>
 								<Pencil /> Calificar
 							</DropdownMenuItem>
@@ -249,7 +274,6 @@ export function SimulationDataTable({ practice }: Props) {
 							>
 								<Calendar /> Editar Reserva
 							</DropdownMenuItem>
-
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
@@ -298,13 +322,10 @@ export function SimulationDataTable({ practice }: Props) {
 					<div className="flex items-center space-x-2">
 						<Button onClick={() => setIsAssignRubricOpen(true)}>Asignar rúbrica</Button>
 						<div className="flex items-center space-x-2">
-							{/* Mostrar el botón solo si no hay datos en la tabla */}
 							{data.length === 0 && (
 								<Button onClick={() => setIsDialogOpen(true)}>Crear Reservas</Button>
 							)}
 						</div>
-
-
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
@@ -370,11 +391,16 @@ export function SimulationDataTable({ practice }: Props) {
 					</div>
 				</div>
 			</div>
-			<CreateSimulationsDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+			<CreateSimulationsDialog
+				open={isDialogOpen}
+				onClose={() => setIsDialogOpen(false)}
+				onReservationsUpdated={fetchSimulations}
+			/>
 			<EditSimulationsDialog
 				open={isEditDialogOpen}
 				onClose={() => setIsEditDialogOpen(false)}
 				simulation={selectedSimulation}
+				onReservationsUpdated={fetchSimulations}
 			/>
 
 			<ViewMembersDialog

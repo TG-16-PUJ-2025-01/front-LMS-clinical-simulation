@@ -16,6 +16,8 @@ import Simulation from "@/modules/core/models/simulation"
 interface EditSimulationsFormProps {
 	onClose: () => void
 	simulation: Simulation
+	setDate: (date: string) => void
+	onReservationsUpdated: () => void
 }
 
 interface RoomOption {
@@ -23,7 +25,12 @@ interface RoomOption {
 	label: string
 }
 
-export default function EditSimulationsForm({ onClose, simulation }: EditSimulationsFormProps) {
+export default function EditSimulationsForm({
+	onClose,
+	simulation,
+	setDate,
+	onReservationsUpdated,
+}: EditSimulationsFormProps) {
 	const [selectedRooms, setSelectedRooms] = useState<RoomOption[]>(
 		simulation.rooms.map((room) => ({
 			value: room.id,
@@ -95,15 +102,24 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
 			return
 		}
 
+		const [startHours, startMinutes] = startTime.split(":").map(Number)
+		const [endHours, endMinutes] = endTime.split(":").map(Number)
+		const reservationDuration = endHours * 60 + endMinutes - (startHours * 60 + startMinutes)
+
+		if (practice?.simulationDuration && reservationDuration !== practice.simulationDuration) {
+			toast.error(
+				`La duración de la reserva debe ser exactamente ${practice.simulationDuration} minutos.`
+			)
+			return
+		}
+
 		try {
 			const startDateTime = new Date(selectedDate)
-			const [startHours, startMinutes] = startTime.split(":").map(Number)
 			startDateTime.setHours(startHours, startMinutes)
 
 			const endDateTime = new Date(selectedDate)
-			const [endHours, endMinutes] = endTime.split(":").map(Number)
 			endDateTime.setHours(endHours, endMinutes)
-			console.log("simulation", simulation)
+
 			const requestData = {
 				practiceId: Number(practiceId),
 				startDateTime: startDateTime.toISOString(),
@@ -113,10 +129,21 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
 
 			await editSimulationById(simulation.simulationId, requestData)
 			toast.success("Reserva actualizada exitosamente")
+			onReservationsUpdated()
 			onClose()
-		} catch (err) {
-			console.error("Error al actualizar simulación:", err)
-			toast.error("No se pudo actualizar la simulación.")
+		} catch (err: any) {
+			const statusCode = err.response?.status
+			switch (statusCode) {
+				case 409:
+					toast.error("La sala ya está reservada para esa fecha y hora.")
+					break
+				case 422:
+					toast.error("La capacidad de la sala no es suficiente para el grupo.")
+					break
+				default:
+					toast.error("Ocurrió un error inesperado. Por favor, inténtalo de nuevo.")
+					break
+			}
 		}
 	}
 
@@ -150,6 +177,7 @@ export default function EditSimulationsForm({ onClose, simulation }: EditSimulat
 						onSelect={(date) => {
 							if (!date) return
 							setSelectedDate(date)
+							setDate(format(date ?? new Date(), "yyyy-MM-dd"))
 						}}
 						locale={es}
 					/>
