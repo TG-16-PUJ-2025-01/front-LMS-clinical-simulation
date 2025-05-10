@@ -63,22 +63,22 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 	const semesters = Array.from({ length: 14 }, (_, i) => i + 1)
 
 	const programs = [
-		{ key: 1, value: "pregrado" },
-		{ key: 2, value: "maestria" },
-		{ key: 3, value: "doctorado" },
+		{ key: 1, value: "Pregrado" },
+		{ key: 2, value: "Maestría" },
+		{ key: 3, value: "Doctorado" },
 	]
 
 	const departments = [
-		{ key: 1, value: "enfermeria clinica" },
-		{ key: 2, value: "medicina interna" },
-		{ key: 3, value: "medicina familiar" },
-		{ key: 4, value: "medicina critica" },
+		{ key: 1, value: "Enfermeria Clinica" },
+		{ key: 2, value: "Medicina Interna" },
+		{ key: 3, value: "Medicina Familiar" },
+		{ key: 4, value: "Medicina Critica" },
 	]
 
 	const faculties = [
-		{ key: 1, value: "medicina" },
-		{ key: 2, value: "enfermeria" },
-		{ key: 3, value: "odontologia" },
+		{ key: 1, value: "Medicina" },
+		{ key: 2, value: "Enfermería" },
+		{ key: 3, value: "Odontología" },
 	]
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -201,7 +201,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 											<Combobox
 												placeholderText="Semestre"
 												options={semesters.map((val) => ({ key: val, value: `${val}` }))}
-												itemName="semester"
+												itemName="semestre"
 												onChange={(selected) => {
 													field.onChange(selected?.value)
 													form.setValue("semester", selected?.key ?? 0)
@@ -222,7 +222,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 											<Combobox
 												placeholderText="Facultad"
 												options={faculties.map((val) => ({ key: val.key, value: `${val.value}` }))}
-												itemName="faculty"
+												itemName="facultad"
 												onChange={(selected) => {
 													field.onChange(selected?.value)
 													form.setValue("faculty", selected?.value ?? "")
@@ -241,12 +241,12 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 										<FormLabel className="m-0 text-right">Departamento</FormLabel>
 										<FormControl>
 											<Combobox
-												placeholderText="Facultad"
+												placeholderText="Departamento"
 												options={departments.map((val) => ({
 													key: val.key,
 													value: `${val.value}`,
 												}))}
-												itemName="department"
+												itemName="departamento"
 												onChange={(selected) => {
 													field.onChange(selected?.value)
 													form.setValue("department", selected?.value ?? "")
@@ -267,7 +267,7 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 											<Combobox
 												placeholderText="Programa"
 												options={programs.map((val) => ({ key: val.key, value: `${val.value}` }))}
-												itemName="program"
+												itemName="programa"
 												onChange={(selected) => {
 													field.onChange(selected?.value)
 													form.setValue("program", selected?.value ?? "")

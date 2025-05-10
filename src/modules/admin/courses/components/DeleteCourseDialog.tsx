@@ -21,7 +21,9 @@ interface Props {
 export default function DeleteCourseDialog({ open, onClose, course }: Props) {
 	const handleConfirm = async () => {
 		try {
+			console.log(course)
 			await deleteCourse(course!.courseId as number)
+			console.log(course)
 			onClose(false)
 			toast.success("Asignatura eliminada exitosamente")
 		} catch (error) {
