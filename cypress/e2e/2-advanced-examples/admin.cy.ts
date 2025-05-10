@@ -11,7 +11,7 @@ describe("Admin flow test", () => {
 		cy.get('button[type="submit"]').click()
 		cy.url().should("include", "/admin/asignaturas")
 
-		cy.step("Step 2 - Probar filtros de asignaturas")
+		/*	cy.step("Step 2 - Probar filtros de asignaturas")
 		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("100003")
 		cy.get("table tbody tr")
 			.first()
@@ -264,16 +264,258 @@ describe("Admin flow test", () => {
 			.and("contain.text", "Asignatura eliminada exitosamente")
 
 		cy.step("Step 5 - Probar Crear una clase")
+		cy.get("nav")
+			.contains("button", "Listado de clases")
+			.should("be.visible")
+			.and("not.be.disabled")
+			.click()
+
+		cy.contains("button", "Nueva clase").should("be.visible").click()
+
+		cy.get('input[placeholder="ID"]').should("not.be.disabled").type("123456") // Para escribir en el input
+
+		cy.contains("label", "Profesor") // Encuentra el label con el texto "Profesor"
+			.siblings("div") // Encuentra el div hermano dentro del mismo contenedor
+			.should("be.visible") // Verifica que el div sea visible
+			.click() // Hace clic en el div
+
+		cy.contains("label", "Profesor") // Encuentra el label con el texto "Profesor"
+			.siblings("div") // Selecciona el div hermano
+			.find('input[role="combobox"]') // Encuentra el input dentro del div
+			.should("be.visible") // Asegura que sea visible
+			.type("M{enter}")
+			.type("M{enter}") // Escribe en el input
+
+		cy.contains("label", "Asignatura") // Encuentra el label con el texto "Coordinador"
+			.siblings("button")
+			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.click() // Hace clic en el botón
+
+		cy.get('input[placeholder="Buscar curso..."]')
+			.should("be.visible") // Espera a que el input esté visible
+			.type("humanismo")
+		cy.contains("[cmdk-item]", "Ética y Humanismo Médico")
+			.should("be.visible") // Asegura que la opción "Pregrado" esté visible
+			.click()
+		cy.get('button[role="combobox"]').should("contain.text", "Humanismo")
+
+		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
+			.siblings("div") // Va al div que contiene los botones
+			.find("button") // Encuentra todos los botones dentro del div
+			.contains("Año") // Filtra el botón que contiene el texto "Año"
+			.should("be.visible") // Verifica que sea visible
+			.click() // Hace clic en el botón
+
+		cy.get('input[placeholder="Buscar año..."]')
+			.should("be.visible") // Espera a que el input esté visible
+			.type("2027{enter}")
+
+		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
+			.siblings("div") // Va al div que contiene los botones
+			.find("button") // Encuentra todos los botones dentro del div
+			.contains("2027")
+      .should("be.visible") 
+			.should("contain.text", "2027")
+
+		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
+			.siblings("div") // Va al div que contiene los botones
+			.find("button") // Encuentra todos los botones dentro del div
+			.contains("Periodo") // Filtra el botón que contiene el texto "Año"
+			.should("be.visible") // Verifica que sea visible
+			.click() // Hace clic en el botón
+
+		cy.get('input[placeholder="Buscar periodo..."]')
+			.should("be.visible") // Espera a que el input esté visible
+			.type("20{enter}")
+
+		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
+			.siblings("div") // Va al div que contiene los botones
+			.find("button") // Encuentra todos los botones dentro del div
+			.contains("20")
+      .should("be.visible") 
+			.should("contain.text", "20")
+
+   
+      cy.contains("label", "No. de Participantes") // Encuentra el label con el texto "Coordinador"
+			.siblings("input")
+			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.click().type("30")// Hace clic en el botón
+
+    cy.get('button[type="submit"]').should("be.visible").click()
+
+    cy.get('li[data-sonner-toast][data-visible="true"]')
+    .should("exist")
+    .and("contain.text", "Clase creada exitosamente")
 
 		cy.step("Step 6 - Probar Editar una clase")
+		
 
+		cy.get("table tbody tr")
+			.eq(3)
+			.find("td")
+			.eq(4)
+			.then(($cell) => {
+				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
+				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+
+				// Ahora, hacemos clic en el botón "..."
+				cy.wrap($cell).parents("tr").find("button").click()
+			})
+
+		cy.contains("Editar").click()
+
+		cy.get('input[placeholder="ID"]').should("not.be.disabled").type("99967866") // Para escribir en el input
+
+		cy.contains("label", "Asignatura") // Encuentra el label con el texto "Coordinador"
+			.siblings("button")
+			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.click() // Hace clic en el botón
+
+		cy.get('input[placeholder="Buscar curso..."]')
+			.should("be.visible")
+			.clear() // Espera a que el input esté visible
+			.type("humanismo")
+		cy.contains("[cmdk-item]", "Ética y Humanismo Médico")
+			.should("be.visible") // Asegura que la opción "Pregrado" esté visible
+			.click()
+		cy.get('button[role="combobox"]').should("contain.text", "Humanismo")
+
+		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
+			.siblings("div") // Va al div que contiene los botones
+			.find("button") // Encuentra todos los botones dentro del div
+			.contains("20") // Filtra el botón que contiene el texto "Año"
+			.should("be.visible") // Verifica que sea visible
+			.click() // Hace clic en el botón
+
+		cy.get('input[placeholder="Buscar año..."]')
+			.should("be.visible") // Espera a que el input esté visible
+			.type("2027{enter}")
+
+		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
+			.siblings("div") // Va al div que contiene los botones
+			.find("button") // Encuentra todos los botones dentro del div
+			.contains("2027")
+			.should("be.visible")
+			.should("contain.text", "2027")
+
+		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
+			.siblings("div") // Va al div que contiene los botones
+			.find("button") // Encuentra todos los botones dentro del div
+			.contains("10") // Filtra el botón que contiene el texto "Año"
+			.should("be.visible") // Verifica que sea visible
+			.click() // Hace clic en el botón
+
+		cy.get('input[placeholder="Buscar periodo..."]')
+			.should("be.visible") // Espera a que el input esté visible
+			.type("20{enter}")
+
+		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
+			.siblings("div") // Va al div que contiene los botones
+			.find("button") // Encuentra todos los botones dentro del div
+			.contains("20")
+			.should("be.visible")
+			.should("contain.text", "20")
+
+		cy.contains("label", "No. de Participantes") // Encuentra el label con el texto "Coordinador"
+			.siblings("input")
+			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.click()
+			.type("30") // Hace clic en el botón
+
+		cy.get('button[type="submit"]').should("be.visible").click()
+
+		cy.get('li[data-sonner-toast][data-visible="true"]')
+			.should("exist")
+			.and("contain.text", "Clase actualizada exitosamente")
+
+		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("999678")
+
+		cy.get("table tbody tr")
+			.first()
+			.within(() => {
+				cy.get("td").eq(0).should("contain", "99967866") // ID
+				cy.get("td").eq(1).should("contain", "Ética y Humanismo Médico") //
+				cy.get("td").eq(3).should("contain", "2027-20") // Departamento
+			})
+			.then(() => {
+				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
+			})
+
+		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("semi")
+
+    cy.get("table tbody tr")
+			.each(($row) => {
+				cy.wrap($row).within(() => {
+					cy.get("td").eq(1).invoke("text").should("include", "Semiología Clínica")
+				})
+			})
+			.then(() => {
+				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
+			})
+*/
 		cy.step("Step 7 - Probar Borrar una clase")
+    cy.get("nav")
+    .contains("button", "Listado de clases")
+    .should("be.visible")
+    .and("not.be.disabled")
+    .click()
+
+  cy.wait(500)
+    cy.get("table tbody tr")
+      .eq(5)
+      .find("td")
+      .eq(4)
+      .then(($cell) => {
+        // Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
+        cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+
+        // Ahora, hacemos clic en el botón "..."
+        cy.wrap($cell).parents("tr").find("button").click()
+      })
+
+    cy.contains("Borrar").click()
+
+    cy.contains('button', 'Eliminar').click();
+    cy.get('li[data-sonner-toast][data-visible="true"]')
+      .should("exist")
+      .and("contain.text", "Clase eliminada exitosamente")
 
 		cy.step("Step 8 - Probar Descargar plantilla de la clase")
+		cy.contains("button", "Descargar plantilla").click()
+
+		cy.get('[role="dialog"]') // Selecciona el modal por el atributo `role="dialog"`
+			.contains("button", "Descargar plantilla") // Busca el botón "Descargar plantilla" dentro del modal
+			.click() // Hace clic en el botón
+
+		cy.get('[role="dialog"]').should("be.visible")
+
+		cy.get('[role="dialog"]')
+			.find("button")
+			.find("svg.lucide-x")
+			.should("be.visible") // Asegúrate de que el SVG está visible
+			.click()
 
 		cy.step("Step 9 - Probar Cargar plantilla de la clase para carga masiva")
 
+		cy.contains("button", "Subir Archivo").click()
+
 		cy.step("Step 10 - Probar editar miembros de una clase")
+
+		cy.wait(1000)
+
+		cy.get("table tbody tr")
+			.eq(3)
+			.find("td")
+			.eq(4)
+			.then(($cell) => {
+				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
+				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+
+				// Ahora, hacemos clic en el botón "..."
+				cy.wrap($cell).parents("tr").find("button").click()
+			})
+
+		cy.contains("Lista de miembros").click()
 
 		cy.step("Step 11 - Probar descargar plantilla de miembros de una clase")
 

@@ -268,12 +268,12 @@ export default function CreateClassDialog({ open, onClose }: Props) {
 											<span className="text-xl font-bold">-</span>
 											<FormControl>
 												<Combobox
-													placeholderText="Período"
+													placeholderText="Periodo"
 													options={periods.map((period) => ({
 														key: Number(period),
 														value: period,
 													}))}
-													itemName="período"
+													itemName="periodo"
 													onChange={(selected) => {
 														form.setValue("yearPeriod", selected?.value.toString() ?? "")
 														form.trigger(["year", "yearPeriod"])
