@@ -121,10 +121,10 @@ export default function EditCourseDialog({ open, onClose, course }: Props) {
 				javerianaId: values.javerianaId,
 				name: values.name,
 				coordinatorId: values.coordinator.id!,
-				semester: course!.semester,
-				program: course!.program,
-				department: course!.department,
-				faculty: course!.faculty,
+				semester: values!.semester,
+				program: values!.program,
+				department: values!.department,
+				faculty: values!.faculty,
 			})
 
 			onClose(false)
