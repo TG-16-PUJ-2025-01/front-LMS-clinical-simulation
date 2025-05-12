@@ -11,7 +11,7 @@ describe("Admin flow test", () => {
 		cy.get('button[type="submit"]').click()
 		cy.url().should("include", "/admin/asignaturas")
 
-		/*	cy.step("Step 2 - Probar filtros de asignaturas")
+		/*cy.step("Step 2 - Probar filtros de asignaturas")
 		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("100003")
 		cy.get("table tbody tr")
 			.first()
@@ -441,18 +441,18 @@ describe("Admin flow test", () => {
 				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
 			})
 
-		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("semi")
+		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("farma")
 
     cy.get("table tbody tr")
 			.each(($row) => {
 				cy.wrap($row).within(() => {
-					cy.get("td").eq(1).invoke("text").should("include", "Semiología Clínica")
+					cy.get("td").eq(1).invoke("text").should("include", "Farmacología General")
 				})
 			})
 			.then(() => {
 				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
 			})
-*/
+
 		cy.step("Step 7 - Probar Borrar una clase")
     cy.get("nav")
     .contains("button", "Listado de clases")
@@ -498,7 +498,12 @@ describe("Admin flow test", () => {
 		cy.step("Step 9 - Probar Cargar plantilla de la clase para carga masiva")
 
 		cy.contains("button", "Subir Archivo").click()
-
+*/
+		cy.get("nav")
+			.contains("button", "Listado de clases")
+			.should("be.visible")
+			.and("not.be.disabled")
+			.click()
 		cy.step("Step 10 - Probar editar miembros de una clase")
 
 		cy.wait(1000)
@@ -517,9 +522,99 @@ describe("Admin flow test", () => {
 
 		cy.contains("Lista de miembros").click()
 
+		cy.contains("button", "Añadir profesores").click()
+
+		cy.get('div[role="dialog"] input[placeholder="Buscar..."]')
+			.should("be.visible")
+			.click()
+			.type("and")
+
+		cy.get("div.absolute.top-full.left-0.z-20")
+			.find("div.cursor-pointer")
+			.contains("Andrés Vera")
+			.click()
+
+		cy.wait(500)
+
+		cy.get('div[role="dialog"] button').contains("Añadir").click()
+
+		cy.get('section input[placeholder="Buscar..."]').should("be.visible").click().type("Vera")
+
+		cy.get("table tbody tr")
+			.each(($row) => {
+				cy.wrap($row).within(() => {
+					cy.get("td").eq(4).invoke("text").should("include", "rofesor")
+				})
+			})
+			.then(() => {
+				cy.get('section input[placeholder="Buscar..."]').should("be.visible").clear()
+			})
+
 		cy.step("Step 11 - Probar descargar plantilla de miembros de una clase")
 
-		cy.step("Step 12 - Probar carga masiva miembros de una clase")
+		cy.contains("button", "Descargar plantilla").click()
+
+		cy.get('[role="dialog"]') // Selecciona el modal por el atributo `role="dialog"`
+			.contains("button", "Descargar plantilla") // Busca el botón "Descargar plantilla" dentro del modal
+			.click() // Hace clic en el botón
+
+		cy.get('[role="dialog"]').should("be.visible")
+
+		cy.get('[role="dialog"]')
+			.find("button")
+			.find("svg.lucide-x")
+			.should("be.visible") // Asegúrate de que el SVG está visible
+			.click()
+
+		cy.step("Step 12 - Probar eliminar miembros de una clase")
+
+		cy.get("table tbody tr")
+			.eq(5)
+			.find("td")
+			.eq(5)
+			.then(($cell) => {
+				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
+				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+
+				// Ahora, hacemos clic en el botón "..."
+				cy.wrap($cell).parents("tr").find("button").click()
+			})
+
+		cy.contains("Borrar").click()
+
+		cy.contains("button", "Eliminar").click()
+
+		cy.get('li[data-sonner-toast][data-visible="true"]')
+			.should("exist")
+			.and("contain.text", "Miembro eliminado de la clase exitosamente")
+
+		cy.get("table tbody tr")
+			.eq(1)
+			.find("td")
+			.eq(5)
+			.then(($cell) => {
+				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
+				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+
+				// Ahora, hacemos clic en el botón "..."
+				cy.wrap($cell).parents("tr").find("button").click()
+			})
+
+		cy.contains("Borrar").click()
+
+		cy.contains("button", "Eliminar").click()
+
+		cy.get('li[data-sonner-toast][data-visible="true"]')
+			.should("exist")
+			.and("contain.text", "Miembro eliminado de la clase exitosamente")
+
+		cy.get('section input[placeholder="Buscar..."]').should("be.visible").click().type("rojas")
+
+		cy.get("table tbody td").should("contain.text", "No results.")
+
+		cy.get('section input[placeholder="Buscar..."]').clear()
+
+		cy.step("Step 12 - Probar añadir estudiantes a una clase")
 
 		cy.step("Step 13 - Probar cuentas")
 	})
