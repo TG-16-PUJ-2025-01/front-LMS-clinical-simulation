@@ -50,6 +50,10 @@ export async function updateCourse(
   id: number,
   updatedCourse: EditCourseDTO
 ): Promise<ApiResponse<Course>> {
+
+	console.log("updatedCourse", updatedCourse)
+
+	
 	const { data } = await axios.put(`${API_URL}/course/update/${id}`, updatedCourse)
 	return {
 		...data,
