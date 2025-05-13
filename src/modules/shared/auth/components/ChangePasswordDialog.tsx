@@ -62,12 +62,12 @@ export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDia
         
         <div className="space-y-4">
             <div className="space-y-2">
-            <label className="block text-sm font-medium">Actual Contraseña</label>
+            <label className="block text-sm font-medium">Contraseña Actual</label>
             <Input
               type="text"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Ingresa tu actual contraseña"
+              placeholder="Ingresa tu contraseña actual "
             />
           </div>
           <div className="space-y-2">

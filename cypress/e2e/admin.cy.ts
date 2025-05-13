@@ -11,7 +11,7 @@ describe("Admin flow test", () => {
 		cy.get('button[type="submit"]').click()
 		cy.url().should("include", "/admin/asignaturas")
 
-		/*cy.step("Step 2 - Probar filtros de asignaturas")
+		cy.step("Step 2 - Probar filtros de asignaturas")
 		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("100003")
 		cy.get("table tbody tr")
 			.first()
@@ -705,6 +705,8 @@ describe("Admin flow test", () => {
 
 		cy.get('button[type="submit"]').should("be.visible").click()
 
+		cy.wait(2000)
+
 		cy.get('li[data-sonner-toast][data-visible="true"]')
 			.should("exist")
 			.and("contain.text", "Usuario creado exitosamente")
@@ -740,7 +742,7 @@ describe("Admin flow test", () => {
 
 		//felipe remirez
 		cy.get("table tbody tr")
-			.eq(4)
+			.eq(5)
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
@@ -756,7 +758,7 @@ describe("Admin flow test", () => {
 
 		//buscar a felipe para ver que efectivamente se borro
 
-		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("felipe")
+		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("mariana")
 
 		cy.get("table tbody td").should("contain.text", "No existen resultados.")
 
@@ -986,7 +988,7 @@ describe("Admin flow test", () => {
 		cy.get('section input[placeholder="Buscar..."]').should("be.visible").type("2b")
 
 		cy.get("table tbody td").should("contain.text", "Sin resultados.")
-*/
+
 		cy.get("nav")
 			.contains("button", "Listado de videos")
 			.should("be.visible")
@@ -1119,7 +1121,59 @@ describe("Admin flow test", () => {
 
 		cy.step("Step 27 - BORRAR VIDEOS")
 
+		cy.get("table tbody tr")
+			.eq(5)
+			.find("td")
+			.eq(4)
+			.then(($cell) => {
+				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
+				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+
+				// Ahora, hacemos clic en el botón "..."
+				cy.wrap($cell).parents("tr").find("button").click()
+			})
+
+		cy.contains("Borrar").click()
+
+		cy.contains("button", "Continuar").click()
+
+		cy.get('section input[placeholder="Buscar..."]').should("be.visible").type("unavailable_video3")
+
+		cy.get("table tbody td").should("contain.text", "No results.")
+
 		cy.step("Step 28 - Probar cambiar contraseña y cerrar sesion")
+
+		/*cy.get("header").find("span.bg-muted").should("be.visible").click()
+
+		cy.contains('div[role="menuitem"]', "Cambiar Contraseña").should("be.visible").click()
+
+		cy.contains("label", "Contraseña Actual") // Encuentra el label con el texto "Coordinador"
+			.siblings("input")
+			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.click()
+			.clear()
+			.type("admin") // Hace clic en el botón
+
+		cy.contains("label", "Nueva Contraseña") // Encuentra el label con el texto "Coordinador"
+			.siblings("input")
+			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.click()
+			.clear()
+			.type("Rstz123$") // Hace clic en el botón
+
+		cy.contains("label", "Confirmar Contraseña") // Encuentra el label con el texto "Coordinador"
+			.siblings("input")
+			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.click()
+			.clear()
+			.type("Rstz123$") // Hace clic en el botón
+
+		cy.contains("button", "Guardar Cambios").click()*/
+
+		cy.get("header").find("span.bg-muted").should("be.visible").click()
+
+		cy.contains('div[role="menuitem"]', "Cerrar Sesión").should("be.visible").click()
+
 	})
 })
 // This file is intentionally left empty. It serves as a placeholder for future tests related to the admin section of the application.
