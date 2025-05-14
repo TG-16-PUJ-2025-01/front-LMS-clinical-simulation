@@ -7,7 +7,7 @@ import {
 import { DialogDescription } from "@radix-ui/react-dialog"
 import { toast } from "sonner"
 import GroupsDataTable from "./GroupsDataTable"
-import { joinSimulation } from "../services/practicesService"
+import { joinSimulation, leaveSimulation } from "../services/practicesService"
 
 interface ViewGroupsDialog {
 	open: boolean
@@ -27,6 +27,20 @@ export default function ViewGroupsDialog({ open, onClose, practiceId, maxNumStud
 		}
 	}
 
+	const handleLeave = async (simulationId: number) => {
+		try {
+			await leaveSimulation(simulationId)
+			toast.success(`Has salido del grupo ${simulationId}`)
+		} catch (error: any) {
+			if (error?.response?.status === 409) {
+				toast.error("No puedes salir del grupo porque ya se ha realizado la simulación")
+			} else {
+				toast.error("Error al salir del grupo")
+			}
+			console.error(error)
+		}
+	}
+
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[800px]">
@@ -38,7 +52,7 @@ export default function ViewGroupsDialog({ open, onClose, practiceId, maxNumStud
 						hay cupos o que la simulación ya fue realizada.
 					</DialogDescription>
 				</DialogHeader>
-				<GroupsDataTable practiceId={practiceId} onEnroll={handleEnroll} maxNumStudentsPerGroup={maxNumStudentsPerGroup} />
+				<GroupsDataTable practiceId={practiceId} onEnroll={handleEnroll} onLeave={handleLeave} maxNumStudentsPerGroup={maxNumStudentsPerGroup} />
 			</DialogContent>
 		</Dialog>
 	)

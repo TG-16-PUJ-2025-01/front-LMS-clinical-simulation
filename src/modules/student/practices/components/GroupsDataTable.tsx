@@ -20,7 +20,15 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/modules/core/components/ui/table"
-import { ArrowUpDown, Search, Check, TriangleAlert, MoreHorizontal, Users } from "lucide-react"
+import {
+	ArrowUpDown,
+	Search,
+	Check,
+	TriangleAlert,
+	MoreHorizontal,
+	Users,
+	LogOut,
+} from "lucide-react"
 import { format } from "date-fns"
 import {
 	getEnroledSimulationId,
@@ -40,10 +48,16 @@ import ViewMembersDialog from "@/modules/coordinator/bookings/components/ViewMem
 interface GroupsDataTableProps {
 	practiceId: number
 	onEnroll: (simulationId: number) => void
+	onLeave: (simulationId: number) => void
 	maxNumStudentsPerGroup: number
 }
 
-export default function GroupsDataTable({ practiceId, onEnroll, maxNumStudentsPerGroup }: GroupsDataTableProps) {
+export default function GroupsDataTable({
+	practiceId,
+	onEnroll,
+	onLeave,
+	maxNumStudentsPerGroup,
+}: GroupsDataTableProps) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -201,6 +215,8 @@ export default function GroupsDataTable({ practiceId, onEnroll, maxNumStudentsPe
 			enableHiding: false,
 			cell: ({ row }) => {
 				const simulation = row.original
+				const simulationId = simulation.simulationId
+				const isEnrolled = enrolledSimulationId === simulationId
 				return (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -219,6 +235,16 @@ export default function GroupsDataTable({ practiceId, onEnroll, maxNumStudentsPe
 							>
 								<Users /> Ver Miembros
 							</DropdownMenuItem>
+							{isEnrolled && (
+								<DropdownMenuItem
+									onClick={async () => {
+										onLeave(simulationId)
+										setTriggerFetchEnrolled((prev) => !prev)
+									}}
+								>
+									<LogOut /> Salir de Grupo
+								</DropdownMenuItem>
+							)}
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
