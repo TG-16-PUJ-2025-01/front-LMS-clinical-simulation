@@ -9,7 +9,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
+import { ArrowUpDown, Download, MoreHorizontal, Pencil, Search, Trash2 } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -40,7 +40,7 @@ import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Role from "@/modules/core/models/role"
-import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
+import ExceltutorialTemplate from "./ExcelTemplateTutorial"
 
 export function UsersDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -48,7 +48,9 @@ export function UsersDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 
-	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | null>(null)
+	const [openDialog, setEditDialog] = useState<"edit" | "delete" | "create" | "tutorial" | null>(
+		null
+	)
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
 	const [openMailConfigDialog, setOpenMailConfigDialog] = useState(false)
@@ -131,30 +133,33 @@ export function UsersDataTable() {
 
 		let allCorrect = true
 
+		const roleFieldMap: Record<string, Role> = {
+			administrador: Role.ADMIN,
+			profesor: Role.PROFESOR,
+			estudiante: Role.ESTUDIANTE,
+			coordinador: Role.COORDINADOR,
+		}
+
 		const processData = async () => {
 			const promises = data.map(async (item, index) => {
-				// Evaluar si el rol es el correcto
-				const roles = Object.keys(item)
-					.filter((key) => key.trim().startsWith("rol"))
-					.map((key) => item[key])
-					.filter((id) => id !== undefined && id !== null && id !== "")
+
+				console.log("Procesando fila:", index + 1, item)
+				
+				const roles: Role[] = []
+
+				for (const field in roleFieldMap) {
+					if (item[field] && item[field].toString().trim() !== "") {
+						roles.push(roleFieldMap[field])
+					}
+				}
 
 				if (roles.length === 0) {
 					allCorrect = false
 					toast.error(
-						`Error en la fila ${index + 1}: el rol no es correcto, por favor verifique el archivo.`
+						`Error en la fila ${index + 1}: debe contener al menos un rol (administrador, profesor, estudiante o coordinador).`
 					)
 					return
 				}
-
-				const isValidRole = roles.every((role) => Object.values(Role).includes(role))
-
-				if (!isValidRole) {
-					allCorrect = false
-					toast.error(`Error en la fila ${index + 1}: el rol no es válido.`)
-					return
-				}
-
 				try {
 					await createUserByExcel({
 						institutionalId: item.idInstitucional,
@@ -194,6 +199,8 @@ export function UsersDataTable() {
 	function neededFields(data: Record<string, any>[]) {
 		const requiredFields = ["idInstitucional", "nombre", "apellido", "email"]
 
+		const atLeastOneFields = ["administrador", "profesor", "estudiante", "coordinador"]
+
 		for (let i = 0; i < data.length; i++) {
 			const row = data[i]
 
@@ -206,9 +213,9 @@ export function UsersDataTable() {
 
 			const hasAllFields = requiredFields.every((field) => rowKeys.includes(field))
 
-			const hasRoleField = rowKeys.some((key) => key.startsWith("rol"))
+			const hasAtLeastOneRole = atLeastOneFields.some((field) => rowKeys.includes(field))
 
-			if (!hasAllFields && !hasRoleField) {
+			if (!hasAllFields || !hasAtLeastOneRole) {
 				return false
 			}
 		}
@@ -216,7 +223,7 @@ export function UsersDataTable() {
 		return true
 	}
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete", user?: User) => {
+	const handleOpenDialog = (type: "create" | "edit" | "delete" | "tutorial", user?: User) => {
 		setEditDialog(type)
 		setSelectedUser(user ?? null)
 	}
@@ -367,7 +374,14 @@ export function UsersDataTable() {
 						</Button>
 						<Button onClick={() => handleOpenDialog("create")}>Nuevo usuario</Button>
 						<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
-						<FileDownloader fileName="users" />
+
+						<Button
+							className="bg-green-800 hover:bg-green-800/90"
+							onClick={() => handleOpenDialog("tutorial")}
+						>
+							<Download className="mr-2 h-4 w-4 text-white" />
+							Descargar plantilla
+						</Button>
 					</div>
 				</div>
 
@@ -468,6 +482,8 @@ export function UsersDataTable() {
 				open={openMailConfigDialog}
 				onClose={() => setOpenMailConfigDialog(false)}
 			/>
+
+			<ExceltutorialTemplate open={openDialog === "tutorial"} onClose={handleCloseDialog} />
 		</>
 	)
 }

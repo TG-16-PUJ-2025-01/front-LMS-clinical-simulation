@@ -10,7 +10,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
+import { ArrowUpDown, Download, MoreHorizontal, Pencil, Search, Trash2, User } from "lucide-react"
 import { Button } from "@/modules/core/components/ui/button"
 import {
 	DropdownMenu,
@@ -34,15 +34,14 @@ import EditClassDialog from "./EditClassDialog"
 import DeleteClassDialog from "./DeleteClassDialog"
 import { useEffect, useState } from "react"
 import CreateClassDialog from "./CreateClassDialog"
-import {  createClassByExcel, getClasses } from "../services/classService"
+import { createClassByExcel, getClasses } from "../services/classService"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
-import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
+import ExceltutorialTemplate from "./ExcelTemplateTutorial"
 
 export function ClassesDataTable() {
-
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [filter, setFilter] = useState<string>("")
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -50,7 +49,9 @@ export function ClassesDataTable() {
 	const [rowSelection, setRowSelection] = useState({})
 	const navigate = useNavigate()
 
-	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | null>(null)
+	const [openDialog, setOpenDialog] = useState<"edit" | "delete" | "create" | "tutorial" | null>(
+		null
+	)
 	const [selectedClass, setSelectedClass] = useState<Class | null>(null)
 
 	const [data, setData] = useState<Class[]>([])
@@ -63,7 +64,6 @@ export function ClassesDataTable() {
 	})
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0)
-
 
 	const [paginationInfo, setPaginationInfo] = useState({
 		total: 0, //total number of records
@@ -91,9 +91,9 @@ export function ClassesDataTable() {
 		}
 
 		fetchClasses()
-	}, [pagination, filter, sorting, openDialog,excelData,refreshTrigger])
+	}, [pagination, filter, sorting, openDialog, excelData, refreshTrigger])
 
-	const handleOpenDialog = (type: "create" | "edit" | "delete", Class?: Class) => {
+	const handleOpenDialog = (type: "create" | "edit" | "delete" | "tutorial", Class?: Class) => {
 		setOpenDialog(type)
 		setSelectedClass(Class ?? null)
 	}
@@ -102,14 +102,12 @@ export function ClassesDataTable() {
 		setOpenDialog(null)
 		setSelectedClass(null)
 	}
-	
-	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
 
+	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
 		const workbook = XLSX.read(fileBuffer, { type: "buffer" })
 		const workbookSheetName = workbook.SheetNames[0]
 		const worksheet = workbook.Sheets[workbookSheetName]
 		const data = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet)
-
 
 		if (!neededFields(data)) {
 			toast.error("El formato del archivo Excel no es el esperado.")
@@ -153,7 +151,7 @@ export function ClassesDataTable() {
 				toast.warning("Hay datos erroneos en el excel, por favor verifique el archivo.")
 			} else {
 				setExcelData(data)
-				setRefreshTrigger(prev => prev + 1)
+				setRefreshTrigger((prev) => prev + 1)
 
 				toast.success("Archivo Excel procesado exitosamente.")
 			}
@@ -344,7 +342,12 @@ export function ClassesDataTable() {
 						<div>
 							<FileLoader onFileLoaded={handleExcelFile} buttonText="Subir Archivo" />
 						</div>
-						<FileDownloader fileName="classes" />
+
+						<Button className="bg-green-800 hover:bg-green-800/90" onClick={() => handleOpenDialog("tutorial")}>
+							<Download className="mr-2 h-4 w-4 text-white" />
+							Descargar plantilla
+						</Button>
+						
 					</div>
 				</div>
 				<div className="mt-4 rounded-md border">
@@ -421,6 +424,7 @@ export function ClassesDataTable() {
 				classId={selectedClass?.classId ?? null}
 			/>
 			<CreateClassDialog open={openDialog === "create"} onClose={handleCloseDialog} />
+			<ExceltutorialTemplate open={openDialog === "tutorial"} onClose={handleCloseDialog} />
 		</>
 	)
 }
