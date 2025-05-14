@@ -27,15 +27,24 @@ export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDia
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
 
+  // Reset form when dialog is closed
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      setNewPassword("");
+      setConfirmPassword("");
+      setPassword("");
+      setError("");
+    }
+    onOpenChange(open);
+  };
+
   const handleSubmit = async () => {
     try {
-      // Validar que las contraseñas coincidan
       if (newPassword !== confirmPassword) {
         setError("Las contraseñas no coinciden.");
         return;
       }
 
-      // Validar la contraseña con el regex
       if (!validatePassword(newPassword)) {
         setError(
           "La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un carácter especial."
@@ -43,10 +52,8 @@ export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDia
         return;
       }
 
-      // Llamar al servicio para cambiar la contraseña
       await changePassword(password, newPassword);
       toast.success("Contraseña cambiada exitosamente");
-      // Cerrar el Dialog después de cambiar la contraseña
       onOpenChange(false);
     } catch (error) {
       setError(error instanceof Error ? error.message : "Error al cambiar la contraseña");
@@ -54,7 +61,7 @@ export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDia
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Cambiar Contraseña</DialogTitle>

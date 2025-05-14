@@ -40,7 +40,7 @@ export default function ResetPasswordForm({ email, token, onSuccess, onBack }: R
             setError("");
             onSuccess();
         } catch {
-            setError("Error al restablecer la contraseña.");
+            setError("Error al restablecer la contraseña. Por favor, inténtalo de nuevo.");
             setMessage("");
         }
     };

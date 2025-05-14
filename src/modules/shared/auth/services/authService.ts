@@ -48,6 +48,9 @@ export const changePassword = async (password: string, newPassword: string) => {
 		setToken(response.data.toString())
 	} catch (error) {
 		console.error("Error al cambiar la contraseña:", error)
+		if (axios.isAxiosError(error) && error.response?.status === 400) {
+			throw new Error("La contraseña actual es incorrecta")
+		}
 		throw new Error("Error al cambiar la contraseña")
 	}
 }
