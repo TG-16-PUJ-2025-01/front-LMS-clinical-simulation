@@ -44,16 +44,33 @@ export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDia
         setError("Las contraseñas no coinciden.");
         return;
       }
-
-      if (!validatePassword(newPassword)) {
-        setError(
-          "La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un carácter especial."
-        );
+      const errors: string[] = [];
+      if (newPassword.length < 8) {
+        errors.push("La contraseña debe tener al menos 8 caracteres.");
+      }
+      if (!/[A-Z]/.test(newPassword)) {
+        errors.push("La contraseña debe incluir una mayúscula.");
+      }
+      if (!/[a-z]/.test(newPassword)) {
+        errors.push("La contraseña debe incluir una minúscula.");
+      }
+      if (!/[0-9]/.test(newPassword)) {
+        errors.push("La contraseña debe incluir un número.");
+      }
+      if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]=+;'/`~]/.test(newPassword)) {
+        errors.push("La contraseña debe incluir un carácter especial.");
+      }
+      if (errors.length > 0) {
+        setError(errors.join(" "));
         return;
       }
 
       await changePassword(password, newPassword);
       toast.success("Contraseña cambiada exitosamente");
+      setNewPassword("");
+      setConfirmPassword("");
+      setPassword("");
+      setError("");
       onOpenChange(false);
     } catch (error) {
       setError(error instanceof Error ? error.message : "Error al cambiar la contraseña");
