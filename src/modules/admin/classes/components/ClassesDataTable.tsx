@@ -39,7 +39,6 @@ import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
-import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
 import ExceltutorialTemplate from "./ExcelTemplateTutorial"
 
 export function ClassesDataTable() {

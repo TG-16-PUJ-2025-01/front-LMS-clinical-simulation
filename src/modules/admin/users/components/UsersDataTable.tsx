@@ -40,7 +40,6 @@ import { FileLoader } from "@/modules/shared/fileLoader/FileLoaderButon"
 import { toast } from "sonner"
 import * as XLSX from "xlsx"
 import Role from "@/modules/core/models/role"
-import { FileDownloader } from "@/modules/shared/fileLoader/fileDownloaderButton"
 import ExceltutorialTemplate from "./ExcelTemplateTutorial"
 
 export function UsersDataTable() {
