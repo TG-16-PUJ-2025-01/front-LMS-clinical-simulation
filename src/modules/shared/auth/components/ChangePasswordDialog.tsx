@@ -11,10 +11,6 @@ import { Input } from "@/modules/core/components/ui/input";
 import { changePassword } from "../services/authService";
 
 import { toast } from "sonner";
-import { validatePassword } from "@/modules/core/lib/utils";
-
-
-
 
 interface ChangePasswordDialogProps {
   isOpen: boolean;
@@ -44,24 +40,24 @@ export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDia
         setError("Las contraseñas no coinciden.");
         return;
       }
-      const errors: string[] = [];
+      const errorMessages: string[] = [];
       if (newPassword.length < 8) {
-        errors.push("La contraseña debe tener al menos 8 caracteres.");
+        errorMessages.push("tener al menos 8 caracteres");
       }
       if (!/[A-Z]/.test(newPassword)) {
-        errors.push("La contraseña debe incluir una mayúscula.");
+        errorMessages.push("incluir una mayúscula");
       }
       if (!/[a-z]/.test(newPassword)) {
-        errors.push("La contraseña debe incluir una minúscula.");
+        errorMessages.push("incluir una minúscula");
       }
       if (!/[0-9]/.test(newPassword)) {
-        errors.push("La contraseña debe incluir un número.");
+        errorMessages.push("incluir un número");
       }
-      if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]=+;'/`~]/.test(newPassword)) {
-        errors.push("La contraseña debe incluir un carácter especial.");
+      if (!/[!@#$%^&*(),.?\":{}|<>_\-\\[\]=+;'/`~]/.test(newPassword)) {
+        errorMessages.push("incluir un carácter especial");
       }
-      if (errors.length > 0) {
-        setError(errors.join(" "));
+      if (errorMessages.length > 0) {
+        setError(`La contraseña debe ${errorMessages.join(", ")}.`);
         return;
       }
 
