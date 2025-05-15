@@ -158,8 +158,6 @@ export default function CreateSimulationsForm({
 			})),
 		}
 
-		console.log("Request data:", requestData)
-
 		try {
 			await createSimulations(requestData)
 			toast.success("Reservas guardadas con éxito.")

@@ -110,7 +110,6 @@ export default function CreateCourseDialog({ open, onClose }: Props) {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			console.log("Valores enviados:", values)
 			await createCourse({
 				javerianaId: values.id,
 				name: values.name,

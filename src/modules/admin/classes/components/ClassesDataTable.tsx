@@ -117,8 +117,6 @@ export function ClassesDataTable() {
 
 		setExcelData(data)
 
-		const results: Class[] = []
-
 		let allCorrect = true
 
 		const processData = async () => {
@@ -140,12 +138,7 @@ export function ClassesDataTable() {
 				}
 			})
 
-			// Esperar a que todas las promesas se resuelvan
 			await Promise.all(promises)
-
-			// Evaluar después de que todos los await se hayan completado
-
-			console.log("Datos leídos del Excel:", results.length)
 
 			if (!allCorrect) {
 				toast.warning("Hay datos erroneos en el excel, por favor verifique el archivo.")
@@ -157,7 +150,6 @@ export function ClassesDataTable() {
 			}
 		}
 
-		// Ejecutar la función asíncrona principal
 		processData()
 	}
 

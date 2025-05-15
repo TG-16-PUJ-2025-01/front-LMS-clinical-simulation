@@ -17,7 +17,6 @@ export default function VerifyPasswordResetForm({ email, onSuccess, onBack }: Ve
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("email", email);
         try {
             const response = await verifyPasswordReset(email, token);
             if (response === 200) {

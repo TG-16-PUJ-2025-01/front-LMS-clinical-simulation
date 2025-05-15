@@ -41,14 +41,9 @@ export default function CreateSimulationsDialog({ open, onClose, onReservationsU
 	)
 
 	useEffect(() => {
-		console.log("Selected date changed:", selectedDate)
-	}, [selectedDate])
-
-	useEffect(() => {
 		const fetchReservations = async () => {
 			try {
 				if (!selectedDate) return
-				console.log("Fetching bookings for:", selectedDate)
 				const reservationsData = await getSchedule(selectedDate)
 				if (eventsServicePlugin?.set) {
 					eventsServicePlugin.set(

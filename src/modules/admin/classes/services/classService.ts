@@ -36,7 +36,6 @@ export async function getClass(id: number): Promise<ApiResponse<Class>> {
 }
 
 export async function createClass(newClass: CreateClassDTO): Promise<ApiResponse<Class>> {
-    console.log(newClass)
     const { data } = await axios.post(`${API_URL}/class/add`, newClass)
     return {
         ...data,
@@ -45,7 +44,6 @@ export async function createClass(newClass: CreateClassDTO): Promise<ApiResponse
 }
 
 export async function createClassByExcel(newClass: CreateClassDTO): Promise<ApiResponse<Class>> {
-    console.log(newClass)
     const { data } = await axios.post(`${API_URL}/class/add/excel`, newClass)
     return {
         ...data,
@@ -54,7 +52,6 @@ export async function createClassByExcel(newClass: CreateClassDTO): Promise<ApiR
 }
 
 export async function updateClass(id: number, updatedClass: CreateClassDTO): Promise<ApiResponse<Class>> {
-    console.log(updatedClass)
     
     const { data } = await axios.put( `${API_URL}/class/update/${id}`, updatedClass)
     return {

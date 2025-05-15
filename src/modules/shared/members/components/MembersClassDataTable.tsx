@@ -72,11 +72,9 @@ export function StudentsClassDataTable() {
 		totalPages: 0, //total number of pages
 	})
 
-	//PARA HOJAS DE EXCEL
 	const [excelData, setExcelData] = useState<Record<string, any>[] | null>(null)
 
 	const handleExcelFile = (fileBuffer: ArrayBuffer) => {
-		console.log("Leyendo archivo Excel...")
 
 		const workbook = XLSX.read(fileBuffer, { type: "buffer" })
 		const workbookSheetName = workbook.SheetNames[0]
@@ -100,12 +98,10 @@ export function StudentsClassDataTable() {
 		const processData = async () => {
 			const promises = data.map(async (item, index) => {
 				if ("profesor" in item) {
-					// Llama al servicio y agrega al resultado
 					try {
 						const updatedClass = await updateClassProfessorMember(Number(id), item.institutionalId)
 						results.push(updatedClass)
 					} catch (error) {
-						console.log(error)
 						toast.error(
 							error instanceof AxiosError
 								? error.response?.data.data
@@ -114,7 +110,6 @@ export function StudentsClassDataTable() {
 						allCorrect = false
 					}
 				} else if ("estudiante" in item) {
-					// Llama al servicio y agrega al resultado
 					try {
 						const updatedClass = await updateClassStudentMember(Number(id), item.institutionalId)
 						results.push(updatedClass)
@@ -132,13 +127,9 @@ export function StudentsClassDataTable() {
 				}
 			})
 
-			// Esperar a que todas las promesas se resuelvan
 			await Promise.all(promises)
 
-			// Evaluar después de que todos los await se hayan completado
 			setExcelData(data)
-
-			console.log("Datos leídos del Excel:", results.length)
 
 			if (!allCorrect) {
 				toast.warning("No se encontraron datos válidos de profesores o estudiantes.")
@@ -147,7 +138,6 @@ export function StudentsClassDataTable() {
 			}
 		}
 
-		// Ejecutar la función asíncrona principal
 		processData()
 	}
 
