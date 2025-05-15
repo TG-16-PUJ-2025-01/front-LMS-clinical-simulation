@@ -11,7 +11,6 @@ import { Input } from "@/modules/core/components/ui/input";
 import { changePassword } from "../services/authService";
 
 import { toast } from "sonner";
-import { validatePassword } from "@/modules/core/lib/utils";
 
 
 
