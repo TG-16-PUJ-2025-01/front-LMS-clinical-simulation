@@ -18,11 +18,11 @@ interface Props {
 }
 
 export default function DeletePracticeDialog({ open, onClose, practiceId }: Props) {
-	async function onConfirmDelete (){
-        if (!practiceId) {
-            toast.error("No se ha proporcionado un ID de práctica para eliminar.")
-            return
-        }
+	async function onConfirmDelete() {
+		if (!practiceId) {
+			toast.error("No se ha proporcionado un ID de práctica para eliminar.")
+			return
+		}
 		try {
 			await deletePractice(practiceId)
 			onClose(false)
@@ -39,13 +39,17 @@ export default function DeletePracticeDialog({ open, onClose, practiceId }: Prop
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar la práctica?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y se eliminarán toda la información vinculada a dicha
-						práctica.
+						Esta acción es <span style={{ color: "red" }}>irreversible</span> y eliminará toda la
+						información asociada a esta práctica, incluyendo simulaciones, evaluaciones, rúbricas
+						calificadas, registros de estudiantes participantes, reservas y asignaciones de salas.
+						Una vez eliminada, <b>no será posible recuperar ninguno de estos datos</b>.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel onClick={() => onClose(false)}>Cancelar</AlertDialogCancel>
-					<AlertDialogAction className="danger" onClick={onConfirmDelete}>Eliminar</AlertDialogAction>
+					<AlertDialogAction className="danger" onClick={onConfirmDelete}>
+						Eliminar
+					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

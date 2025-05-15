@@ -25,8 +25,14 @@ export default function DeleteUserDialog({ open, onClose, user }: Props) {
 			await deleteUser(user!.id as number)
 			onClose(false)
 			toast.success("Usuario eliminado exitosamente")
-		} catch {
-			toast.error("Error al eliminar el usuario")
+		} catch (error: any) {
+			if (error?.response?.status === 409) {
+				toast.error(
+					"No se puede eliminar el usuario porque tiene entidades asociadas (clases, cursos, simulaciones, etc). Elimine primero las entidades vinculadas manualmente."
+				)
+			} else {
+				toast.error("Error al eliminar el usuario")
+			}
 		}
 	}
 
@@ -36,7 +42,7 @@ export default function DeleteUserDialog({ open, onClose, user }: Props) {
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar el usuario?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y se eliminarán todos los datos vinculados a este usuario.
+						Esta acción no es reversible y se eliminarán todas las entidades vinculadas a este usuario.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>

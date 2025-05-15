@@ -27,9 +27,14 @@ export default function DeleteClassDialog({ open, onClose, classId }: Props) {
 			await deleteClass(classId)
 			onClose(false)
 			toast.success("Asignatura eliminada exitosamente")
-		} catch (error) {
-			console.error(error)
-			toast.error("Error al eliminar la asignatura")
+		} catch (error: any) {
+			if (error?.response?.status === 409) {
+				toast.error(
+					"No se puede eliminar la clase porque tiene prácticas asociadas. Elimine primero las prácticas vinculadas manualmente."
+				)
+			} else {
+				toast.error("Error al eliminar la asignatura")
+			}
 		}
 	}
 
@@ -39,8 +44,7 @@ export default function DeleteClassDialog({ open, onClose, classId }: Props) {
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar la clase?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Esta acción no es reversible y se eliminarán toda la información vinculada a dicha
-						clase.
+						Esta acción no es reversible y se eliminarán todas las prácticas vinculadas a esta clase.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>

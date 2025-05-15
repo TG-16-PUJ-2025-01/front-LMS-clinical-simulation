@@ -24,8 +24,14 @@ export default function DeleteCourseDialog({ open, onClose, course }: Props) {
 			await deleteCourse(course!.courseId as number)
 			onClose(false)
 			toast.success("Asignatura eliminada exitosamente")
-		} catch (error) {
-			toast.error("Error al eliminar la asignatura")
+		} catch (error: any) {
+			if (error?.response?.status === 409) {
+				toast.error(
+					"No se puede eliminar la asignatura porque tiene clases asociadas. Elimine primero las clases vinculadas manualmente."
+				)
+			} else {
+				toast.error("Error al eliminar la asignatura")
+			}
 		}
 	}
 
