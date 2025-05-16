@@ -53,7 +53,6 @@ export default function EditSimulationsDialog({
 	)
 
 	useEffect(() => {
-		console.log("Selected date changed:", selectedDate)
 		calendarControls.setDate(selectedDate)
 	}, [selectedDate])
 

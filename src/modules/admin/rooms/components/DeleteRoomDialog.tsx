@@ -29,11 +29,13 @@ export default function DeleteRoomDialog({ open, onClose, roomId }: Props) {
 			toast.success("Sala eliminada exitosamente.")
 			onClose(false)
 		} catch (error: any) {
-			if (error.response && error.response.data && error.response.data.message) {
-				toast.error(error.response.data.message)
-			} else{
+			if (error?.response?.status === 409) {
+				toast.error(
+					"No se puede eliminar la sala porque tiene simulaciones asociadas. Elimine primero las simulaciones vinculadas manualmente."
+				)
+			} else {
 				toast.error("Error al eliminar la sala")
-			}	
+			}
 		}
 	}
 
@@ -42,7 +44,9 @@ export default function DeleteRoomDialog({ open, onClose, roomId }: Props) {
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>¿Seguro que desea eliminar la sala?</AlertDialogTitle>
-					<AlertDialogDescription>Esta acción no es reversible.</AlertDialogDescription>
+					<AlertDialogDescription>
+						Esta acción no es reversible y se eliminarán todas las simulaciones vinculadas a esta sala.
+					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel onClick={() => onClose(false)}>Cancelar</AlertDialogCancel>

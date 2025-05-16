@@ -26,7 +26,6 @@ export const verifyPasswordReset = async (email: string, token: string): Promise
     try {
         const password = null;
         const passwordResetData : PasswordResetData = { email, password, token };
-        console.log("passwordResetData", passwordResetData);
         const response = await axios.post(`${API_URL}/reset-password/verify`, passwordResetData);
         return response.status;
     } catch (error) {

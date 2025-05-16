@@ -61,7 +61,6 @@ export function CoursesDataTable() {
 
 			setData(res.data)
 
-			console.log("Data fetched:", res.data)
 		}
 
 		fetchCoursesAndClasses()
@@ -84,8 +83,6 @@ export function CoursesDataTable() {
 					})
 				)
 				setYearOptions(generatedYearOptions)
-
-				console.log("Year options fetched:", generatedYearOptions)
 			} catch (error) {
 				console.error("Error fetching classes:", error)
 			}

@@ -11,10 +11,6 @@ import { Input } from "@/modules/core/components/ui/input";
 import { changePassword } from "../services/authService";
 
 import { toast } from "sonner";
-import { validatePassword } from "@/modules/core/lib/utils";
-
-
-
 
 interface ChangePasswordDialogProps {
   isOpen: boolean;
@@ -27,26 +23,50 @@ export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDia
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
 
+  // Reset form when dialog is closed
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      setNewPassword("");
+      setConfirmPassword("");
+      setPassword("");
+      setError("");
+    }
+    onOpenChange(open);
+  };
+
   const handleSubmit = async () => {
     try {
-      // Validar que las contraseñas coincidan
       if (newPassword !== confirmPassword) {
         setError("Las contraseñas no coinciden.");
         return;
       }
-
-      // Validar la contraseña con el regex
-      if (!validatePassword(newPassword)) {
-        setError(
-          "La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un carácter especial."
-        );
+      const errorMessages: string[] = [];
+      if (newPassword.length < 8) {
+        errorMessages.push("tener al menos 8 caracteres");
+      }
+      if (!/[A-Z]/.test(newPassword)) {
+        errorMessages.push("incluir una mayúscula");
+      }
+      if (!/[a-z]/.test(newPassword)) {
+        errorMessages.push("incluir una minúscula");
+      }
+      if (!/[0-9]/.test(newPassword)) {
+        errorMessages.push("incluir un número");
+      }
+      if (!/[!@#$%^&*(),.?\":{}|<>_\-\\[\]=+;'/`~]/.test(newPassword)) {
+        errorMessages.push("incluir un carácter especial");
+      }
+      if (errorMessages.length > 0) {
+        setError(`La contraseña debe ${errorMessages.join(", ")}.`);
         return;
       }
 
-      // Llamar al servicio para cambiar la contraseña
       await changePassword(password, newPassword);
       toast.success("Contraseña cambiada exitosamente");
-      // Cerrar el Dialog después de cambiar la contraseña
+      setNewPassword("");
+      setConfirmPassword("");
+      setPassword("");
+      setError("");
       onOpenChange(false);
     } catch (error) {
       setError(error instanceof Error ? error.message : "Error al cambiar la contraseña");
@@ -54,7 +74,7 @@ export function ChangePasswordDialog({ isOpen, onOpenChange }: ChangePasswordDia
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Cambiar Contraseña</DialogTitle>

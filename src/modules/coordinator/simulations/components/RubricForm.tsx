@@ -41,19 +41,18 @@ const FormSchema = z
 	.object({
 		evaluatedCriterias: z.array(
 			z.object({
-				score: z.coerce.number().default(0),
+				score: z.coerce.number().min(0).max(5).default(0),
 				comment: z.string().default(""),
 			})
 		),
 		total: z.object({
-			score: z.coerce.number().default(0),
+			score: z.coerce.number().min(0).max(5).default(0),
 			comment: z.string().default(""),
 		}),
 	})
 	.superRefine((rubric, ctx) => {
 		const hasEmptyComments = rubric.evaluatedCriterias.some((criteria) => criteria.comment === "")
 		if (hasEmptyComments || rubric.total.comment === "") {
-			console.log("add issue")
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
 				message: "Todos los criterios deben tener comentario",
@@ -123,7 +122,7 @@ export function RubricForm({
 			const total = criteria.reduce((acc, curr, index) => {
 				return acc + (curr?.score ?? 0) * (rubricTemplate?.criteria[index]?.weight ?? 0)
 			}, 0)
-			const totalScore = Math.round(total) / 100
+			const totalScore = Math.round(total / 10) / 10
 			setTotalScore(totalScore)
 
 			updatingTotal.current = true
@@ -254,6 +253,7 @@ export function RubricForm({
 																			<FormControl>
 																				<Input
 																					type="number"
+																					step="0.1"
 																					defaultValue={0}
 																					min={0}
 																					max={5}

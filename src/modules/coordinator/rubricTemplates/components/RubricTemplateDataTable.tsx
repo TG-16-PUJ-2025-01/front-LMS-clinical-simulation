@@ -39,6 +39,8 @@ import { RadioGroup, RadioGroupItem } from "@/modules/core/components/ui/radio-g
 import { Label } from "@/modules/core/components/ui/label"
 import ArchiveRubricTemplateDialog from "./ArchiveRubricTemplateDialog"
 import ViewRubricTemplateDialog from "./ViewRubricTemplateDialog"
+import { usePreferencesStore } from "@/modules/core/stores/preferencesStore"
+import Role from "@/modules/core/models/role"
 
 export function RubricTemplateDataTable() {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -47,6 +49,7 @@ export function RubricTemplateDataTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 	const [rowSelection, setRowSelection] = useState({})
 	const [archived, setArchived] = useState<"all" | "archived">("all")
+	const preferredRole = usePreferencesStore((state) => state.preferredRole)
 
 	const [openDialog, setOpenDialog] = useState<
 		"edit" | "delete" | "create" | "archive" | "view" | null
@@ -167,9 +170,11 @@ export function RubricTemplateDataTable() {
 							<DropdownMenuItem onClick={() => handleOpenDialog("archive", rubric)}>
 								<Inbox /> {rubric.archived ? "Desarchivar" : "Archivar"}
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => handleOpenDialog("delete", rubric)}>
-								<Trash2 /> Borrar
-							</DropdownMenuItem>
+							{preferredRole === Role.COORDINADOR && (
+								<DropdownMenuItem onClick={() => handleOpenDialog("delete", rubric)}>
+									<Trash2 /> Borrar
+								</DropdownMenuItem>
+							)}
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)
@@ -303,11 +308,13 @@ export function RubricTemplateDataTable() {
 				onClose={handleCloseDialog}
 				rubricTemplateData={selectedRubric ?? undefined}
 			/>
-			<DeleteRubricTemplateDialog
-				open={openDialog === "delete"}
-				onClose={handleCloseDialog}
-				rubricTemplateToDelete={selectedRubric ?? undefined}
-			/>
+			{preferredRole === Role.COORDINADOR && (
+				<DeleteRubricTemplateDialog
+					open={openDialog === "delete"}
+					onClose={handleCloseDialog}
+					rubricTemplateToDelete={selectedRubric ?? undefined}
+				/>
+			)}
 			<ArchiveRubricTemplateDialog
 				open={openDialog === "archive"}
 				onClose={handleCloseDialog}
