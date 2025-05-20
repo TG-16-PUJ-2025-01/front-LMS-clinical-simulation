@@ -33,7 +33,7 @@ export default function ViewGroupsDialog({ open, onClose, practiceId, maxNumStud
 			toast.success(`Has salido del grupo ${groupNumber}`)
 		} catch (error: any) {
 			if (error?.response?.status === 409) {
-				toast.error("No puedes salir del grupo porque ya se ha realizado la simulación")
+				toast.error("No puedes salir del grupo porque ya se ha realizado la simulación, está en progreso o ya ha sido calificada")
 			} else {
 				toast.error("Error al salir del grupo")
 			}
