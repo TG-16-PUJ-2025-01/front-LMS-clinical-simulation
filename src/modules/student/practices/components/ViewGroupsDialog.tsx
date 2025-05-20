@@ -17,20 +17,20 @@ interface ViewGroupsDialog {
 }
 
 export default function ViewGroupsDialog({ open, onClose, practiceId, maxNumStudentsPerGroup }: ViewGroupsDialog) {
-	const handleEnroll = async (simulationId: number) => {
+	const handleEnroll = async (simulationId: number, groupNumber: number) => {
 		try {
 			await joinSimulation(simulationId)
-			toast.success(`Inscrito en el grupo ${simulationId}`)
+			toast.success(`Inscrito en el grupo ${groupNumber}`)
 		} catch (error) {
 			toast.error("Error al inscribirse en el grupo")
 			console.error(error)
 		}
 	}
 
-	const handleLeave = async (simulationId: number) => {
+	const handleLeave = async (simulationId: number, groupNumber: number) => {
 		try {
 			await leaveSimulation(simulationId)
-			toast.success(`Has salido del grupo ${simulationId}`)
+			toast.success(`Has salido del grupo ${groupNumber}`)
 		} catch (error: any) {
 			if (error?.response?.status === 409) {
 				toast.error("No puedes salir del grupo porque ya se ha realizado la simulación")
@@ -52,7 +52,12 @@ export default function ViewGroupsDialog({ open, onClose, practiceId, maxNumStud
 						hay cupos o que la simulación ya fue realizada.
 					</DialogDescription>
 				</DialogHeader>
-				<GroupsDataTable practiceId={practiceId} onEnroll={handleEnroll} onLeave={handleLeave} maxNumStudentsPerGroup={maxNumStudentsPerGroup} />
+				<GroupsDataTable
+					practiceId={practiceId}
+					onEnroll={handleEnroll}
+					onLeave={handleLeave}
+					maxNumStudentsPerGroup={maxNumStudentsPerGroup}
+				/>
 			</DialogContent>
 		</Dialog>
 	)

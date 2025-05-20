@@ -47,8 +47,8 @@ import ViewMembersDialog from "@/modules/coordinator/bookings/components/ViewMem
 
 interface GroupsDataTableProps {
 	practiceId: number
-	onEnroll: (simulationId: number) => void
-	onLeave: (simulationId: number) => void
+	onEnroll: (simulationId: number, groupNumber: number) => void
+	onLeave: (simulationId: number, groupNumber: number) => void
 	maxNumStudentsPerGroup: number
 }
 
@@ -180,6 +180,7 @@ export default function GroupsDataTable({
 			cell: ({ row }) => {
 				const simulation = row.original
 				const simulationId = simulation.simulationId
+				const groupNumber = simulation.groupNumber
 				const isEnrolled = enrolledSimulationId === simulationId
 				const isAvailable = simulation.available
 
@@ -188,7 +189,7 @@ export default function GroupsDataTable({
 						disabled={isEnrolled || !isAvailable}
 						variant={!isAvailable ? "outline" : "default"}
 						onClick={async () => {
-							await onEnroll(simulationId)
+							onEnroll(simulationId, groupNumber)
 							setTriggerFetchEnrolled((prev) => !prev)
 						}}
 						className="flex items-center justify-center"
@@ -216,6 +217,7 @@ export default function GroupsDataTable({
 			cell: ({ row }) => {
 				const simulation = row.original
 				const simulationId = simulation.simulationId
+				const groupNumber = simulation.groupNumber
 				const isEnrolled = enrolledSimulationId === simulationId
 				return (
 					<DropdownMenu>
@@ -238,7 +240,7 @@ export default function GroupsDataTable({
 							{isEnrolled && (
 								<DropdownMenuItem
 									onClick={async () => {
-										onLeave(simulationId)
+										onLeave(simulationId, groupNumber)
 										setTriggerFetchEnrolled((prev) => !prev)
 									}}
 								>
