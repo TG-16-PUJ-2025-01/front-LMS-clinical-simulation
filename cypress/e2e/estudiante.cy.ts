@@ -1,5 +1,5 @@
 describe("Estudiante flow test", () => {
-	it.only("CORD-1 Flujo completo de un estudiante", () => {
+	it.only("EST-1 Flujo completo de un estudiante", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
 		cy.wait(2000)
