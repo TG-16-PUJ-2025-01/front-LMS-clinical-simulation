@@ -1,5 +1,5 @@
 describe("Admin flow test", () => {
-	it.only("CORD-1 Flujo completo de un coordinador", () => {
+	it.only("CORD-1 Flujo completo de un administrador", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
 		cy.wait(2000)

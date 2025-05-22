@@ -1,5 +1,5 @@
 describe("Estudiante flow test", () => {
-	it.only("CORD-1 Flujo completo de un coordinador", () => {
+	it.only("CORD-1 Flujo completo de un estudiante", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
 		cy.wait(2000)
@@ -253,4 +253,3 @@ describe("Estudiante flow test", () => {
 		cy.contains('div[role="menuitem"]', "Cerrar Sesión").should("be.visible").click()
 	})
 })
-// This file is intentionally left empty. It serves as a placeholder for future tests related to the admin section of the application.
