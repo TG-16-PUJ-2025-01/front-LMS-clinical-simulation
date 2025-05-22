@@ -1,5 +1,5 @@
 describe("Teacher flow tests", () => {
-	it.only("CORD-1 Flujo completo de un coordinador", () => {
+	it("CORD-1 Flujo completo de un coordinador", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
 		cy.wait(2000)
@@ -667,7 +667,7 @@ describe("Teacher flow tests", () => {
 		cy.get("button").contains("Editar porcentajes de calificación").click()
 
 		cy.get('div[role="dialog"]').within(() => {
-			cy.get("input").eq(0).clear().type("10") // Represents 100%
+			cy.get("input").eq(0).clear().type("10")
 			cy.get("input").eq(1).clear().type("0")
 			cy.get("input").eq(2).clear().type("0")
 			cy.get("input").eq(3).clear().type("0")

@@ -1,5 +1,5 @@
 describe("Teacher flow tests", () => {
-	it.only("PROF-1 Flujo Completo Profe", () => {
+	it("PROF-1 Flujo Completo Profe", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
 		cy.wait(2000)
