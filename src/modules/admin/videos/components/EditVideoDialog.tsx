@@ -43,7 +43,7 @@ export default function EditVideoDialog({ open, onClose, video }: Props) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			name: undefined,
+			name: "",
 			simulationId: undefined,
 		},
 	})
@@ -52,23 +52,23 @@ export default function EditVideoDialog({ open, onClose, video }: Props) {
 
 	useEffect(() => {
 		if (video) {
-			form.reset({
-				name: video.name,
-				simulationId: video.simulation?.simulationId,
-			})
 			getSimulationForVideo(video.videoId).then((res) => {
-				console.log(res)
 				if (res.data) {
 					setSimulations([res.data])
-					form.setValue("simulationId", res.data.simulationId)
+					form.reset({
+						name: video.name ?? "",
+						simulationId: res.data?.simulationId ?? undefined,
+					})
 				} else {
 					setSimulations([])
-					form.setValue("simulationId", undefined)
+					form.reset({
+						name: video.name ?? "",
+						simulationId: undefined,
+					})
 				}
 			})
 		}
 	}, [form, video])
-
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			await updateVideo(video!.videoId, {
