@@ -21,7 +21,7 @@ import {
 	FormMessage,
 } from "@/modules/core/components/ui/form"
 import { useEffect, useState } from "react"
-import { updateVideo, getSimulationForVideo } from "../services/videoService"
+import { updateVideo, getSimulationForVideo, getCandidateSimulationsForSimulation } from "../services/videoService"
 import { toast } from "sonner"
 import { Combobox } from "@/modules/core/components/Combobox/Combobox"
 import Simulation from "@/modules/core/models/simulation"
@@ -54,11 +54,18 @@ export default function EditVideoDialog({ open, onClose, video }: Props) {
 		if (video) {
 			getSimulationForVideo(video.videoId).then((res) => {
 				if (res.data) {
-					setSimulations([res.data])
-					form.reset({
-						name: video.name ?? "",
-						simulationId: res.data?.simulationId ?? undefined,
-					})
+					const associatedSimulation = res.data
+					getCandidateSimulationsForSimulation(associatedSimulation.simulationId).then(
+						(candidatesRes: { data?: Simulation[] }) => {
+							const candidates = candidatesRes.data || []
+							// Join the associated simulation with the candidates
+							setSimulations([associatedSimulation, ...candidates])
+							form.reset({
+								name: video.name ?? "",
+								simulationId: associatedSimulation.simulationId,
+							})
+						}
+					)
 				} else {
 					setSimulations([])
 					form.reset({
@@ -69,6 +76,7 @@ export default function EditVideoDialog({ open, onClose, video }: Props) {
 			})
 		}
 	}, [form, video])
+
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			await updateVideo(video!.videoId, {

@@ -35,6 +35,11 @@ export async function getVideos(
 	}
 }
 
+export async function getCandidateSimulationsForSimulation(simulationId: number): Promise<ApiResponse<Simulation[]>> {
+	const { data } = await axios.get(`${API_URL}/simulation/${simulationId}/candidates`)
+	return data
+}
+
 export async function getSimulationForVideo(videoId: number): Promise<ApiResponse<Simulation>> {
 	const { data } = await axios.get(`${API_URL}/video/${videoId}/simulation`)
 	return data
