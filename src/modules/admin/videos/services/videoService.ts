@@ -2,9 +2,11 @@ import axios from "axios"
 import { API_URL } from "@/modules/core/config/env"
 import Video from "@/modules/core/models/video"
 import ApiResponse from "@/modules/core/models/apiResponse"
+import Simulation from "@/modules/core/models/simulation"
 
 interface EditVideo {
 	name: string
+	simulationId?: number
 }
 
 export async function getVideos(
@@ -31,6 +33,11 @@ export async function getVideos(
 			recordingDate: new Date(video.recordingDate),
 		})),
 	}
+}
+
+export async function getSimulationForVideo(videoId: number): Promise<ApiResponse<Simulation>> {
+	const { data } = await axios.get(`${API_URL}/video/${videoId}/simulation`)
+	return data
 }
 
 export async function updateVideo(videoId: number, video: EditVideo): Promise<ApiResponse<Video>> {

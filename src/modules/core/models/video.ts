@@ -1,4 +1,5 @@
 import Comment from "./comment"
+import Simulation from "./simulation"
 
 export default interface Video {
 	videoId: number
@@ -8,5 +9,6 @@ export default interface Video {
 	size: number // in GB
 	available: boolean
 	videoUrl: string
+	simulation: Simulation
 	comments: Comment[]
 }
