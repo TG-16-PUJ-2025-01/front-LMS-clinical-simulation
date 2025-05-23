@@ -72,7 +72,7 @@ export function ComboboxCreate({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className="col-span-3 justify-between"
+					className="col-span-3 justify-between truncate max-w-full"
 				>
 					{value
 						? options.find((option) => option.value === value)?.value || value

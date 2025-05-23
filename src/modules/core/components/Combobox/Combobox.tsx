@@ -68,7 +68,7 @@ export function Combobox({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className={cn("col-span-3 justify-between", className)}
+					className={cn("col-span-3 justify-between truncate max-w-full", className)}
 				>
 					{value
 						? options.find((option) => option.value === value)?.value || value
