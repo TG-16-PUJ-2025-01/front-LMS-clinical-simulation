@@ -1,4 +1,4 @@
-describe("Teacher flow tests", () => {
+describe("Coordinator flow tests", () => {
 
 	it("CORD-2 Acceso No Autorizado Coordinador", () => {
 		cy.step("Step 1 - Login")

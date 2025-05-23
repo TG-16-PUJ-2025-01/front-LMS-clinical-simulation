@@ -79,7 +79,7 @@ export default function ExceltutorialTemplate({ open, onClose }: Props) {
 								<td className="border border-gray-300 px-2 py-1">18391029123</td>
 								<td className="border border-gray-300 px-2 py-1">Pablo</td>
 								<td className="border border-gray-300 px-2 py-1">Picasso</td>
-								<td className="border border-gray-300 px-2 py-1">p.icasso@javerina.edu.co</td>
+								<td className="border border-gray-300 px-2 py-1">p.icasso@javeriana.edu.co</td>
 								<td className="border border-gray-300 px-2 py-1"></td>
 								<td className="border border-gray-300 px-2 py-1">x</td>
 								<td className="border border-gray-300 px-2 py-1"></td>
