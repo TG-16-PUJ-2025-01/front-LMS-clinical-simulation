@@ -1,8 +1,8 @@
-import { cn } from "../lib/utils"
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { cn } from "../../lib/utils"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { CalendarIcon } from "lucide-react"
-import { Button } from "./ui/button"
-import { Calendar } from "./ui/calendar"
+import { Button } from "../ui/button"
+import { Calendar } from "../ui/calendar"
 
 interface Props {
   id: string
