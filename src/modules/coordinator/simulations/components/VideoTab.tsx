@@ -75,7 +75,7 @@ export default function VideoTab({ video, sync }: Props) {
 			) : (
 				<ul>
 					{video?.comments.map((comment) => (
-						<li key={comment.timestamp} className="flex items-baseline gap-2">
+						<li key={`${comment.timestamp}-${comment.message}`} className="flex items-baseline gap-2">
 							<Button
 								type="button"
 								variant="link"

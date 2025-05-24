@@ -93,7 +93,7 @@ export default function EditVideoDialog({ open, onClose, video }: Props) {
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[425px]" onSubmit={() => {}}>
+			<DialogContent className="sm:max-w-[600px]" onSubmit={() => {}}>
 				<DialogHeader>
 					<DialogTitle>Editar Video</DialogTitle>
 					<DialogDescription>Puedes editar los siguientes atributos del video</DialogDescription>

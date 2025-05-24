@@ -99,7 +99,7 @@ export default function SimulationPage() {
 						<div>
 							<ul className="mb-2 flex">
 								{simulation?.videos.map((video, index) => (
-									<li>
+									<li key={video.videoId}>
 										<Button
 											variant="ghost"
 											className={cn("rounded-b-none border-b-2", {

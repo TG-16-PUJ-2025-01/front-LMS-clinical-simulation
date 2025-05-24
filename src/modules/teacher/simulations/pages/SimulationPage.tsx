@@ -21,6 +21,7 @@ export default function SimulationPage() {
 	const simulation = useSimulationStore((state) => state.simulation)
 	const setSimulation = useSimulationStore((state) => state.setSimulation)
 	const [isSync, setIsSync] = useState(false)
+	const [commentsSync, setCommentsSync] = useState(true)
 	const [selectedVideo, setSelectedVideo] = useState<Video | undefined>()
 
 	useEffect(() => {
@@ -37,12 +38,13 @@ export default function SimulationPage() {
 	useEffect(() => {
 		if (!simulation) return
 
-		if (!selectedVideo) {
+		if (!selectedVideo || commentsSync) {
 			setSelectedVideo(simulation.videos[0])
 		} else {
 			const video = simulation.videos.find((video) => video.videoId === selectedVideo.videoId)
 			if (video) {
 				setSelectedVideo(video)
+				setCommentsSync(true)
 			}
 		}
 
@@ -51,7 +53,7 @@ export default function SimulationPage() {
 
 		if (!simulation.practice.classModel) return
 		setClassData(simulation.practice.classModel)
-	}, [simulation, setPracticeData, setClassData, selectedVideo])
+	}, [simulation, setPracticeData, setClassData])
 
 	return (
 		<>
@@ -108,7 +110,6 @@ export default function SimulationPage() {
 											type="button"
 											onClick={() => {
 												setSelectedVideo(video)
-												setIsSync(false)
 											}}
 										>
 											Video {index + 1}
@@ -116,7 +117,10 @@ export default function SimulationPage() {
 									</li>
 								))}
 							</ul>
-							<VideoTab video={selectedVideo} sync={() => setIsSync(false)} />
+							<VideoTab video={selectedVideo} sync={() => {
+								setIsSync(false)
+								setCommentsSync(false)
+							}} />
 						</div>
 					) : (
 						<div className="flex aspect-video w-full flex-col items-center justify-center gap-6">
