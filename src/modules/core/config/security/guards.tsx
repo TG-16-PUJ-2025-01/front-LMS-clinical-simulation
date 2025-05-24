@@ -7,7 +7,7 @@ import TeacherLayout from "@/modules/teacher/layout/TeacherLayout"
 import { LayoutSlotProvider } from "../../components/Slots/LayoutSlotContext"
 import { isValidToken, getRolesByToken } from "@/modules/shared/auth/services/authService"
 import { useEffect, useState } from "react"
-import Loader from "@/modules/shared/others/Loader/Loader"
+import Loader from "@/modules/core/components/Loader/Loader"
 import Role from "../../models/role"
 import { usePreferencesStore } from "../../stores/preferencesStore"
 
