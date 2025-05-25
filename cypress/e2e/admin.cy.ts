@@ -1,5 +1,5 @@
 describe("Admin flow test", () => {
-	it.only("CORD-1 Flujo completo de un administrador", () => {
+	it.only("ADMIN-1 Flujo completo de un administrador", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
 		cy.wait(2000)
@@ -16,7 +16,7 @@ describe("Admin flow test", () => {
 		cy.get("table tbody tr")
 			.first()
 			.within(() => {
-				cy.get("td").eq(0).should("contain", "100003") // ID
+				cy.get("td").eq(0).should("contain", "100003")
 			})
 			.then(() => {
 				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
@@ -63,58 +63,53 @@ describe("Admin flow test", () => {
 		cy.get('input[value="0"]').should("be.visible").click().type("10291")
 
 		cy.get('input[placeholder="Nombre"]').should("be.visible").click().type("Anestesiología")
-		// Selecciona el coordinador
 		cy.contains("button", "Selecciona un coordinador").should("be.visible").click()
 
 		cy.get('input[placeholder="Buscar coordinador..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("Felipe")
 
 		cy.contains("[cmdk-item]", "Felipe")
-			.should("be.visible") // Asegura que la opción "Felipe" esté visible
+			.should("be.visible")
 			.click()
 		
 		cy.get('button[role="combobox"]').should("contain.text", "Felipe")
 
-		// Selecciona el semestre
 		cy.contains('button[role="combobox"]', "Semestre").should("be.visible").click()
 		cy.get('input[placeholder="Buscar semestre..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("2")
 		cy.contains("[cmdk-item]", "2")
-			.should("be.visible") // Asegura que la opción "2" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "2")
 
-		// Selecciona la Facultad
 		cy.contains('button[role="combobox"]', "Facultad").should("be.visible").click()
 		cy.get('input[placeholder="Buscar facultad..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("enf")
 		cy.contains("[cmdk-item]", "Enfermería")
-			.should("be.visible") // Asegura que la opción "Enfermería" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Enfermería").should("be.visible")
 
-		// Selecciona el Departamento
 		cy.contains('button[role="combobox"]', "Departamento").should("be.visible").click()
 		cy.get('input[placeholder="Buscar departamento..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("inter")
 		cy.get("[cmdk-item]")
-			.should("be.visible") // Espera a que las opciones sean visibles
+			.should("be.visible")
 			.contains("Medicina Interna")
-			.should("be.visible") // Asegura que la opción "Medicina Interna" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Medicina Interna")
 
-		// Selecciona el Programa
 		cy.contains('button[role="combobox"]', "Programa").should("be.visible").click()
 		cy.get('input[placeholder="Buscar programa..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("pre")
 		cy.contains("[cmdk-item]", "Pregrado")
-			.should("be.visible") // Asegura que la opción "Pregrado" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Pregrado")
 
@@ -125,22 +120,17 @@ describe("Admin flow test", () => {
 			.and("contain.text", "Asignatura creada exitosamente")
 
 		cy.step("Step 3 - Probar Editar una asignatura")
-		// Encuentra el primer botón con el ícono de los tres puntos suspensivos (...) y haz clic
 		cy.get("table tbody tr")
 			.first()
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				cy.log($cell.text())
 
-				// Ahora, hacemos clic en el botón "..."
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
 		cy.contains("Editar").click()
-
-		//Cambiar la información de la asignatura
 
 		cy.get('input[name="javerianaId"]').should("be.visible").click().clear().type("10291232")
 
@@ -150,70 +140,70 @@ describe("Admin flow test", () => {
 			.clear()
 			.type("Anestesiología avanzada")
 
-		cy.contains("label", "Coordinador") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Coordinador")
 			.siblings("button")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
-			.click() // Hace clic en el botón
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar coordinador..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("Felipe")
 		cy.contains("[cmdk-item]", "Felipe")
-			.should("be.visible") // Asegura que la opción "Felipe" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Felipe")
 
-		cy.contains("label", "Semestre") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Semestre")
 			.siblings("button")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
-			.click() // Hace clic en el botón
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar semestre..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("2")
 		cy.contains("[cmdk-item]", "2")
-			.should("be.visible") // Asegura que la opción "2" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "2")
 
-		cy.contains("label", "Facultad") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Facultad")
 			.siblings("button")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
-			.click() // Hace clic en el botón
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar facultad..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("enf")
 		cy.contains("[cmdk-item]", "Enfermería")
-			.should("be.visible") // Asegura que la opción "Enfermería" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Enfermería").should("be.visible")
 
-		cy.contains("label", "Departamento") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Departamento")
 			.siblings("button")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
-			.click() // Hace clic en el botón
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar departamento..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("inter")
 		cy.get("[cmdk-item]")
-			.should("be.visible") // Espera a que las opciones sean visibles
+			.should("be.visible")
 			.contains("Medicina Interna")
-			.should("be.visible") // Asegura que la opción "Medicina Interna" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Medicina Interna")
 
-		cy.contains("label", "Programa") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Programa")
 			.siblings("button")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
-			.click() // Hace clic en el botón
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar programa..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("pre")
 		cy.contains("[cmdk-item]", "Pregrado")
-			.should("be.visible") // Asegura que la opción "Pregrado" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Pregrado")
 
@@ -223,7 +213,6 @@ describe("Admin flow test", () => {
 			.should("exist")
 			.and("contain.text", "Asignatura actualizada exitosamente")
 
-		//EVALUAR QUE SE CAMBIO EL NOMBRE DE LA ASIGNATURA
 		cy.get('input[placeholder="Buscar..."]')
 			.should("be.visible")
 			.click()
@@ -232,12 +221,12 @@ describe("Admin flow test", () => {
 		cy.get("table tbody tr")
 			.first()
 			.within(() => {
-				cy.get("td").eq(0).should("contain", "10291232") // ID
-				cy.get("td").eq(1).should("contain", "Anestesiología avanzada") //
-				cy.get("td").eq(2).should("contain", "Felipe") // Coordinador
-				cy.get("td").eq(3).should("contain", "Medicina Interna") // Departamento
-				cy.get("td").eq(4).should("contain", "Pregrado") // Programa
-				cy.get("td").eq(5).should("contain", "2") // Semestre
+				cy.get("td").eq(0).should("contain", "10291232")
+				cy.get("td").eq(1).should("contain", "Anestesiología avanzada")
+				cy.get("td").eq(2).should("contain", "Felipe")
+				cy.get("td").eq(3).should("contain", "Medicina Interna")
+				cy.get("td").eq(4).should("contain", "Pregrado")
+				cy.get("td").eq(5).should("contain", "2")
 			})
 			.then(() => {
 				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
@@ -246,14 +235,12 @@ describe("Admin flow test", () => {
 		cy.step("Step 4 - Probar Eliminar una asignatura")
 
 		cy.get("table tbody tr")
-			.eq(3)
+			.eq(8)
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				cy.log($cell.text())
 
-				// Ahora, hacemos clic en el botón "..."
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -274,74 +261,66 @@ describe("Admin flow test", () => {
 
 		cy.contains("button", "Nueva clase").should("be.visible").click()
 
-		cy.get('input[placeholder="ID"]').should("not.be.disabled").type("123456") // Para escribir en el input
+		cy.get('input[placeholder="ID"]').should("not.be.disabled").type("123456")
 
-		cy.contains("label", "Profesor") // Encuentra el label con el texto "Profesor"
-			.siblings("div") // Encuentra el div hermano dentro del mismo contenedor
-			.should("be.visible") // Verifica que el div sea visible
-			.click() // Hace clic en el div
+		cy.contains("label", "Profesor")
+			.siblings("div")
+			.should("be.visible")
+			.click()
 
-		cy.contains("label", "Profesor") // Encuentra el label con el texto "Profesor"
-			.siblings("div") // Selecciona el div hermano
-			.find('input[role="combobox"]') // Encuentra el input dentro del div
-			.should("be.visible") // Asegura que sea visible
+		cy.contains("label", "Profesor")
+			.siblings("div")
+			.find('input[role="combobox"]')
+			.should("be.visible")
 			.type("M{enter}")
-			.type("M{enter}") // Escribe en el input
+			.type("M{enter}")
 
-		cy.contains("label", "Asignatura") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Asignatura")
 			.siblings("button")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
-			.click() // Hace clic en el botón
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar curso..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("humanismo")
 		cy.contains("[cmdk-item]", "Ética y Humanismo Médico")
-			.should("be.visible") // Asegura que la opción "Pregrado" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Humanismo")
 
-		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
-			.siblings("div") // Va al div que contiene los botones
-			.find("button") // Encuentra todos los botones dentro del div
-			.contains("Año") // Filtra el botón que contiene el texto "Año"
-			.should("be.visible") // Verifica que sea visible
-			.click() // Hace clic en el botón
+		cy.contains("label", "Año y Periodo")
+			.siblings("div")
+			.find("button")
+			.contains("Año")
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar año..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("2027{enter}")
 
-		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
-			.siblings("div") // Va al div que contiene los botones
-			.find("button") // Encuentra todos los botones dentro del div
+		cy.wait(500)
+
+		cy.contains("label", "Año y Periodo")
+			.siblings("div")
+			.find("button")
 			.contains("2027")
 			.should("be.visible")
 			.should("contain.text", "2027")
 
-		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
-			.siblings("div") // Va al div que contiene los botones
-			.find("button") // Encuentra todos los botones dentro del div
-			.contains("Periodo") // Filtra el botón que contiene el texto "Año"
-			.should("be.visible") // Verifica que sea visible
-			.click() // Hace clic en el botón
+		cy.contains('button[role="combobox"]', 'Periodo').click();
+
+		cy.wait(500)
 
 		cy.get('input[placeholder="Buscar periodo..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("20{enter}")
 
-		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
-			.siblings("div") // Va al div que contiene los botones
-			.find("button") // Encuentra todos los botones dentro del div
-			.contains("20")
-			.should("be.visible")
-			.should("contain.text", "20")
-
-		cy.contains("label", "No. de Participantes") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "No. de Participantes")
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible")
 			.click()
-			.type("30") // Hace clic en el botón
+			.type("30")
 
 		cy.get('button[type="submit"]').should("be.visible").click()
 
@@ -356,74 +335,66 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				cy.log($cell.text())
 
-				// Ahora, hacemos clic en el botón "..."
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
 		cy.contains("Editar").click()
 
-		cy.get('input[placeholder="ID"]').should("not.be.disabled").type("99967866") // Para escribir en el input
+		cy.get('input[placeholder="ID"]').should("not.be.disabled").type("99967866")
 
-		cy.contains("label", "Asignatura") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Asignatura")
 			.siblings("button")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
-			.click() // Hace clic en el botón
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar curso..."]')
 			.should("be.visible")
-			.clear() // Espera a que el input esté visible
+			.clear()
 			.type("humanismo")
 		cy.contains("[cmdk-item]", "Ética y Humanismo Médico")
-			.should("be.visible") // Asegura que la opción "Pregrado" esté visible
+			.should("be.visible")
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Humanismo")
 
-		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
-			.siblings("div") // Va al div que contiene los botones
-			.find("button") // Encuentra todos los botones dentro del div
-			.contains("20") // Filtra el botón que contiene el texto "Año"
-			.should("be.visible") // Verifica que sea visible
-			.click() // Hace clic en el botón
+		cy.contains("label", "Año y Periodo")
+			.siblings("div")
+			.find("button")
+			.contains("20")
+			.should("be.visible")
+			.click()
 
 		cy.get('input[placeholder="Buscar año..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("2027{enter}")
 
-		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
-			.siblings("div") // Va al div que contiene los botones
-			.find("button") // Encuentra todos los botones dentro del div
+		cy.wait(500)
+
+		cy.contains("label", "Año y Periodo")
+			.siblings("div")
+			.find("button")
 			.contains("2027")
 			.should("be.visible")
 			.should("contain.text", "2027")
 
-		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
-			.siblings("div") // Va al div que contiene los botones
-			.find("button") // Encuentra todos los botones dentro del div
-			.contains("10") // Filtra el botón que contiene el texto "Año"
-			.should("be.visible") // Verifica que sea visible
-			.click() // Hace clic en el botón
+		cy.contains('button[role="combobox"]', '10').click();
+
+		cy.wait(500)
 
 		cy.get('input[placeholder="Buscar periodo..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible")
 			.type("20{enter}")
 
-		cy.contains("label", "Año y Periodo") // Encuentra el label con el texto "Año y Periodo"
-			.siblings("div") // Va al div que contiene los botones
-			.find("button") // Encuentra todos los botones dentro del div
-			.contains("20")
-			.should("be.visible")
-			.should("contain.text", "20")
-
-		cy.contains("label", "No. de Participantes") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "No. de Participantes")
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible")
 			.click()
-			.type("30") // Hace clic en el botón
+			.type("30")
 
 		cy.get('button[type="submit"]').should("be.visible").click()
+
+		cy.wait(1000)
 
 		cy.get('li[data-sonner-toast][data-visible="true"]')
 			.should("exist")
@@ -434,9 +405,9 @@ describe("Admin flow test", () => {
 		cy.get("table tbody tr")
 			.first()
 			.within(() => {
-				cy.get("td").eq(0).should("contain", "99967866") // ID
-				cy.get("td").eq(1).should("contain", "Ética y Humanismo Médico") //
-				cy.get("td").eq(3).should("contain", "2027-20") // Departamento
+				cy.get("td").eq(0).should("contain", "99967866")
+				cy.get("td").eq(1).should("contain", "Ética y Humanismo Médico")
+				cy.get("td").eq(3).should("contain", "2027-20")
 			})
 			.then(() => {
 				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
@@ -467,10 +438,8 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				cy.log($cell.text())
 
-				// Ahora, hacemos clic en el botón "..."
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -484,16 +453,16 @@ describe("Admin flow test", () => {
 		cy.step("Step 8 - Probar Descargar plantilla de la clase")
 		cy.contains("button", "Descargar plantilla").click()
 
-		cy.get('[role="dialog"]') // Selecciona el modal por el atributo `role="dialog"`
-			.contains("button", "Descargar plantilla") // Busca el botón "Descargar plantilla" dentro del modal
-			.click() // Hace clic en el botón
+		cy.get('[role="dialog"]')
+			.contains("button", "Descargar plantilla")
+			.click()
 
 		cy.get('[role="dialog"]').should("be.visible")
 
 		cy.get('[role="dialog"]')
 			.find("button")
 			.find("svg.lucide-x")
-			.should("be.visible") // Asegúrate de que el SVG está visible
+			.should("be.visible")
 			.click()
 
 		cy.step("Step 9 - Probar Cargar plantilla de la clase para carga masiva")
@@ -514,10 +483,10 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -556,16 +525,16 @@ describe("Admin flow test", () => {
 
 		cy.contains("button", "Descargar plantilla").click()
 
-		cy.get('[role="dialog"]') // Selecciona el modal por el atributo `role="dialog"`
-			.contains("button", "Descargar plantilla") // Busca el botón "Descargar plantilla" dentro del modal
-			.click() // Hace clic en el botón
+		cy.get('[role="dialog"]')
+			.contains("button", "Descargar plantilla")
+			.click()
 
 		cy.get('[role="dialog"]').should("be.visible")
 
 		cy.get('[role="dialog"]')
 			.find("button")
 			.find("svg.lucide-x")
-			.should("be.visible") // Asegúrate de que el SVG está visible
+			.should("be.visible")
 			.click()
 
 		cy.step("Step 12 - Probar eliminar miembros de una clase")
@@ -575,10 +544,9 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(5)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -595,10 +563,10 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(5)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -615,10 +583,10 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(5)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -694,10 +662,10 @@ describe("Admin flow test", () => {
 			.click()
 			.type("m_card@javeriana.edu.co")
 
-		cy.contains("label", "Roles") // Encuentra el label con el texto "Profesor"
-			.siblings("div") // Selecciona el div hermano
-			.find('input[role="combobox"]') // Encuentra el input dentro del div
-			.should("be.visible") // Asegura que sea visible
+		cy.contains("label", "Roles") 
+			.siblings("div") 
+			.find('input[role="combobox"]') 
+			.should("be.visible") 
 			.type("P{enter}")
 			.type("E{enter}")
 			.type("A{enter}")
@@ -716,9 +684,9 @@ describe("Admin flow test", () => {
 		cy.get("table tbody tr")
 			.first()
 			.within(() => {
-				cy.get("td").eq(0).should("contain", "18293019234") // ID
-				cy.get("td").eq(1).should("contain", "m_card@javeriana.edu.co") //
-				cy.get("td").eq(2).should("contain", "Cárdenas María") // Coordinador
+				cy.get("td").eq(0).should("contain", "18293019234") 
+				cy.get("td").eq(1).should("contain", "m_card@javeriana.edu.co")
+				cy.get("td").eq(2).should("contain", "Cárdenas María") 
 			})
 			.then(() => {
 				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
@@ -740,25 +708,20 @@ describe("Admin flow test", () => {
 
 		cy.step("Step 15 - Borrar cuentas cuentas")
 
-		//felipe remirez
 		cy.get("table tbody tr")
-			.eq(5)
+			.eq(9)
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				cy.log($cell.text())
 
-				// Ahora, hacemos clic en el botón "..."
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
 		cy.contains("Borrar").click()
 		cy.contains("button", "Eliminar").click()
 
-		//buscar a felipe para ver que efectivamente se borro
-
-		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("mariana")
+		cy.get('input[placeholder="Buscar..."]').should("be.visible").click().type("General administrador")
 
 		cy.get("table tbody td").should("contain.text", "No existen resultados.")
 
@@ -771,10 +734,10 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -784,10 +747,10 @@ describe("Admin flow test", () => {
 
 		cy.get('input[name="lastName"]').should("be.visible").click().clear().type("García")
 
-		cy.contains("label", "Roles") // Encuentra el label con el texto "Profesor"
-			.siblings("div") // Selecciona el div hermano
-			.find('input[role="combobox"]') // Encuentra el input dentro del div
-			.should("be.visible") // Asegura que sea visible
+		cy.contains("label", "Roles") 
+			.siblings("div") 
+			.find('input[role="combobox"]') 
+			.should("be.visible") 
 			.type("E{enter}")
 			.type("A{enter}")
 
@@ -797,16 +760,16 @@ describe("Admin flow test", () => {
 
 		cy.contains("button", "Descargar plantilla").click()
 
-		cy.get('[role="dialog"]') // Selecciona el modal por el atributo `role="dialog"`
-			.contains("button", "Descargar plantilla") // Busca el botón "Descargar plantilla" dentro del modal
-			.click() // Hace clic en el botón
+		cy.get('[role="dialog"]') 
+			.contains("button", "Descargar plantilla") 
+			.click() 
 
 		cy.get('[role="dialog"]').should("be.visible")
 
 		cy.get('[role="dialog"]')
 			.find("button")
 			.find("svg.lucide-x")
-			.should("be.visible") // Asegúrate de que el SVG está visible
+			.should("be.visible") 
 			.click()
 
 		cy.get("nav")
@@ -823,30 +786,30 @@ describe("Admin flow test", () => {
 
 		cy.contains("button", "Nueva Sala").should("be.visible").click()
 
-		cy.get('input[placeholder="Nombre"]').should("not.be.disabled").type("sala de partos") // Para escribir en el input
+		cy.get('input[placeholder="Nombre"]').should("not.be.disabled").type("sala de partos")
 
 		cy.contains('button[role="combobox"]', "Seleccionar...").should("be.visible").click()
 		cy.get('input[placeholder="Buscar tipo de sala..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible") 
 			.type("Cir")
 		cy.get("[cmdk-item]")
-			.should("be.visible") // Espera a que las opciones sean visibles
+			.should("be.visible") 
 			.contains("Cirugía")
-			.should("be.visible") // Asegura que la opción "Medicina Interna" esté visible
+			.should("be.visible") 
 			.click()
 		cy.get('button[role="combobox"]').should("contain.text", "Cirugía")
 
-		cy.contains("label", "Capacidad") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Capacidad") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
-			.type("30") // Hace clic en el botón
+			.type("30") 
 
-		cy.contains("label", "Dirección IP") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Dirección IP") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
-			.type("10.192.234.23") // Hace clic en el botón
+			.type("10.192.234.23") 
 
 		cy.get('button[type="submit"]').should("be.visible").click()
 
@@ -880,44 +843,44 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
 		cy.contains("Editar").click()
 
-		cy.contains("label", "Nombre") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Nombre") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
 			.clear()
-			.type("sala de genética") // Hace clic en el botón
+			.type("sala de genética") 
 
-		cy.contains("label", "Capacidad") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Capacidad") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
 			.clear()
-			.type("15") // Hace clic en el botón
+			.type("15") 
 
-		cy.contains("label", "Dirección IP") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Dirección IP") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
 			.clear()
-			.type("10.123.212.1") // Hace clic en el botón
+			.type("10.123.212.1") 
 
 		cy.contains('button[role="combobox"]', "Cuidado crítico intensivo").should("be.visible").click()
 		cy.get('input[placeholder="Buscar tipo de sala..."]')
-			.should("be.visible") // Espera a que el input esté visible
+			.should("be.visible") 
 			.type("Cir")
 		cy.get("[cmdk-item]")
-			.should("be.visible") // Espera a que las opciones sean visibles
+			.should("be.visible") 
 			.contains("Cirugía")
-			.should("be.visible") // Asegura que la opción "Medicina Interna" esté visible
+			.should("be.visible") 
 			.click()
 
 		cy.get('button[role="combobox"]').should("contain.text", "Cirugía")
@@ -950,10 +913,10 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -970,10 +933,10 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -1023,23 +986,20 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
 		cy.contains("Ver video").click()
 
 		cy.get('div[role="dialog"]').within(() => {
-			// Verifica el texto del <p>
 			cy.get("p").contains("0350-224234500_small").should("be.visible")
 
-			// Verifica que exista el <video> con el src esperado
 			cy.get("video").should("have.attr", "src").and("include", "10350-224234500_small")
 
-			// Luego haces click en el elemento <video>
 			cy.get("video").click({ force: true })
 		})
 
@@ -1048,20 +1008,18 @@ describe("Admin flow test", () => {
 		cy.get('[role="dialog"]')
 			.find("button")
 			.find("svg.lucide-x")
-			.should("be.visible") // Asegúrate de que el SVG está visible
+			.should("be.visible") 
 			.click()
-
-		//probar un video que no este disponible
 
 		cy.get("table tbody tr")
 			.eq(4)
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -1076,7 +1034,7 @@ describe("Admin flow test", () => {
 		cy.get('[role="dialog"]')
 			.find("button")
 			.find("svg.lucide-x")
-			.should("be.visible") // Asegúrate de que el SVG está visible
+			.should("be.visible") 
 			.click()
 
 		cy.step("Step 26.2 - EDITAR VIDEOS")
@@ -1086,21 +1044,21 @@ describe("Admin flow test", () => {
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
 		cy.contains("Editar").click()
 
-		cy.contains("label", "Nombre") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Nombre") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
 			.clear()
-			.type("unavailable_video3") // Hace clic en el botón
+			.type("unavailable_video3") 
 
 		cy.get('button[type="submit"]').click()
 
@@ -1113,23 +1071,23 @@ describe("Admin flow test", () => {
 		cy.get("table tbody tr")
 			.first()
 			.within(() => {
-				cy.get("td").eq(0).should("contain", "unavailable_video3") // ID
+				cy.get("td").eq(0).should("contain", "unavailable_video3") 
 			})
 			.then(() => {
 				cy.get('input[placeholder="Buscar..."]').should("be.visible").clear()
 			})
 
-		cy.step("Step 27 - BORRAR VIDEOS")
+		cy.step("Step 27 - Borrar videos")
 
 		cy.get("table tbody tr")
 			.eq(5)
 			.find("td")
 			.eq(4)
 			.then(($cell) => {
-				// Aquí puedes hacer algo con el contenido de la quinta columna si lo necesitas
-				cy.log($cell.text()) // Esto solo es para verificar el valor de la celda
+				
+				cy.log($cell.text()) 
 
-				// Ahora, hacemos clic en el botón "..."
+				
 				cy.wrap($cell).parents("tr").find("button").click()
 			})
 
@@ -1147,26 +1105,26 @@ describe("Admin flow test", () => {
 
 		cy.contains('div[role="menuitem"]', "Cambiar Contraseña").should("be.visible").click()
 
-		cy.contains("label", "Contraseña Actual") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Contraseña Actual") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
 			.clear()
-			.type("admin") // Hace clic en el botón
+			.type("admin") 
 
-		cy.contains("label", "Nueva Contraseña") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Nueva Contraseña") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
 			.clear()
-			.type("Rstz123$") // Hace clic en el botón
+			.type("Rstz123$") 
 
-		cy.contains("label", "Confirmar Contraseña") // Encuentra el label con el texto "Coordinador"
+		cy.contains("label", "Confirmar Contraseña") 
 			.siblings("input")
-			.should("be.visible") // Encuentra el botón hermano dentro del mismo div
+			.should("be.visible") 
 			.click()
 			.clear()
-			.type("Rstz123$") // Hace clic en el botón
+			.type("Rstz123$") 
 
 		cy.contains("button", "Guardar Cambios").click()*/
 
@@ -1175,4 +1133,3 @@ describe("Admin flow test", () => {
 		cy.contains('div[role="menuitem"]', "Cerrar Sesión").should("be.visible").click()
 	})
 })
-// This file is intentionally left empty. It serves as a placeholder for future tests related to the admin section of the application.
