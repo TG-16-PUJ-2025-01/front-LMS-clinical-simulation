@@ -91,7 +91,7 @@ export default function MainMenuPage() {
 				/>
 			</LayoutSlot>
 			<LayoutSlot name="title">Tus Clases</LayoutSlot>
-			<div className="mb-4 flex items-center justify-between gap-4">
+			<div className="-mb-2 flex items-center justify-between gap-4">
 				<div className="relative w-1/2 max-w-sm">
 					<Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 stroke-zinc-500" />
 					<Input
@@ -130,14 +130,18 @@ export default function MainMenuPage() {
 				{data.length === 0 ? (
 					<p className="mt-6 text-gray-500">No se encontraron clases</p>
 				) : (
-					<div className="mt-6 grid w-full grid-cols-[repeat(auto-fit,300px)] justify-between gap-y-6">
+					<div className="mt-6 grid w-full grid-cols-[repeat(auto-fit,300px)] justify-between">
 						{data.map((classItem) => (
 							<CardClass
 								key={classItem.classId}
+								className="mt-6"
 								classData={classItem}
 								onClick={() => handleClassNavigation(classItem)}
 							/>
 						))}
+						<div></div>
+						<div></div>
+						<div></div>
 					</div>
 				)}
 			</div>

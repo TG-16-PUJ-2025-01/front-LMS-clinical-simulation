@@ -11,14 +11,16 @@ import Class from "@/modules/core/models/class"
 type CardProps = React.ComponentProps<typeof Card> & {
 	classData: Class
 	onClick?: () => void
+	className?: string
 }
 
-export function CardClass({ classData, onClick }: CardProps) {
+export function CardClass({ classData, onClick, className }: CardProps) {
 	return (
 		<Card
 			onClick={onClick}
 			className={cn(
-				"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden shadow-md transition-transform hover:scale-105"
+				"relative h-[300px] w-[300px] transform cursor-pointer overflow-hidden shadow-md transition-transform hover:scale-105",
+				className
 			)}
 		>
 			<CardHeader className="bg-blue-javeriana h-3/5 p-0" />
