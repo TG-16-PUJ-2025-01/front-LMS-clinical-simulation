@@ -1101,7 +1101,7 @@ describe("Admin flow test", () => {
 
 		cy.step("Step 28 - Probar cambiar contraseña y cerrar sesion")
 
-		/*cy.get("header").find("span.bg-muted").should("be.visible").click()
+		cy.get("header").find("span.bg-muted").should("be.visible").click()
 
 		cy.contains('div[role="menuitem"]', "Cambiar Contraseña").should("be.visible").click()
 
@@ -1126,7 +1126,7 @@ describe("Admin flow test", () => {
 			.clear()
 			.type("Rstz123$") 
 
-		cy.contains("button", "Guardar Cambios").click()*/
+		cy.contains("button", "Guardar Cambios").click()
 
 		cy.get("header").find("span.bg-muted").should("be.visible").click()
 
