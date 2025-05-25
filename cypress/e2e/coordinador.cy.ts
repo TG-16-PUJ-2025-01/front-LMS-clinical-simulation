@@ -3,6 +3,7 @@ describe("Coordinator flow tests", () => {
 	it("CORD-2 Acceso No Autorizado Coordinador", () => {
 		cy.step("Step 1 - Login")
 		cy.visit("/")
+		cy.wait(2000)
 		cy.get("input#email").should("be.visible").and("have.attr", "placeholder", "Correo registrado")
 		cy.get("input#password").should("be.visible").and("have.attr", "placeholder", "Contraseña")
 		cy.get('button[type="submit"]').should("be.visible").and("contain", "Ingresar")
